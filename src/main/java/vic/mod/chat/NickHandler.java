@@ -37,14 +37,13 @@ public class NickHandler
 	
 	private File nickfile;
 	
-	public NickHandler(File file)
+	public NickHandler()
 	{
 		FMLCommonHandler.instance().bus().register(this);
 		MinecraftForge.EVENT_BUS.register(this);
 		
 		nickRegistry = HashBiMap.create(new HashMap<String, String>());
-		nickfile = new File(file.getAbsolutePath() + "/vchat_nicks.json");
-		nickfile.setWritable(true);
+		nickfile = new File("vchat_nicks.json");
 	}
 	
 	@SubscribeEvent

@@ -12,7 +12,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 
-@Mod(modid = "vchat", name = "vChat", version = "0.1r07", acceptableRemoteVersions = "*")
+@Mod(modid = "vchat", name = "vChat", version = "0.1r09", acceptableRemoteVersions = "*")
 public class VChat {
 	
 	@Instance("vchat")
@@ -40,8 +40,8 @@ public class VChat {
 		File rootDir = event.getModConfigurationDirectory().getParentFile();
 		rootDir.setWritable(true);
 		commonHandler = new CommonHandler();
-		channelHandler = new ChannelHandler(rootDir);
-		if(config.nickEnabled) nickHandler = new NickHandler(rootDir);			
+		channelHandler = new ChannelHandler();
+		if(config.nickEnabled) nickHandler = new NickHandler();			
 	}
 	
 	@EventHandler

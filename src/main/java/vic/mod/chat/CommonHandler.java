@@ -77,27 +77,28 @@ public class CommonHandler
 		{
 			componentName.getChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(entity.getUsername())));
 		}
-		
+
 		for(Object obj : MinecraftServer.getServer().getConfigurationManager().playerEntityList)
 		{
+			ChatComponentText computed2 = computed.createCopy();
 			ChatEntity receiver = new ChatEntity(obj);		
 			if(applyFormat) 
 			{
 				for(Object obj2 : MinecraftServer.getServer().getConfigurationManager().playerEntityList)
 				{
-					ChatEntity player = new ChatEntity(obj);
-					new ChatFormatter.ChatFormatterUsername(player, receiver, false).apply(computed);
+					ChatEntity player = new ChatEntity(obj2);
+					new ChatFormatter.ChatFormatterUsername(player, receiver, false).apply(computed2);	
 				}
 				if(Config.nickEnabled)
 				{
 					for(Object obj2 : MinecraftServer.getServer().getConfigurationManager().playerEntityList)
 					{
-						ChatEntity player = new ChatEntity(obj);
-						new ChatFormatter.ChatFormatterUsername(player, receiver, true).apply(computed);
+						ChatEntity player = new ChatEntity(obj2);
+						new ChatFormatter.ChatFormatterUsername(player, receiver, true).apply(computed2);	
 					}
-				}
+				}	
 			}
-			VChat.channelHandler.privateMessageOnChannel(channel, entity, receiver, new ChatComponentTranslation("chat.type.text", componentName, computed));
+			VChat.channelHandler.privateMessageOnChannel(channel, entity, receiver, new ChatComponentTranslation("chat.type.text", componentName, computed2));
 		}
 		event.setCanceled(true);
 	}

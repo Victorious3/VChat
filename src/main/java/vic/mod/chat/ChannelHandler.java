@@ -48,7 +48,7 @@ public class ChannelHandler
 	private File channelfile;
 	private File playerfile;
 	
-	public ChannelHandler(File file)
+	public ChannelHandler()
 	{
 		FMLCommonHandler.instance().bus().register(this);
 		MinecraftForge.EVENT_BUS.register(this);
@@ -56,10 +56,8 @@ public class ChannelHandler
 		registerChannel(new ChannelGlobal());
 		if(Config.localEnabled) registerChannel(new ChannelLocal());
 		
-		channelfile = new File(file.getAbsolutePath() + "/vchat_channels.json");
-		channelfile.setWritable(true);
-		playerfile = new File(file.getAbsolutePath() + "/vchat_players.json");
-		playerfile.setWritable(true);
+		channelfile = new File("vchat_channels.json");
+		playerfile = new File("vchat_players.json");
 	}
 
 	@SubscribeEvent(priority = EventPriority.NORMAL)
