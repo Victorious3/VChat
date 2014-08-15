@@ -1,5 +1,6 @@
 /*
 /*/
 !.gitignore
+!LICENSE.txt
 !build.gradle
 !/src/
