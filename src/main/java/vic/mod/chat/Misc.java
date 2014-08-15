@@ -3,6 +3,7 @@ package vic.mod.chat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.regex.Pattern;
 
 import net.minecraft.command.CommandBase;
@@ -36,7 +37,13 @@ public class Misc
 	
 	public static EntityPlayerMP getPlayer(String player)
 	{
-		return MinecraftServer.getServer().getConfigurationManager().func_152612_a(player);
+		Iterator iterator = MinecraftServer.getServer().getConfigurationManager().playerEntityList.iterator();
+		while(iterator.hasNext())
+		{
+			EntityPlayerMP entity = (EntityPlayerMP)iterator.next();
+			if(entity.getCommandSenderName().equalsIgnoreCase(player)) return entity;
+		}
+		return null;
 	}
 	
 	public static abstract class CommandOverrideAccess extends CommandBase 

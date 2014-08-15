@@ -24,7 +24,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
-import com.mojang.authlib.GameProfile;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
@@ -154,13 +153,7 @@ public class NickHandler
 					sender.addChatMessage(new ChatComponentText("Removed nickname from player \"" + args[0] + "\"."));
 				}
 				else
-				{
-					GameProfile gameprofile = MinecraftServer.getServer().func_152358_ax().func_152655_a(args[0]);
-					if(gameprofile == null)
-					{
-						throw new CommandException("The given player does not exist!", sender);
-					}
-					
+				{					
 					if(args[1].contains("\u00A7")) throw new CommandException("You can not use color codes inside nicknames.", sender);
  					String playername = getPlayerFromNick(args[1]);
 					if(playername == null)
