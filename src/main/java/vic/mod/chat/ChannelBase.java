@@ -7,7 +7,9 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 public abstract class ChannelBase implements IChannel
 {
@@ -112,13 +114,34 @@ public abstract class ChannelBase implements IChannel
 	@Override
 	public void write(JsonObject obj) 
 	{
+		JsonArray muted = new JsonArray();
+		for(int i = 0; i < this.muted.size(); i++)
+			muted.add(new JsonPrimitive(this.muted.get(i).getUsername()));
 		
+		JsonArray banned = new JsonArray();
+		for(int i = 0; i < this.banned.size(); i++)
+			banned.add(new JsonPrimitive(this.banned.get(i).getUsername()));
+		
+		obj.add("muted", muted);
+		obj.add("banned", banned);
 	}
 
 	@Override
 	public void read(JsonObject obj) 
 	{
+		if(obj.has("muted"))
+		{
+			JsonArray muted = obj.getAsJsonArray("muted");
+			for(int i = 0; i < muted.size(); i++)
+				this.muted.add(new ChatEntity(muted.get(i).getAsString()));
+		}
 		
+		if(obj.has("banned"))
+		{
+			JsonArray banned = obj.getAsJsonArray("banned");
+			for(int i = 0; i < banned.size(); i++)
+				this.banned.add(new ChatEntity(banned.get(i).getAsString()));
+		}
 	}
 
 	@Override
@@ -131,5 +154,11 @@ public abstract class ChannelBase implements IChannel
 	public Collection<ChatEntity> getMembers() 
 	{
 		return joined;
-	}	
+	}
+
+	@Override
+	public boolean autoJoin(ChatEntity player) 
+	{
+		return true;
+	}
 }

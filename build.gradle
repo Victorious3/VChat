@@ -17,7 +17,7 @@ buildscript {
 
 apply plugin: 'forge'
 
-version = "0.1r09"
+version = "0.1r10"
 group= "vic.mod.chat"
 archivesBaseName = "vChat"
 

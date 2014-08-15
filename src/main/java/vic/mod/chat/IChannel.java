@@ -23,6 +23,8 @@ public interface IChannel
 	
 	public boolean canJoin(ChatEntity player);
 	
+	public boolean autoJoin(ChatEntity player);
+	
 	public void onJoin(ChatEntity player, boolean initial);
 	
 	public void onLeave(ChatEntity player, boolean initial);

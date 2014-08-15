@@ -31,8 +31,9 @@ public class Config
 		modt = config.getString("modt", "GENERAL", 		
 				"Welcome, \u00A7e\u00A7l%NAME%\u00A7r to \u00A7o%MODT%\u00A7r!/n"
 				+ "Currently, there are %ONLINE%/%ONLINE_MAX% players online./n"
-				+ "You are playing on dimension %DIM% (\u00A7o%DIM_NAME%\u00A7r) and local time is %TIME%./n"
-				+ "The server is running vChat to display this MotD,/n"
+				+ "You are playing on dimension %DIM% (\u00A7o%DIM_NAME%\u00A7r)/n"
+				+ "and the local time is %TIME%./n"
+				+ "The server is running vChat to display this motd,/n"
 				+ "Have a good one! \u00A7o~Vic\u00A7r", 
 				
 				"The \"Message of the Day\". It will be sent to every player that joins the server.\n"
@@ -62,7 +63,5 @@ public class Config
 		if(colorHighlightSelf == null) colorHighlightSelf = EnumChatFormatting.DARK_RED;
 		
 		urlPermissionLevel = config.getInt("url_permlevel", "GENERAL", 0, 0, Integer.MAX_VALUE, "Change the permission level required to post clickable links in chat. 0 is everyone by default.");
-		
-		config.save();
 	}
 }

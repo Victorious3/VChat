@@ -28,9 +28,11 @@ import vic.mod.chat.Misc.CommandOverrideAccess;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
 
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -53,8 +55,8 @@ public class ChannelHandler
 		FMLCommonHandler.instance().bus().register(this);
 		MinecraftForge.EVENT_BUS.register(this);
 		
-		registerChannel(new ChannelGlobal());
 		if(Config.localEnabled) registerChannel(new ChannelLocal());
+		registerChannel(new ChannelGlobal());
 		
 		channelfile = new File("vchat_channels.json");
 		playerfile = new File("vchat_players.json");
@@ -66,6 +68,8 @@ public class ChannelHandler
 		ChatEntity player = new ChatEntity(event.player);
 		if(!members.containsKey(player))
 		{
+			for(IChannel channel : channels.values())
+				if(channel instanceof ChannelCustom && channel.autoJoin(player)) joinChannel(player, channel, true);
 			if(Config.localEnabled) joinChannel(player, getChannel("local"), true);
 			joinChannel(player, getChannel("global"), true);
 		}
@@ -119,6 +123,36 @@ public class ChannelHandler
 			VChat.logger.error("Could not read the player file. Maybe it's disrupted or the access is restricted. Try deleting it.");
 		}
 		
+		try {
+			if(channelfile.exists())
+			{
+				JsonParser parser = new JsonParser();
+				JsonArray chans = (JsonArray)parser.parse(new JsonReader(new FileReader(channelfile)));
+				for(int i = 0; i < chans.size(); i++)
+				{
+					JsonObject channel = (JsonObject)chans.get(i);
+					String name = channel.get("name").getAsString();
+					if(channels.containsKey(name)) channels.get(name).read(channel);
+					else
+					{
+						registerChannel(new ChannelCustom(name));
+						channels.get(name).read(channel);
+					}
+				}
+			}
+		} catch (JsonIOException e) {
+			e.printStackTrace();
+			VChat.logger.error("Could not read the channel file. Maybe it's disrupted or the access is restricted. Try deleting it.");
+		} catch (JsonSyntaxException e2) {
+			e2.printStackTrace();
+			VChat.logger.error("The channel file contains invalid syntax. It has to be a valid JSON file");
+		} catch (NullPointerException e3) {
+			e3.printStackTrace();
+			VChat.logger.error("The channel file is missing a required field.");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		event.registerServerCommand(new CommandChannel());
 		if(Config.localEnabled) event.registerServerCommand(new CommandLocal());
 		event.registerServerCommand(new CommandGlobal());
@@ -148,6 +182,28 @@ public class ChannelHandler
 		} catch (Exception e) {
 			e.printStackTrace();
 			VChat.logger.error("Could save the player file. Maybe it's disrupted or the access is restricted. Try deleting it.");
+		}
+		
+		try {
+			if(!channelfile.exists()) channelfile.createNewFile();
+			
+			JsonArray chans = new JsonArray();
+			for(IChannel channel : channels.values())
+			{
+				JsonObject obj = new JsonObject();
+				obj.addProperty("name", channel.getName());
+				channel.write(obj);
+				chans.add(obj);
+			}
+			
+			FileWriter writer = new FileWriter(channelfile);
+			writer.write(new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create().toJson(chans));
+			writer.flush();
+			writer.close();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			VChat.logger.error("Could save the channel file. Maybe it's disrupted or the access is restricted. Try deleting it.");
 		}
 	}
 	
@@ -224,7 +280,8 @@ public class ChannelHandler
 			component = channel.formatChat(sender, receiver, component);
 			if(channel.getPrefix() != null)
 			{
-				ChatComponentText text = new ChatComponentText("[" + channel.getPrefix() + "] ");
+				ChatComponentText text = new ChatComponentText("");
+				text.appendText("[" + channel.getPrefix() + "] ");
 				text.appendSibling(component);
 				receiver.toPlayer().addChatComponentMessage(text);
 			}	
@@ -323,8 +380,8 @@ public class ChannelHandler
 		@Override
 		public String getCommandUsage(ICommandSender sender) 
 		{
-			if(sender instanceof EntityPlayerMP) return "/channel [join/leave/msg/create/remove/list/ban/unban/kick/mute/unmute] [...]";
-			return "/channel <msg/create/remove/list/ban/unban/kick/mute/unmute> [...]";
+			if(sender instanceof EntityPlayerMP) return "/channel [join/leave/msg/list/ban/unban/kick/mute/unmute] [...]";
+			return "/channel <msg/list/ban/unban/kick/mute/unmute> [...]";
 		}
 
 		@Override
@@ -414,22 +471,6 @@ public class ChannelHandler
 						String message = StringUtils.join(Arrays.asList(args).subList(2, args.length).toArray(), " ");
 						broadcastOnChannel(channel, ChatEntity.SERVER, new ChatComponentText(message));
 					}
-				}
-				else if(args[0].equalsIgnoreCase("create"))
-				{
-					if(checkPermission(sender, 3))
-					{
-						
-					}
-					throw new CommandException("Sorry, but you can't do that yet.");
-				}
-				else if(args[0].equalsIgnoreCase("remove"))
-				{
-					if(checkPermission(sender, 3))
-					{
-						
-					}
-					throw new CommandException("Sorry, but you can't do that yet.");
 				}
 				else if(args[0].equalsIgnoreCase("list"))
 				{

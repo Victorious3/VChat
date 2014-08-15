@@ -67,16 +67,12 @@ public class CommonHandler
 		computed.getChatStyle().setColor(channel.getColor());
 		
 		if(applyFormat)
-		{
 			if(Config.urlPermissionLevel == 0 || event.player.canCommandSenderUseCommand(Config.urlPermissionLevel, null)) new ChatFormatter.ChatFormatterURL().apply(computed);
-		}
 		if(Config.colorPermissionLevel == 0 || event.player.canCommandSenderUseCommand(Config.colorPermissionLevel, null)) new ChatFormatter.ChatFormatterColor().apply(computed);
 
 		ChatComponentText componentName = (ChatComponentText) event.component.getFormatArgs()[0];
 		if(entity.getNickname() != null)
-		{
 			componentName.getChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(entity.getUsername())));
-		}
 
 		for(Object obj : MinecraftServer.getServer().getConfigurationManager().playerEntityList)
 		{
