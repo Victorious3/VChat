@@ -30,6 +30,7 @@ public class ChannelCustom extends ChannelBase
 		obj.addProperty("whitelisted", whitelisted);
 		if(prefix != null) obj.addProperty("prefix", prefix);
 		obj.addProperty("autojoin", autojoin);
+		obj.addProperty("multiDim", multiDim);
 		
 		super.write(obj);
 	}
@@ -43,6 +44,7 @@ public class ChannelCustom extends ChannelBase
 		if(obj.has("whitelisted")) whitelisted = obj.get("whitelisted").getAsBoolean();
 		if(obj.has("prefix")) prefix = obj.get("prefix").getAsString();
 		if(obj.has("autojoin")) autojoin = obj.get("autojoin").getAsBoolean();
+		if(obj.has("multiDim")) multiDim = obj.get("multiDim").getAsBoolean();
 		
 		super.read(obj);
 	}
@@ -110,5 +112,11 @@ public class ChannelCustom extends ChannelBase
 	public boolean autoJoin(ChatEntity player) 
 	{
 		return autojoin;
+	}
+
+	@Override
+	public boolean isWhitelisted() 
+	{
+		return whitelisted;
 	}
 }

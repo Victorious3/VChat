@@ -19,6 +19,8 @@ public interface IChannel
 	
 	public boolean isMuted(ChatEntity player);
 	
+	public boolean isWhitelisted();
+	
 	public boolean canReceiveChat(ChatEntity sender, ChatEntity receiver, IChatComponent message);
 	
 	public boolean canJoin(ChatEntity player);

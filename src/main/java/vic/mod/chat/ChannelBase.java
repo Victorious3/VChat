@@ -95,8 +95,11 @@ public abstract class ChannelBase implements IChannel
 			if(banned.contains(player))
 			{
 				banned.remove(player);
-				ChannelHandler.privateMessageOnChannel(this, ChatEntity.SERVER, issuer, new ChatComponentText("You unbanned " + player.getUsername() + " from the channel."));
+				if(isWhitelisted()) ChannelHandler.privateMessageOnChannel(this, ChatEntity.SERVER, issuer, new ChatComponentText("You removed " + player.getUsername() + " from the whitelist."));
+				else ChannelHandler.privateMessageOnChannel(this, ChatEntity.SERVER, issuer, new ChatComponentText("You unbanned " + player.getUsername() + " from the channel."));
+				if(isWhitelisted() && joined.contains(player)) ChannelHandler.leaveChannel(player, this);
 			}
+			else if(isWhitelisted()) ChannelHandler.privateMessageOnChannel(this, ChatEntity.SERVER, issuer, new ChatComponentText("You haven't added " + player.getUsername() + " to the whitelist!"));
 			else ChannelHandler.privateMessageOnChannel(this, ChatEntity.SERVER, issuer, new ChatComponentText("You haven't banned " + player.getUsername() + " from the channel!"));
 		}
 		else if(!unban)
@@ -104,9 +107,11 @@ public abstract class ChannelBase implements IChannel
 			if(!banned.contains(player))
 			{
 				banned.add(player);
-				ChannelHandler.broadcastOnChannel(this, ChatEntity.SERVER, new ChatComponentText(player + " was banned from the channel by " + issuer));
-				if(joined.contains(player)) ChannelHandler.leaveChannel(player, this);
+				if(isWhitelisted()) ChannelHandler.broadcastOnChannel(this, ChatEntity.SERVER, new ChatComponentText(player + " was added to the whitelist by " + issuer));
+				else ChannelHandler.broadcastOnChannel(this, ChatEntity.SERVER, new ChatComponentText(player + " was banned from the channel by " + issuer));
+				if(!isWhitelisted() && joined.contains(player)) ChannelHandler.leaveChannel(player, this);
 			}
+			else if(isWhitelisted()) ChannelHandler.privateMessageOnChannel(this, ChatEntity.SERVER, issuer, new ChatComponentText("You already added " + player.getUsername() + " to the whitelist!"));
 			else ChannelHandler.privateMessageOnChannel(this, ChatEntity.SERVER, issuer, new ChatComponentText("You already banned " + player.getUsername() + " from the channel!"));
 		}
 	}
@@ -160,5 +165,11 @@ public abstract class ChannelBase implements IChannel
 	public boolean autoJoin(ChatEntity player) 
 	{
 		return true;
+	}
+
+	@Override
+	public boolean isWhitelisted() 
+	{
+		return false;
 	}
 }

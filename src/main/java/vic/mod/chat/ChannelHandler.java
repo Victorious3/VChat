@@ -380,8 +380,8 @@ public class ChannelHandler
 		@Override
 		public String getCommandUsage(ICommandSender sender) 
 		{
-			if(sender instanceof EntityPlayerMP) return "/channel [join/leave/msg/list/ban/unban/kick/mute/unmute] [...]";
-			return "/channel <msg/list/ban/unban/kick/mute/unmute> [...]";
+			if(sender instanceof EntityPlayerMP) return "/channel [join/leave/msg/list/ban/unban/whitelist add/whitelist remove/kick/mute/unmute] [...]";
+			return "/channel <msg/list/ban/unban/whitelist add/whitelist remove/kick/mute/unmute> [...]";
 		}
 
 		@Override
@@ -505,6 +505,8 @@ public class ChannelHandler
 						
 						IChannel channel = getChannel(args[1]);
 						if(channel == null) throw new ChannelNotFoundException(args[1]);
+						if((args[0].equalsIgnoreCase("ban") || args[0].equalsIgnoreCase("unban")) && channel.isWhitelisted())
+							throw new CommandException("The channel " + channel.getName() + " is whitelisted. Use /channel whitelist <add/remove> instead.");
 						
 						ChatEntity entity = new ChatEntity(args[2]);
 						if(entity.toPlayer() == null && args[0].equalsIgnoreCase("kick"))
@@ -517,6 +519,21 @@ public class ChannelHandler
 						if(args[0].equalsIgnoreCase("ban") || args[0].equalsIgnoreCase("unban")) channel.ban(isPlayer ? new ChatEntity(player) : ChatEntity.SERVER, entity, u);
 						else if(args[0].equalsIgnoreCase("mute") || args[0].equalsIgnoreCase("unmute")) channel.mute(isPlayer ? new ChatEntity(player) : ChatEntity.SERVER, entity, u);
 						else channel.kick(isPlayer ? new ChatEntity(player) : ChatEntity.SERVER, entity);
+					}
+				}
+				else if(args[0].equalsIgnoreCase("whitelist"))
+				{
+					if(checkPermission(sender, 3))
+					{
+						if(args.length != 4 || (!args[1].equalsIgnoreCase("add") && !args[1].equalsIgnoreCase("remove"))) 
+							throw new WrongUsageException("/channel whitelist <add/remove> <channel> <player>");
+						
+						boolean u = args[1].equalsIgnoreCase("remove");
+						IChannel channel = getChannel(args[2]);
+						if(channel == null) throw new ChannelNotFoundException(args[2]);
+						
+						ChatEntity entity = new ChatEntity(args[3]);
+						channel.ban(isPlayer ? new ChatEntity(player) : ChatEntity.SERVER, entity, u);
 					}
 				}
 				else throw new WrongUsageException(getCommandUsage(sender));
