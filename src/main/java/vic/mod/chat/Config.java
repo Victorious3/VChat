@@ -63,5 +63,7 @@ public class Config
 		if(colorHighlightSelf == null) colorHighlightSelf = EnumChatFormatting.DARK_RED;
 		
 		urlPermissionLevel = config.get("url_permlevel", "GENERAL", 0, "Change the permission level required to post clickable links in chat. 0 is everyone by default.").getInt();
+		
+		config.save();
 	}
 }
