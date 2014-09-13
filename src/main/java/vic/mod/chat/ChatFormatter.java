@@ -121,10 +121,10 @@ public abstract class ChatFormatter implements IChatFormatter
 		@Override
 		protected ChatComponentText getComponentReplacement(String match) 
 		{	
+			String ytid = "";
 			try {
 				URL url = new URL(match);
 				List<NameValuePair> list = URLEncodedUtils.parse(url.toURI(), "UTF-8");
-				String ytid = "";
 				boolean isPlaylist = false;
 				
 				for(NameValuePair pair : list)
@@ -174,7 +174,9 @@ public abstract class ChatFormatter implements IChatFormatter
 					
 					return c1;
 				}
-			} catch (Exception e) {}
+			} catch (Exception e) {
+				VChat.logger.warn("Could not retreive video data for video " + ytid + ": " + e.getClass().getSimpleName());
+			}
 			
 			ChatComponentText text = new ChatComponentText(match);
 			ChatStyle style = new ChatStyle();
