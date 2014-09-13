@@ -67,7 +67,11 @@ public class CommonHandler
 		computed.getChatStyle().setColor(channel.getColor());
 		
 		if(applyFormat)
-			if(Config.urlPermissionLevel == 0 || event.player.canCommandSenderUseCommand(Config.urlPermissionLevel, null)) new ChatFormatter.ChatFormatterURL().apply(computed);
+			if(Config.urlPermissionLevel == 0 || event.player.canCommandSenderUseCommand(Config.urlPermissionLevel, null))
+			{
+				new ChatFormatter.ChatFormatterYoutube().apply(computed);
+				new ChatFormatter.ChatFormatterURL().apply(computed);
+			}		
 		if(Config.colorPermissionLevel == 0 || event.player.canCommandSenderUseCommand(Config.colorPermissionLevel, null)) new ChatFormatter.ChatFormatterColor().apply(computed);
 
 		ChatComponentText componentName = (ChatComponentText) event.component.getFormatArgs()[0];

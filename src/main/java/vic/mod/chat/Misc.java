@@ -14,6 +14,7 @@ import net.minecraft.server.MinecraftServer;
 public class Misc 
 {
 	public static Pattern urlPattern = Pattern.compile("\\b(https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
+	public static Pattern ytVideoPattern = Pattern.compile("(http:|https:)?\\/\\/(www\\.)?(youtube.com|youtu.be)\\/(watch)?(\\?v=)?(\\S+)?");
 	
 	public static String[] parseModt(String modt, EntityPlayerMP player)
 	{
