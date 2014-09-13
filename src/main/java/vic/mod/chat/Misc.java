@@ -1,8 +1,10 @@
 package vic.mod.chat;
 
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 
@@ -84,5 +86,18 @@ public class Misc
 			if(getRequiredPermissionLevel() == 0) return true;
 			return sender.canCommandSenderUseCommand(getRequiredPermissionLevel(), getCommandName());
 		}
+	}
+	
+	public static HashMap<String, String> getQueryMap(URL url)  
+	{
+		String[] params = url.getQuery().split("&");
+		HashMap<String, String> map = new HashMap<String, String>();
+		for(String param : params)
+		{
+			String name = param.split("=")[0];
+			String value = param.split("=")[1];
+			map.put(name, value);
+		}
+		return map;
 	}
 }

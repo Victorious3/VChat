@@ -2,7 +2,7 @@ package vic.mod.chat;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.util.List;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,8 +16,6 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -124,14 +122,11 @@ public abstract class ChatFormatter implements IChatFormatter
 			String ytid = "";
 			try {
 				URL url = new URL(match);
-				List<NameValuePair> list = URLEncodedUtils.parse(url.toURI(), "UTF-8");
+				HashMap<String, String> query = Misc.getQueryMap(url);
 				boolean isPlaylist = false;
+				if(query.containsKey("v")) ytid = query.get("v");
+				if(query.containsKey("list")) isPlaylist = true;
 				
-				for(NameValuePair pair : list)
-				{
-					if(pair.getName().equalsIgnoreCase("v")) ytid = pair.getValue();	
-					else if(pair.getName().equalsIgnoreCase("list")) isPlaylist = true;
-				}
 				if(ytid.length() == 0)
 				{
 					String path = url.getPath();
