@@ -19,16 +19,17 @@ import vic.mod.chat.Misc;
 import vic.mod.chat.Misc.CommandOverrideAccess;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent;
 
-public class AFKHandler implements IChatHandler
+public class AFKHandler extends ChatHandlerImpl
 {
 	private HashMap<ChatEntity, AFKEntry> afk = new HashMap<ChatEntity, AFKEntry>();
 	
 	public AFKHandler()
 	{
+		super();
 		FMLCommonHandler.instance().bus().register(this);
 		MinecraftForge.EVENT_BUS.register(this);
 	}
@@ -38,9 +39,13 @@ public class AFKHandler implements IChatHandler
 	{
 		event.registerServerCommand(new AFKCommand());
 	}
-
-	@Override public void onServerUnload(FMLServerStoppingEvent event){}
 	
+	@SubscribeEvent()
+	public void onPlayerLeft(PlayerEvent.PlayerLoggedOutEvent event)
+	{
+		afk.remove(new ChatEntity(event.player));
+	}
+
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void onCommand(CommandEvent event)
 	{
@@ -82,39 +87,9 @@ public class AFKHandler implements IChatHandler
 			String reason = "AFK";
 			if(args.length > 0) reason = StringUtils.join(args, " ");
 			ChatEntity entity = new ChatEntity(sender);
-			String nickname = entity.getNickname();
-			if(nickname == null) nickname = entity.getUsername();
 			
-			if(isAfk(entity))
-			{
-				AFKEntry entry = afk.remove(entity);
-				ChatComponentText text = new ChatComponentText("*" + nickname + " is no longer AFK.");
-				text.getChatStyle().setItalic(true);
-				text.getChatStyle().setColor(EnumChatFormatting.GRAY);
-				ChannelHandler.broadcast(text);
-				
-				if(!entry.messaged.isEmpty())
-				{
-					ChatComponentText comp = new ChatComponentText("The following players tried to message you: ");
-					Iterator<ChatEntity> iterator = entry.messaged.iterator();
-					while(iterator.hasNext())
-					{
-						ChatComponentText nameComponent = Misc.getComponent(iterator.next());
-						comp.appendSibling(nameComponent);
-						if(iterator.hasNext()) comp.appendText(", ");
-					}
-					comp.appendText(".");
-					sender.addChatMessage(comp);
-				}
-			}
-			else
-			{
-				afk.put(entity, new AFKEntry(reason));
-				ChatComponentText text = new ChatComponentText("*" + nickname + " is now AFK (" + reason + ").");
-				text.getChatStyle().setItalic(true);
-				text.getChatStyle().setColor(EnumChatFormatting.GRAY);
-				ChannelHandler.broadcast(text);
-			}
+			if(isAfk(entity)) removeAfk(entity);
+			else setAfk(entity, reason);
 		}
 
 		@Override
@@ -132,6 +107,44 @@ public class AFKHandler implements IChatHandler
 	public String getReason(ChatEntity entity)
 	{
 		return afk.get(entity).reason;
+	}
+	
+	public void setAfk(ChatEntity entity, String reason)
+	{
+		String nickname = entity.getNickname();
+		if(nickname == null) nickname = entity.getUsername();
+		
+		afk.put(entity, new AFKEntry(reason));
+		ChatComponentText text = new ChatComponentText("*" + nickname + " is now AFK (" + reason + ").");
+		text.getChatStyle().setItalic(true);
+		text.getChatStyle().setColor(EnumChatFormatting.GRAY);
+		ChannelHandler.broadcast(text);
+	}
+	
+	public void removeAfk(ChatEntity entity)
+	{
+		String nickname = entity.getNickname();
+		if(nickname == null) nickname = entity.getUsername();
+		
+		AFKEntry entry = afk.remove(entity);
+		ChatComponentText text = new ChatComponentText("*" + nickname + " is no longer AFK.");
+		text.getChatStyle().setItalic(true);
+		text.getChatStyle().setColor(EnumChatFormatting.GRAY);
+		ChannelHandler.broadcast(text);
+		
+		if(!entry.messaged.isEmpty())
+		{
+			ChatComponentText comp = new ChatComponentText("The following players tried to message you: ");
+			Iterator<ChatEntity> iterator = entry.messaged.iterator();
+			while(iterator.hasNext())
+			{
+				ChatComponentText nameComponent = Misc.getComponent(iterator.next());
+				comp.appendSibling(nameComponent);
+				if(iterator.hasNext()) comp.appendText(", ");
+			}
+			comp.appendText(".");
+			entity.toPlayer().addChatMessage(comp);
+		}
 	}
 	
 	private static class AFKEntry

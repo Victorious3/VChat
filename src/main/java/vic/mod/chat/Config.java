@@ -13,6 +13,7 @@ public class Config
 	public static boolean channelListEnabled;
 	public static boolean nickEnabled;
 	public static boolean afkEnabled;
+	public static boolean autoAfkEnabled;
 	public static boolean localEnabled;
 	public static boolean globalCrossDim;
 	public static boolean urlEnabled;
@@ -21,6 +22,7 @@ public class Config
 	public static int nickPermissionLevel;
 	public static int colorPermissionLevel;
 	public static int urlPermissionLevel;
+	public static int autoAfkTime;
 	
 	public static int localRange;
 	public static int ytTitleLimit;
@@ -54,7 +56,10 @@ public class Config
 				+ "/n is used for a line feed.\n").getString();
 		
 		modtEnabled = config.get("GENERAL", "modt_enabled", true, "Disable or enable the \"Message of the Day.\"").getBoolean(true);
+		
 		afkEnabled = config.get("GENERAL", "afk_enabled", true, "Disable or enable the /afk command").getBoolean(true);
+		autoAfkEnabled = config.get("GENERAL", "auto_afk_enabled", true, "Disable or enable the auto afk. Needs \"afk_enabled\" to be set to \"true\"").getBoolean(true);
+		autoAfkTime = config.get("GENERAL", "auto_afk_timeout", 120, "Change the timeout at which a player will be marked as afk, in seconds.").getInt(120);
 		
 		nickEnabled = config.get("GENERAL", "nick_enabled", true, "Disable or enable the ability to choose a nickname via /nick").getBoolean(true);	
 		nickPermissionLevel = config.get("GENERAL", "nick_permlevel", 3, "Change the permission level required to use the /nick command. 3 is OP by default.").getInt(3);

@@ -15,7 +15,6 @@ import net.minecraft.command.server.CommandMessage;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import vic.mod.chat.ChatEntity;
@@ -30,13 +29,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
-public class NickHandler implements IChatHandler
+public class NickHandler extends ChatHandlerImpl
 {
 	public static HashBiMap<String, String> nickRegistry;
 	
@@ -44,8 +42,7 @@ public class NickHandler implements IChatHandler
 	
 	public NickHandler()
 	{
-		FMLCommonHandler.instance().bus().register(this);
-		MinecraftForge.EVENT_BUS.register(this);
+		super();
 		
 		nickRegistry = HashBiMap.create(new HashMap<String, String>());
 		nickfile = new File("vchat_nicks.json");
@@ -124,6 +121,7 @@ public class NickHandler implements IChatHandler
 	@Override
 	public void onServerLoad(FMLServerStartingEvent event)
 	{
+		nickRegistry.clear();
 		loadNicks();
 		event.registerServerCommand(new CommandNick());
 	}

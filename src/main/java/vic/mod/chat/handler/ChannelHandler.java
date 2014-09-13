@@ -20,7 +20,6 @@ import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.MinecraftForge;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -43,14 +42,13 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 
-public class ChannelHandler implements IChatHandler
+public class ChannelHandler extends ChatHandlerImpl
 {
 	public static HashMap<ChatEntity, ArrayList<String>> members = new HashMap<ChatEntity, ArrayList<String>>();
 	public static HashMap<String, IChannel> channels = new HashMap<String, IChannel>();
@@ -60,8 +58,7 @@ public class ChannelHandler implements IChatHandler
 	
 	public ChannelHandler()
 	{
-		FMLCommonHandler.instance().bus().register(this);
-		MinecraftForge.EVENT_BUS.register(this);
+		super();
 		
 		if(Config.localEnabled) registerChannel(new ChannelLocal());
 		registerChannel(new ChannelGlobal());

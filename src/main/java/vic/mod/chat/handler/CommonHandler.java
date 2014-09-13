@@ -6,7 +6,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.ServerChatEvent;
 import vic.mod.chat.ChatEntity;
@@ -15,21 +14,12 @@ import vic.mod.chat.Config;
 import vic.mod.chat.IChannel;
 import vic.mod.chat.Misc;
 import vic.mod.chat.VChat;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 
-public class CommonHandler implements IChatHandler
+public class CommonHandler extends ChatHandlerImpl
 {
-	public CommonHandler()
-	{
-		FMLCommonHandler.instance().bus().register(this);
-		MinecraftForge.EVENT_BUS.register(this);
-	}
-	
 	@SubscribeEvent
 	public void onPlayerJoined(PlayerEvent.PlayerLoggedInEvent event)
 	{
@@ -121,7 +111,4 @@ public class CommonHandler implements IChatHandler
 			}
 		}
 	}
-
-	@Override public void onServerLoad(FMLServerStartingEvent event) {}
-	@Override public void onServerUnload(FMLServerStoppingEvent event) {}
 }

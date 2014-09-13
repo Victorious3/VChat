@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import org.apache.logging.log4j.Logger;
 
 import vic.mod.chat.handler.AFKHandler;
+import vic.mod.chat.handler.AutoAFKHandler;
 import vic.mod.chat.handler.ChannelHandler;
 import vic.mod.chat.handler.CommonHandler;
 import vic.mod.chat.handler.IChatHandler;
@@ -26,6 +27,7 @@ public class VChat {
 	public static CommonHandler commonHandler;
 	public static ChannelHandler channelHandler;
 	public static AFKHandler afkHandler;
+	public static AutoAFKHandler autoAfkHandler;
 	public static NickHandler nickHandler;
 	public static Config config;
 	
@@ -49,18 +51,12 @@ public class VChat {
 		rootDir.setWritable(true);
 		commonHandler = new CommonHandler();
 		channelHandler = new ChannelHandler();
-		handlers.add(commonHandler);
-		handlers.add(channelHandler);
 		
-		if(config.nickEnabled) 
-		{
-			nickHandler = new NickHandler();
-			handlers.add(nickHandler);
-		}
+		if(config.nickEnabled) nickHandler = new NickHandler();
 		if(config.afkEnabled) 
 		{
 			afkHandler = new AFKHandler();
-			handlers.add(afkHandler);
+			if(config.autoAfkEnabled) autoAfkHandler = new AutoAFKHandler();
 		}
 	}
 	

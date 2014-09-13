@@ -138,9 +138,7 @@ public abstract class ChatFormatter implements IChatFormatter
 					if(path.startsWith("/v/")) ytid = url.getPath().substring(3);
 					else ytid = url.getPath().substring(1);
 				}
-				
-				System.out.println(ytid);
-				
+								
 				if(ytid.length() > 0)
 				{
 					URL apiURL = new URL("http://gdata.youtube.com/feeds/api/videos/" + ytid + "?v=2");
