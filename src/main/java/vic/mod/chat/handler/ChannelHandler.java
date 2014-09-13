@@ -1,4 +1,4 @@
-package vic.mod.chat;
+package vic.mod.chat.handler;
 
 import java.io.File;
 import java.io.FileReader;
@@ -24,7 +24,15 @@ import net.minecraftforge.common.MinecraftForge;
 
 import org.apache.commons.lang3.StringUtils;
 
+import vic.mod.chat.ChannelCustom;
+import vic.mod.chat.ChannelGlobal;
+import vic.mod.chat.ChannelLocal;
+import vic.mod.chat.ChatEntity;
+import vic.mod.chat.Config;
+import vic.mod.chat.IChannel;
+import vic.mod.chat.Misc;
 import vic.mod.chat.Misc.CommandOverrideAccess;
+import vic.mod.chat.VChat;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -42,7 +50,7 @@ import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 
-public class ChannelHandler 
+public class ChannelHandler implements IChatHandler
 {
 	public static HashMap<ChatEntity, ArrayList<String>> members = new HashMap<ChatEntity, ArrayList<String>>();
 	public static HashMap<String, IChannel> channels = new HashMap<String, IChannel>();
@@ -96,6 +104,7 @@ public class ChannelHandler
 		}
 	}
 	
+	@Override
 	public void onServerLoad(FMLServerStartingEvent event)
 	{
 		try {
@@ -158,6 +167,7 @@ public class ChannelHandler
 		event.registerServerCommand(new CommandGlobal());
 	}
 	
+	@Override
 	public void onServerUnload(FMLServerStoppingEvent event) 
 	{
 		try {
@@ -266,6 +276,14 @@ public class ChannelHandler
 		ArrayList<IChannel> list = new ArrayList<IChannel>();
 		for(String s : members.get(player)) list.add(channels.get(s));
 		return list;
+	}
+	
+	public static void broadcast(IChatComponent component)
+	{
+		for(ChatEntity player : Misc.getOnlinePlayers())
+		{
+			player.toPlayer().addChatComponentMessage(component);
+		}
 	}
 	
 	public static void broadcastOnChannel(IChannel channel, ChatEntity sender, IChatComponent component)
@@ -491,7 +509,20 @@ public class ChannelHandler
 						if(channel == null) throw new ChannelNotFoundException(args[1]);
 						if(isPlayer && !channel.isOnChannel(new ChatEntity(player))) throw new ChannelNotJoinedException(channel);
 						sender.addChatMessage(new ChatComponentText(channel.getMembers().size() + " player(s) active on channel \"" + channel.getName() +"\":"));
-						sender.addChatMessage(new ChatComponentText(channel.getMembers().toString()));
+						
+						ChatComponentText comp = new ChatComponentText("");
+						comp.appendText("[");
+						
+						Iterator<ChatEntity> iterator = channel.getMembers().iterator();
+						while(iterator.hasNext())
+						{
+							ChatComponentText nameComponent = Misc.getComponent(iterator.next());
+							comp.appendSibling(nameComponent);
+							if(iterator.hasNext()) comp.appendText(", ");
+						}
+						comp.appendText("]");
+						
+						sender.addChatMessage(comp);
 					}
 					else throw new WrongUsageException("/ch list [channel]");
 				}

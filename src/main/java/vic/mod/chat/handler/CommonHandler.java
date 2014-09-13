@@ -1,8 +1,7 @@
-package vic.mod.chat;
+package vic.mod.chat.handler;
 
 import net.minecraft.command.server.CommandEmote;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.event.HoverEvent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
@@ -10,12 +9,20 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.ServerChatEvent;
+import vic.mod.chat.ChatEntity;
+import vic.mod.chat.ChatFormatter;
+import vic.mod.chat.Config;
+import vic.mod.chat.IChannel;
+import vic.mod.chat.Misc;
+import vic.mod.chat.VChat;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 
-public class CommonHandler 
+public class CommonHandler implements IChatHandler
 {
 	public CommonHandler()
 	{
@@ -74,10 +81,8 @@ public class CommonHandler
 			}		
 		if(Config.colorPermissionLevel == 0 || event.player.canCommandSenderUseCommand(Config.colorPermissionLevel, null)) new ChatFormatter.ChatFormatterColor().apply(computed);
 
-		ChatComponentText componentName = (ChatComponentText) event.component.getFormatArgs()[0];
-		if(entity.getNickname() != null)
-			componentName.getChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(entity.getUsername())));
-
+		ChatComponentText componentName = Misc.getComponent(entity);
+		
 		for(Object obj : MinecraftServer.getServer().getConfigurationManager().playerEntityList)
 		{
 			ChatComponentText computed2 = computed.createCopy();
@@ -104,7 +109,7 @@ public class CommonHandler
 		event.setCanceled(true);
 	}
 	
-	@SubscribeEvent
+	@SubscribeEvent(priority = EventPriority.LOW)
 	public void onCommand(CommandEvent event)
 	{
 		if(event.command instanceof CommandEmote)
@@ -116,4 +121,7 @@ public class CommonHandler
 			}
 		}
 	}
+
+	@Override public void onServerLoad(FMLServerStartingEvent event) {}
+	@Override public void onServerUnload(FMLServerStoppingEvent event) {}
 }

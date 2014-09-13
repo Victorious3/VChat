@@ -1,4 +1,4 @@
-package vic.mod.chat;
+package vic.mod.chat.handler;
 
 import java.io.File;
 import java.io.FileReader;
@@ -11,12 +11,17 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.PlayerNotFoundException;
 import net.minecraft.command.WrongUsageException;
+import net.minecraft.command.server.CommandMessage;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import vic.mod.chat.ChatEntity;
+import vic.mod.chat.Config;
 import vic.mod.chat.Misc.CommandOverrideAccess;
+import vic.mod.chat.VChat;
 
 import com.google.common.collect.HashBiMap;
 import com.google.gson.GsonBuilder;
@@ -28,9 +33,10 @@ import com.google.gson.stream.JsonReader;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.event.FMLServerStoppingEvent;
+import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
-public class NickHandler 
+public class NickHandler implements IChatHandler
 {
 	public static HashBiMap<String, String> nickRegistry;
 	
@@ -48,7 +54,7 @@ public class NickHandler
 	@SubscribeEvent
 	public void getPlayerName(PlayerEvent.NameFormat event)
 	{
-		if(nickRegistry.containsKey(event.username)) event.displayname = "\u00A7e" + nickRegistry.get(event.username);
+		if(nickRegistry.containsKey(event.username)) event.displayname = nickRegistry.get(event.username);
 	}
 	
 	public void loadNicks()
@@ -79,6 +85,19 @@ public class NickHandler
 		return null;
 	}
 	
+	@SubscribeEvent(priority = EventPriority.LOW)
+	public void onCommand(CommandEvent event)
+	{
+		if(event.command instanceof CommandMessage)
+		{
+			if(event.parameters.length > 0)
+			{
+				ChatEntity entity = new ChatEntity((Object)event.parameters[0]);
+				if(entity.getUsername() != null) event.parameters[0] = entity.getUsername();
+			}
+		}	
+	}
+	
 	public void saveNicks()
 	{
 		try {
@@ -102,12 +121,14 @@ public class NickHandler
 		}
 	}
 	
+	@Override
 	public void onServerLoad(FMLServerStartingEvent event)
 	{
 		loadNicks();
 		event.registerServerCommand(new CommandNick());
 	}
 	
+	@Override
 	public void onServerUnload(FMLServerStoppingEvent event)
 	{
 		saveNicks();

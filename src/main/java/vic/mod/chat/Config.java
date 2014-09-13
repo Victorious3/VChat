@@ -12,6 +12,7 @@ public class Config
 	public static boolean modtEnabled;
 	public static boolean channelListEnabled;
 	public static boolean nickEnabled;
+	public static boolean afkEnabled;
 	public static boolean localEnabled;
 	public static boolean globalCrossDim;
 	public static boolean urlEnabled;
@@ -28,6 +29,7 @@ public class Config
 	
 	public static EnumChatFormatting colorHighlight;
 	public static EnumChatFormatting colorHighlightSelf;
+	public static EnumChatFormatting colorNickName;
 	
 	public static void initialize(File file)
 	{
@@ -52,7 +54,9 @@ public class Config
 				+ "/n is used for a line feed.\n").getString();
 		
 		modtEnabled = config.get("GENERAL", "modt_enabled", true, "Disable or enable the \"Message of the Day.\"").getBoolean(true);
-		nickEnabled = config.get("GENERAL", "nick_enabled", true, "Disable or enable the ability to choose a nickname via /nick").getBoolean(true);
+		afkEnabled = config.get("GENERAL", "afk_enabled", true, "Disable or enable the /afk command").getBoolean(true);
+		
+		nickEnabled = config.get("GENERAL", "nick_enabled", true, "Disable or enable the ability to choose a nickname via /nick").getBoolean(true);	
 		nickPermissionLevel = config.get("GENERAL", "nick_permlevel", 3, "Change the permission level required to use the /nick command. 3 is OP by default.").getInt(3);
 		nickMin = config.get("GENERAL", "nick_size_min", 3, "Change the minimum nick length").getInt(3);
 		nickMax = config.get("GENERAL", "nick_size_max", 14, "Change the maximum nick length").getInt(3);
@@ -63,6 +67,11 @@ public class Config
 		localRange = config.get("GENERAL", "local_range", 50, "Change the block distance in which players receive the local chat.").getInt(50);
 		globalCrossDim = config.get("GENERAL", "global_cross_dim", true, "Enable if you want the global chat to be cross-dimensional.").getBoolean(true);
 		
+		urlEnabled = config.get("GENERAL", "url_enabled", true, "Disable or enable the option to post clickable links in chat.").getBoolean(true);
+		urlEnabledYoutube = config.get("GENERAL", "url_enabled_yt", true, "Disable or enable the option to post youtube links in chat.").getBoolean(true);
+		ytTitleLimit =  config.get("GENERAL", "yt_title_limit", 48, "Specify the size at which video tites will get cut.").getInt(48);
+		urlPermissionLevel = config.get("GENERAL", "url_permlevel", 0, "Change the permission level required to post clickable links in chat. 0 is everyone by default.").getInt();
+		
 		config.addCustomCategoryComment("STYLE", "Valid colors are: BLACK, DARK_BLUE, DARK_GREEN, DARK_AQUA, DARK_RED, DARK_PURPLE, GOLD, GRAY, DARK_GRAY, BLUE, GREEN, AQUA, RED, LIGHT_PURPLE, YELLOW, WHITE");
 		
 		colorHighlight = EnumChatFormatting.getValueByName(config.get("STYLE", "color_highlight", "DARK_AQUA", "The color used by the name hightlighting.").getString());
@@ -71,10 +80,8 @@ public class Config
 		colorHighlightSelf = EnumChatFormatting.getValueByName(config.get("STYLE", "color_highlight_self", "DARK_RED", "The color used by the name hightlighting if yourself gets highlighted.").getString());
 		if(colorHighlightSelf == null) colorHighlightSelf = EnumChatFormatting.DARK_RED;
 		
-		urlEnabled = config.get("GENERAL", "url_enabled", true, "Disable or enable the option to post clickable links in chat.").getBoolean(true);
-		urlEnabledYoutube = config.get("GENERAL", "url_enabled_yt", true, "Disable or enable the option to post youtube links in chat.").getBoolean(true);
-		ytTitleLimit =  config.get("GENERAL", "yt_title_limit", 48, "Specify the size at which video tites will get cut.").getInt(48);
-		urlPermissionLevel = config.get("GENERAL", "url_permlevel", 0, "Change the permission level required to post clickable links in chat. 0 is everyone by default.").getInt();
+		colorNickName = EnumChatFormatting.getValueByName(config.get("STYLE", "color_nick", "YELLOW", "Change the color applied to nicknames").getString());
+		if(colorNickName == null) colorNickName = EnumChatFormatting.YELLOW;
 		
 		config.save();
 	}

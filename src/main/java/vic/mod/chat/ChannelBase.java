@@ -3,6 +3,7 @@ package vic.mod.chat;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import vic.mod.chat.handler.ChannelHandler;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;

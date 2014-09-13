@@ -11,6 +11,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import net.minecraft.event.ClickEvent;
 import net.minecraft.event.HoverEvent;
+import net.minecraft.event.HoverEvent.Action;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
@@ -101,7 +102,6 @@ public abstract class ChatFormatter implements IChatFormatter
 		{
 			ChatComponentText text = new ChatComponentText(match);
 			ChatStyle style = new ChatStyle();
-			style.setUnderlined(true);
 			style.setColor(EnumChatFormatting.BLUE);
 			style.setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText("Click to open URL")));
 			style.setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, match));
@@ -125,10 +125,13 @@ public abstract class ChatFormatter implements IChatFormatter
 				URL url = new URL(match);
 				List<NameValuePair> list = URLEncodedUtils.parse(url.toURI(), "UTF-8");
 				String ytid = "";
+				boolean isPlaylist = false;
 				
 				for(NameValuePair pair : list)
+				{
 					if(pair.getName().equalsIgnoreCase("v")) ytid = pair.getValue();	
-				
+					else if(pair.getName().equalsIgnoreCase("list")) isPlaylist = true;
+				}
 				if(ytid.length() == 0)
 				{
 					String path = url.getPath();
@@ -157,9 +160,9 @@ public abstract class ChatFormatter implements IChatFormatter
 					c1.getChatStyle().setColor(EnumChatFormatting.WHITE);
 					c1.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, match));
 					c1.getChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
-						new ChatComponentText("Click to open Video (" + EnumChatFormatting.AQUA + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + EnumChatFormatting.RESET + " - " + EnumChatFormatting.AQUA + viewcount + EnumChatFormatting.RESET + " views)")));	
+						new ChatComponentText("Click to open video (" + EnumChatFormatting.AQUA + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + EnumChatFormatting.RESET + " - " + EnumChatFormatting.AQUA + viewcount + EnumChatFormatting.RESET + " views)")));	
 					
-					c1.appendText("[YT: ");
+					c1.appendText("[YT" + (isPlaylist ? " Playlist" : "") + ": ");
 					ChatComponentText c2 = new ChatComponentText("\"" + title + "\"");
 					c2.getChatStyle().setColor(EnumChatFormatting.RED);
 					c1.appendSibling(c2);
@@ -175,9 +178,8 @@ public abstract class ChatFormatter implements IChatFormatter
 			
 			ChatComponentText text = new ChatComponentText(match);
 			ChatStyle style = new ChatStyle();
-			style.setUnderlined(true);
 			style.setColor(EnumChatFormatting.BLUE);
-			style.setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText("Click to open URL")));
+			style.setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText("Click to open video - Could not retreive video data")));
 			style.setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, match));
 			text.setChatStyle(style);
 			return text;
@@ -242,9 +244,19 @@ public abstract class ChatFormatter implements IChatFormatter
 		{
 			ChatComponentText text = new ChatComponentText(replaceNick ? player.getNickname() : player.getUsername());
 			ChatStyle style = new ChatStyle();
+			boolean afk = Config.afkEnabled ? VChat.afkHandler.isAfk(player) : false;
 			if(isSelf) style.setColor(Config.colorHighlightSelf);
+			else if(afk) style.setColor(EnumChatFormatting.GRAY);
 			else style.setColor(Config.colorHighlight);
-			if(replaceNick) style.setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(player.getUsername())));
+			
+			if(!isSelf)
+			{
+				if(afk) style.setChatHoverEvent(
+					new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(player.getUsername() + " (AFK - " + VChat.afkHandler.getReason(player) + ")")));
+				else if(replaceNick) style.setChatHoverEvent(new HoverEvent(Action.SHOW_TEXT, new ChatComponentText(player.getUsername())));
+				if(!afk) style.setChatClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/msg " + player.getUsername()));
+			}
+			
 			text.setChatStyle(style);
 			return text;
 		}

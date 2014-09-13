@@ -9,7 +9,12 @@ import java.util.regex.Pattern;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.event.ClickEvent;
+import net.minecraft.event.HoverEvent;
+import net.minecraft.event.HoverEvent.Action;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
 
 public class Misc 
 {
@@ -45,6 +50,30 @@ public class Misc
 			if(entity.getCommandSenderName().equalsIgnoreCase(player)) return entity;
 		}
 		return null;
+	}
+	
+	public static ChatComponentText getComponent(ChatEntity entity)
+	{
+		String nick = entity.getNickname();
+		ChatComponentText nameComponent = new ChatComponentText("<" + nick != null ? nick : entity.getUsername() + "> ");
+		if(nick != null)
+		{
+			if(Config.afkEnabled && VChat.afkHandler.isAfk(entity))
+			{
+				nameComponent.getChatStyle().setColor(EnumChatFormatting.GRAY);
+				nameComponent.getChatStyle().setChatHoverEvent(
+					new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(entity.getUsername() + " (AFK - " + VChat.afkHandler.getReason(entity) + ")")));
+			}	
+			else 
+			{
+				nameComponent.getChatStyle().setColor(Config.colorNickName);
+				nameComponent.getChatStyle().setChatHoverEvent(new HoverEvent(Action.SHOW_TEXT, new ChatComponentText(entity.getUsername())));
+				nameComponent.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/msg " + entity.getUsername()));
+			}
+		}
+		else nameComponent.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/msg " + entity.getUsername()));
+		
+		return nameComponent;
 	}
 	
 	public static abstract class CommandOverrideAccess extends CommandBase 

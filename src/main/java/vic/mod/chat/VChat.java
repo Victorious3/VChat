@@ -1,13 +1,18 @@
 package vic.mod.chat;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import org.apache.logging.log4j.Logger;
 
+import vic.mod.chat.handler.AFKHandler;
+import vic.mod.chat.handler.ChannelHandler;
+import vic.mod.chat.handler.CommonHandler;
+import vic.mod.chat.handler.IChatHandler;
+import vic.mod.chat.handler.NickHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.event.FMLServerStoppingEvent;
@@ -20,8 +25,11 @@ public class VChat {
 	
 	public static CommonHandler commonHandler;
 	public static ChannelHandler channelHandler;
+	public static AFKHandler afkHandler;
 	public static NickHandler nickHandler;
 	public static Config config;
+	
+	public static ArrayList<IChatHandler> handlers = new ArrayList<IChatHandler>();
 	
 	public static Logger logger;
 	
@@ -41,32 +49,36 @@ public class VChat {
 		rootDir.setWritable(true);
 		commonHandler = new CommonHandler();
 		channelHandler = new ChannelHandler();
-		if(config.nickEnabled) nickHandler = new NickHandler();			
-	}
-	
-	@EventHandler
-	public void init(FMLInitializationEvent event)
-	{
+		handlers.add(commonHandler);
+		handlers.add(channelHandler);
 		
+		if(config.nickEnabled) 
+		{
+			nickHandler = new NickHandler();
+			handlers.add(nickHandler);
+		}
+		if(config.afkEnabled) 
+		{
+			afkHandler = new AFKHandler();
+			handlers.add(afkHandler);
+		}
 	}
 	
 	@EventHandler
 	public void onServerLoad(FMLServerStartingEvent event)
 	{
-		if(config != null)
+		for(IChatHandler handler : handlers)
 		{
-			if(config.nickEnabled) nickHandler.onServerLoad(event);
-			channelHandler.onServerLoad(event);
+			handler.onServerLoad(event);
 		}
 	}
 	
 	@EventHandler
 	public void onServerUnload(FMLServerStoppingEvent event)
 	{
-		if(config != null) 
+		for(IChatHandler handler : handlers)
 		{
-			if(config.nickEnabled) nickHandler.onServerUnload(event);
-			channelHandler.onServerUnload(event);
+			handler.onServerUnload(event);
 		}
 	}
 }

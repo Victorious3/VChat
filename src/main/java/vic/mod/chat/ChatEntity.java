@@ -1,5 +1,6 @@
 package vic.mod.chat;
 
+import vic.mod.chat.handler.NickHandler;
 import net.minecraft.entity.player.EntityPlayerMP;
 
 public class ChatEntity 
