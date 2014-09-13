@@ -133,8 +133,10 @@ public abstract class ChatFormatter implements IChatFormatter
 				{
 					String path = url.getPath();
 					if(path.startsWith("/v/")) ytid = url.getPath().substring(3);
-					else ytid = url.getPath().substring(3);
+					else ytid = url.getPath().substring(1);
 				}
+				
+				System.out.println(ytid);
 				
 				if(ytid.length() > 0)
 				{
@@ -149,13 +151,15 @@ public abstract class ChatFormatter implements IChatFormatter
 					int minutes = seconds / 60;
 					seconds = seconds % 60;
 					int viewcount = Integer.parseInt((doc.getElementsByTagName("yt:statistics").item(0).getAttributes().getNamedItem("viewCount").getNodeValue()));
+					if(title.length() > Config.ytTitleLimit) title = title.substring(0, Config.ytTitleLimit) + "...";
 					
 					ChatComponentText c1 = new ChatComponentText("");
 					c1.getChatStyle().setColor(EnumChatFormatting.WHITE);
-					c1.getChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText("Click to open Video")));
 					c1.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, match));
+					c1.getChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
+						new ChatComponentText("Click to open Video (" + EnumChatFormatting.AQUA + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + EnumChatFormatting.RESET + " - " + EnumChatFormatting.AQUA + viewcount + EnumChatFormatting.RESET + " views)")));	
 					
-					c1.appendText("[");
+					c1.appendText("[YT: ");
 					ChatComponentText c2 = new ChatComponentText("\"" + title + "\"");
 					c2.getChatStyle().setColor(EnumChatFormatting.RED);
 					c1.appendSibling(c2);
@@ -163,15 +167,7 @@ public abstract class ChatFormatter implements IChatFormatter
 					ChatComponentText c3 = new ChatComponentText(author);
 					c3.getChatStyle().setColor(EnumChatFormatting.YELLOW);
 					c1.appendSibling(c3);
-					c1.appendText(" (");
-					ChatComponentText c4 = new ChatComponentText(minutes + ":" + seconds);
-					c4.getChatStyle().setColor(EnumChatFormatting.AQUA);
-					c1.appendSibling(c4);
-					c1.appendText(" - ");
-					ChatComponentText c5 = new ChatComponentText(String.valueOf(viewcount));
-					c5.getChatStyle().setColor(EnumChatFormatting.AQUA);
-					c1.appendSibling(c5);
-					c1.appendText(" views)]");
+					c1.appendText("]");
 					
 					return c1;
 				}

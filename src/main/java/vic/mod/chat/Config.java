@@ -14,11 +14,17 @@ public class Config
 	public static boolean nickEnabled;
 	public static boolean localEnabled;
 	public static boolean globalCrossDim;
+	public static boolean urlEnabled;
+	public static boolean urlEnabledYoutube;
 	
 	public static int nickPermissionLevel;
 	public static int colorPermissionLevel;
 	public static int urlPermissionLevel;
+	
 	public static int localRange;
+	public static int ytTitleLimit;
+	public static int nickMin;
+	public static int nickMax;
 	
 	public static EnumChatFormatting colorHighlight;
 	public static EnumChatFormatting colorHighlightSelf;
@@ -47,8 +53,11 @@ public class Config
 		
 		modtEnabled = config.get("GENERAL", "modt_enabled", true, "Disable or enable the \"Message of the Day.\"").getBoolean(true);
 		nickEnabled = config.get("GENERAL", "nick_enabled", true, "Disable or enable the ability to choose a nickname via /nick").getBoolean(true);
-		channelListEnabled = config.get("GENERAL", "channel_list_enabled", true, "Disable or enable to show the list of joined channels when joining the server.").getBoolean(true);
 		nickPermissionLevel = config.get("GENERAL", "nick_permlevel", 3, "Change the permission level required to use the /nick command. 3 is OP by default.").getInt(3);
+		nickMin = config.get("GENERAL", "nick_size_min", 3, "Change the minimum nick length").getInt(3);
+		nickMax = config.get("GENERAL", "nick_size_max", 14, "Change the maximum nick length").getInt(3);
+		
+		channelListEnabled = config.get("GENERAL", "channel_list_enabled", true, "Disable or enable to show the list of joined channels when joining the server.").getBoolean(true);
 		colorPermissionLevel = config.get("GENERAL", "color_permlevel", 3, "Change the permission level required to use chat formatting with \"&\" as prefix. 3 is OP by default.").getInt(3);
 		localEnabled = config.get("GENERAL", "local_enabled", true, "Disable or enable the local chat.").getBoolean(true);
 		localRange = config.get("GENERAL", "local_range", 50, "Change the block distance in which players receive the local chat.").getInt(50);
@@ -62,6 +71,9 @@ public class Config
 		colorHighlightSelf = EnumChatFormatting.getValueByName(config.get("STYLE", "color_highlight_self", "DARK_RED", "The color used by the name hightlighting if yourself gets highlighted.").getString());
 		if(colorHighlightSelf == null) colorHighlightSelf = EnumChatFormatting.DARK_RED;
 		
+		urlEnabled = config.get("GENERAL", "url_enabled", true, "Disable or enable the option to post clickable links in chat.").getBoolean(true);
+		urlEnabledYoutube = config.get("GENERAL", "url_enabled_yt", true, "Disable or enable the option to post youtube links in chat.").getBoolean(true);
+		ytTitleLimit =  config.get("GENERAL", "yt_title_limit", 48, "Specify the size at which video tites will get cut.").getInt(48);
 		urlPermissionLevel = config.get("GENERAL", "url_permlevel", 0, "Change the permission level required to post clickable links in chat. 0 is everyone by default.").getInt();
 		
 		config.save();

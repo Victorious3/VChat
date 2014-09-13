@@ -159,7 +159,8 @@ public class NickHandler
 					if(playername == null)
 					{
 						if(args[0].equals(args[1])) throw new CommandException("You can not create a nickname which is equivalent to the username!", sender);
-						if(args[1].length() < 3) throw new CommandException("You can not create a nickname which has less than 3 letters!", sender);
+						if(args[1].length() < Config.nickMin) throw new CommandException("You can not create a nickname which has less than " + Config.nickMin + " characters!", sender);
+						if(args[1].length() > Config.nickMax) throw new CommandException("You can not create a nickname which has more than " + Config.nickMax + " characters!", sender);
 						if(!args[1].matches("[A-z0-9_]+")) throw new CommandException("A nickname can only contain alphanumeric characters and underscores.");
 						nickRegistry.put(args[0], args[1]);
 						if(player != null) player.refreshDisplayName();
