@@ -35,20 +35,27 @@ public class AutoAFKHandler extends ChatHandlerImpl
 			for(TrackedPosition pos : tracked.values())
 			{
 				pos.update();
-				if(pos.hitCooldown() && !pos.autoAfk)
+				ChatEntity entity = new ChatEntity(pos.player);
+				
+				if(pos.hitCooldown() && !VChat.afkHandler.isAfk(entity))
 				{
-					VChat.afkHandler.setAfk(new ChatEntity(pos.player), "Auto AFK");
+					VChat.afkHandler.setAfk(entity, "Auto AFK");
 					pos.autoAfk = true;
 				}
-				
 				if(!pos.hitCooldown() && pos.autoAfk)
 				{
-					VChat.afkHandler.removeAfk(new ChatEntity(pos.player));
+					VChat.afkHandler.removeAfk(entity);
 					pos.autoAfk = false;
 				}
 			}
 			lastAction = time;
 		}	
+	}
+	
+	/** Callback from the /afk command to remove possible auto afks **/
+	public void onAFKRemoved(EntityPlayerMP entity)
+	{
+		tracked.put(entity, new TrackedPosition(entity));
 	}
 	
 	@SubscribeEvent()
@@ -69,7 +76,7 @@ public class AutoAFKHandler extends ChatHandlerImpl
 		tracked.clear();
 	}
 	
-	private static class TrackedPosition
+	public static class TrackedPosition
 	{
 		private boolean autoAfk;
 		private int cooldown = Config.autoAfkTime;

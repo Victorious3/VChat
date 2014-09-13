@@ -57,7 +57,7 @@ public class Misc
 	public static ChatComponentText getComponent(ChatEntity entity)
 	{
 		String nick = entity.getNickname();
-		ChatComponentText nameComponent = new ChatComponentText("<" + nick != null ? nick : entity.getUsername() + "> ");
+		ChatComponentText nameComponent = new ChatComponentText(nick != null ? nick : entity.getUsername());
 		if(nick != null)
 		{
 			if(Config.afkEnabled && VChat.afkHandler.isAfk(entity))
@@ -90,6 +90,7 @@ public class Misc
 	
 	public static HashMap<String, String> getQueryMap(URL url)  
 	{
+		if(url.getQuery() == null) return new HashMap<String, String>();
 		String[] params = url.getQuery().split("&");
 		HashMap<String, String> map = new HashMap<String, String>();
 		for(String param : params)

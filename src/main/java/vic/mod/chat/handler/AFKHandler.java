@@ -15,8 +15,10 @@ import net.minecraftforge.event.CommandEvent;
 import org.apache.commons.lang3.StringUtils;
 
 import vic.mod.chat.ChatEntity;
+import vic.mod.chat.Config;
 import vic.mod.chat.Misc;
 import vic.mod.chat.Misc.CommandOverrideAccess;
+import vic.mod.chat.VChat;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.eventhandler.EventPriority;
@@ -59,7 +61,6 @@ public class AFKHandler extends ChatHandlerImpl
 					ChatComponentText comp = new ChatComponentText("The player you tired to message is currently AFK (Reason: " + getReason(entity) + ")");
 					comp.getChatStyle().setColor(EnumChatFormatting.RED);
 					event.sender.addChatMessage(comp);
-					event.setCanceled(true);
 					afk.get(entity).messaged.add(new ChatEntity(event.sender));
 				}
 			}
@@ -88,7 +89,11 @@ public class AFKHandler extends ChatHandlerImpl
 			if(args.length > 0) reason = StringUtils.join(args, " ");
 			ChatEntity entity = new ChatEntity(sender);
 			
-			if(isAfk(entity)) removeAfk(entity);
+			if(isAfk(entity)) 
+			{
+				removeAfk(entity);
+				if(Config.afkEnabled) VChat.autoAfkHandler.onAFKRemoved((EntityPlayerMP)sender);
+			}
 			else setAfk(entity, reason);
 		}
 
@@ -115,7 +120,7 @@ public class AFKHandler extends ChatHandlerImpl
 		if(nickname == null) nickname = entity.getUsername();
 		
 		afk.put(entity, new AFKEntry(reason));
-		ChatComponentText text = new ChatComponentText("*" + nickname + " is now AFK (" + reason + ").");
+		ChatComponentText text = new ChatComponentText("*" + nickname + " is now AFK" + (!reason.equalsIgnoreCase("AFK") ? " (" + reason + ")" : "") + ".");
 		text.getChatStyle().setItalic(true);
 		text.getChatStyle().setColor(EnumChatFormatting.GRAY);
 		ChannelHandler.broadcast(text);
