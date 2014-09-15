@@ -17,17 +17,32 @@ buildscript {
 
 apply plugin: 'forge'
 
-version = "0.1r13"
-group= "vic.mod.chat"
-archivesBaseName = "vChat"
+// Read properties file
+ext {
+    configFile = file "build.properties"
 
-minecraft {
-    version = "1.7.10-10.13.0.1199"
-    assetDir = "eclipse/assets"
+    configFile.withReader {
+        // Load config.  It shall from now be referenced as simply config or project.config
+        def prop = new Properties()
+        prop.load(it)
+        config = new ConfigSlurper().parse prop
+    }
 }
 
-processResources
-{
+version = config.mod.version
+group = "vic.mod.chat"
+archivesBaseName = "vChat"
+
+
+minecraft {
+    version = "${config.minecraft.version}-${config.forge.version}"
+    assetDir = "eclipse/assets"
+
+    replaceIn "Constants.java"
+    replace "\${version}", "${config.mod.version}"
+}
+
+processResources {
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
 }
