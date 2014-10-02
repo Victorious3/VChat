@@ -72,7 +72,7 @@ public class ChatEntity implements IChatEntity
 	public String getNickname()
 	{
 		if(Config.nickEnabled)
-			if(isBot) return username.substring(4);
+			if(isBot) return username;
 			else return NickHandler.nickRegistry.get(this.username);
 		return null;
 	}

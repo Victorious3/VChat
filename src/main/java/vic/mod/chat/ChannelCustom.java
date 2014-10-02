@@ -107,6 +107,11 @@ public class ChannelCustom extends ChannelBase
 		
 		return comp;
 	}
+	
+	public boolean hasRange()
+	{
+		return range > 0;
+	}
 
 	@Override
 	public boolean autoJoin(ChatEntity player) 

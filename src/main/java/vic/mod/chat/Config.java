@@ -32,6 +32,7 @@ public class Config
 	public static EnumChatFormatting colorHighlight;
 	public static EnumChatFormatting colorHighlightSelf;
 	public static EnumChatFormatting colorNickName;
+	public static EnumChatFormatting colorBot;
 	
 	public static void initialize(File file)
 	{
@@ -87,6 +88,9 @@ public class Config
 		
 		colorNickName = EnumChatFormatting.getValueByName(config.get("STYLE", "color_nick", "YELLOW", "Change the color applied to nicknames").getString());
 		if(colorNickName == null) colorNickName = EnumChatFormatting.YELLOW;
+		
+		colorBot = EnumChatFormatting.getValueByName(config.get("STYLE", "color_bot", "GREEN", "Change the color applied to bots").getString());
+		if(colorNickName == null) colorNickName = EnumChatFormatting.GREEN;
 		
 		config.save();
 	}

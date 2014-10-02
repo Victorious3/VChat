@@ -229,7 +229,7 @@ public class ChannelHandler extends ChatHandlerImpl
 			members.get(player).add(active.getName());
 			return true;
 		}
-		else if(channel.canJoin(player))
+		else if(channel.canJoin(player) || player.isBot() || player.isServer())
 		{
 			channel.onJoin(player, initial);
 			if(!members.containsKey(player)) members.put(player, new ArrayList<String>());
@@ -291,7 +291,7 @@ public class ChannelHandler extends ChatHandlerImpl
 	
 	public static void privateMessageOnChannel(IChannel channel, ChatEntity sender, ChatEntity receiver, IChatComponent component)
 	{
-		if((channel.isOnChannel(receiver) || receiver.isServer()) && channel.canReceiveChat(sender, receiver, component))
+		if((channel.isOnChannel(receiver) || receiver.isServer() || receiver.isBot()) && channel.canReceiveChat(sender, receiver, component))
 		{
 			component = channel.formatChat(sender, receiver, component);
 			if(channel.getPrefix() != null)
@@ -435,7 +435,20 @@ public class ChannelHandler extends ChatHandlerImpl
 					if(joinChannel(new ChatEntity(player), channel))
 					{
 						sender.addChatMessage(new ChatComponentText("You are now talking on \"" + channel.getName() + "\"."));
-						sender.addChatMessage(new ChatComponentText("Currently active: " + channel.getMembers().toString()));
+						
+						ChatComponentText comp = new ChatComponentText("Currently active: ");
+						comp.appendText("[");
+						
+						Iterator<ChatEntity> iterator = channel.getMembers().iterator();
+						while(iterator.hasNext())
+						{
+							ChatComponentText nameComponent = Misc.getComponent(iterator.next());
+							comp.appendSibling(nameComponent);
+							if(iterator.hasNext()) comp.appendText(", ");
+						}
+						comp.appendText("]");
+						
+						sender.addChatMessage(comp);
 					}	
 				}
 				else if(args[0].equalsIgnoreCase("leave") && isPlayer)

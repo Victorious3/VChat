@@ -4,7 +4,9 @@ public interface IChatBot
 {
 	public void onLoad(IBotHandler handler);
 	
-	public void onUnload();
+	public void onServerLoad();
+	
+	public void onServerUnload();
 	
 	public String getName();
 	

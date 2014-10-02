@@ -68,7 +68,7 @@ public class Misc
 			}	
 			else 
 			{
-				nameComponent.getChatStyle().setColor(Config.colorNickName);
+				nameComponent.getChatStyle().setColor(entity.isBot() ? Config.colorBot : Config.colorNickName);
 				nameComponent.getChatStyle().setChatHoverEvent(new HoverEvent(Action.SHOW_TEXT, new ChatComponentText(entity.getUsername())));
 				nameComponent.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/msg " + entity.getUsername()));
 			}

@@ -1,6 +1,9 @@
 package vic.mod.chat.handler;
 
+import java.util.Arrays;
+
 import net.minecraft.command.server.CommandEmote;
+import net.minecraft.command.server.CommandMessage;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
@@ -8,6 +11,11 @@ import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.ServerChatEvent;
+
+import org.apache.commons.lang3.StringUtils;
+
+import vic.mod.chat.BotHandler;
+import vic.mod.chat.ChannelCustom;
 import vic.mod.chat.ChatEntity;
 import vic.mod.chat.ChatFormatter;
 import vic.mod.chat.Config;
@@ -95,6 +103,11 @@ public class CommonHandler extends ChatHandlerImpl
 			}
 			VChat.channelHandler.privateMessageOnChannel(channel, entity, receiver, new ChatComponentTranslation("chat.type.text", componentName, computed2));
 		}
+		
+		if(!channel.getName().equals("local") && !(channel instanceof ChannelCustom && ((ChannelCustom)channel).hasRange()))
+			for(BotHandler bot : VChat.botLoader.bots.values())
+				bot.owningBot.onMessage(message, entity, channel);
+		
 		MinecraftServer.getServer().addChatMessage(new ChatComponentTranslation("chat.type.text", componentName, computed));
 		event.setCanceled(true);
 	}
@@ -108,6 +121,28 @@ public class CommonHandler extends ChatHandlerImpl
 			{
 				if(event.parameters.length < 2) return;
 				for(int i = 0; i < event.parameters.length; i++) event.parameters[i] = event.parameters[i].replaceAll("&", "\u00A7");
+			}
+		}
+	}
+	
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void onCommandPost(CommandEvent event)
+	{
+		if(event.command instanceof CommandMessage)
+		{
+			if(event.parameters.length > 0)
+			{
+				String name = event.parameters[0];
+				if(Misc.getPlayer(name) == null && VChat.botLoader.containsBot(name))
+				{
+					BotHandler bot = VChat.botLoader.getBot(name);
+					String message = StringUtils.join(Arrays.asList(event.parameters).subList(1, event.parameters.length).toArray(), " ");
+					ChatEntity entity;
+					if(event.sender instanceof EntityPlayerMP) entity = new ChatEntity(event.sender);
+					else entity = ChatEntity.SERVER;
+					bot.owningBot.onPrivateMessage(message, entity);
+					event.setCanceled(true);
+				}
 			}
 		}
 	}

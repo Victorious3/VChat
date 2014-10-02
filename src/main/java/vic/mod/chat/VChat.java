@@ -25,6 +25,8 @@ public class VChat
 	@Instance("vchat")
 	public static VChat instance;  
 	
+	public static BotLoader botLoader;
+	
 	public static CommonHandler commonHandler;
 	public static ChannelHandler channelHandler;
 	public static AFKHandler afkHandler;
@@ -52,6 +54,7 @@ public class VChat
 		rootDir.setWritable(true);
 		commonHandler = new CommonHandler();
 		channelHandler = new ChannelHandler();
+		botLoader = new BotLoader();
 		
 		if(config.nickEnabled) nickHandler = new NickHandler();
 		if(config.afkEnabled) 
