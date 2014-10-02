@@ -19,6 +19,8 @@ import net.minecraft.util.EnumChatFormatting;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import vic.mod.chat.api.IChatFormatter;
+
 public abstract class ChatFormatter implements IChatFormatter
 {
 	private boolean matched = false;

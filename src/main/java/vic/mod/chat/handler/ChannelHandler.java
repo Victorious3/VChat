@@ -28,10 +28,11 @@ import vic.mod.chat.ChannelGlobal;
 import vic.mod.chat.ChannelLocal;
 import vic.mod.chat.ChatEntity;
 import vic.mod.chat.Config;
-import vic.mod.chat.IChannel;
 import vic.mod.chat.Misc;
 import vic.mod.chat.Misc.CommandOverrideAccess;
 import vic.mod.chat.VChat;
+import vic.mod.chat.api.IChannel;
+import vic.mod.chat.api.bot.IChatEntity;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -261,14 +262,14 @@ public class ChannelHandler extends ChatHandlerImpl
 		return channels.get(name);
 	}
 	
-	public static IChannel getActiveChannel(ChatEntity player)
+	public static IChannel getActiveChannel(IChatEntity player)
 	{
 		ArrayList<String> joined = members.get(player);
 		if(joined == null || joined.size() == 0) return null;
 		return channels.get(joined.get(joined.size() - 1));
 	}
 	
-	public static ArrayList<IChannel> getJoinedChannels(ChatEntity player)
+	public static ArrayList<IChannel> getJoinedChannels(IChatEntity player)
 	{
 		ArrayList<IChannel> list = new ArrayList<IChannel>();
 		for(String s : members.get(player)) list.add(channels.get(s));
@@ -298,9 +299,9 @@ public class ChannelHandler extends ChatHandlerImpl
 				ChatComponentText text = new ChatComponentText("");
 				text.appendText("[" + channel.getPrefix() + "] ");
 				text.appendSibling(component);
-				receiver.toPlayer().addChatComponentMessage(text);
+				((EntityPlayerMP)receiver.toPlayer()).addChatComponentMessage(text);
 			}	
-			else receiver.toPlayer().addChatComponentMessage(component);
+			else ((EntityPlayerMP)receiver.toPlayer()).addChatComponentMessage(component);
 		}
 	}
 	

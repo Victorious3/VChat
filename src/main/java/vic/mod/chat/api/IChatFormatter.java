@@ -1,4 +1,4 @@
-package vic.mod.chat;
+package vic.mod.chat.api;
 
 import net.minecraft.util.ChatComponentText;
 

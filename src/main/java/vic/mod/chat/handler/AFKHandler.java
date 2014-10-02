@@ -92,7 +92,7 @@ public class AFKHandler extends ChatHandlerImpl
 			if(isAfk(entity)) 
 			{
 				removeAfk(entity);
-				if(Config.afkEnabled) VChat.autoAfkHandler.onAFKRemoved((EntityPlayerMP)sender);
+				if(Config.autoAfkEnabled) VChat.autoAfkHandler.onAFKRemoved((EntityPlayerMP)sender);
 			}
 			else setAfk(entity, reason);
 		}

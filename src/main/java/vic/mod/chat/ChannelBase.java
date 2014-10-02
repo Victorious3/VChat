@@ -3,10 +3,11 @@ package vic.mod.chat;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import vic.mod.chat.handler.ChannelHandler;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
+import vic.mod.chat.api.IChannel;
+import vic.mod.chat.handler.ChannelHandler;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;

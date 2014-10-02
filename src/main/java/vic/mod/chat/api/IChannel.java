@@ -1,24 +1,29 @@
-package vic.mod.chat;
+package vic.mod.chat.api;
 
 import java.util.Collection;
 
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
+import vic.mod.chat.ChatEntity;
+import vic.mod.chat.api.bot.IChannelBase;
 
 import com.google.gson.JsonObject;
 
-public interface IChannel 
+public interface IChannel extends IChannelBase
 {
 	public IChatComponent formatChat(ChatEntity sender, ChatEntity receiver, IChatComponent message);
 	
+	@Override
 	public String getPrefix();
 	
+	@Override
 	public String getName();
 
 	public boolean isOnChannel(ChatEntity player);
 	
 	public boolean isMuted(ChatEntity player);
 	
+	@Override
 	public boolean isWhitelisted();
 	
 	public boolean canReceiveChat(ChatEntity sender, ChatEntity receiver, IChatComponent message);

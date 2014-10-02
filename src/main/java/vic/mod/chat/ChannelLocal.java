@@ -32,7 +32,7 @@ public class ChannelLocal extends ChannelBase
 		if(sender.equals(ChatEntity.SERVER)) return message;
 		if(sender.equals(receiver)) return message;
 		
-		int distance = (int)sender.toPlayer().getDistanceToEntity(receiver.toPlayer());
+		int distance = (int)(sender.toPlayer()).getDistanceToEntity(receiver.toPlayer());
 		ChatComponentText comp = new ChatComponentText("[" + distance + "m] ");
 		comp.appendSibling(message);
 		

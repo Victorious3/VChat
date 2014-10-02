@@ -1,13 +1,21 @@
 package vic.mod.chat;
 
-import vic.mod.chat.handler.NickHandler;
 import net.minecraft.entity.player.EntityPlayerMP;
+import vic.mod.chat.api.bot.IChatEntity;
+import vic.mod.chat.handler.NickHandler;
 
-public class ChatEntity 
+public class ChatEntity implements IChatEntity
 {
 	private final String username;
+	private boolean isBot = false;
 	
 	public static ChatEntity SERVER = new ChatEntity((String)null);
+	
+	public ChatEntity(String username, boolean isBot)
+	{
+		this.isBot = isBot;
+		this.username = username;
+	}
 	
 	public ChatEntity(String username)
 	{
@@ -42,19 +50,30 @@ public class ChatEntity
 		return Misc.getPlayer(username);
 	}
 	
+	@Override
 	public boolean isServer()
 	{
 		return this == SERVER;
 	}
 	
+	@Override
+	public boolean isBot()
+	{
+		return isBot;
+	}
+	
+	@Override
 	public String getUsername()
 	{
 		return username;
 	}
 	
+	@Override
 	public String getNickname()
 	{
-		if(Config.nickEnabled) return NickHandler.nickRegistry.get(this.username);
+		if(Config.nickEnabled)
+			if(isBot) return username.substring(4);
+			else return NickHandler.nickRegistry.get(this.username);
 		return null;
 	}
 
