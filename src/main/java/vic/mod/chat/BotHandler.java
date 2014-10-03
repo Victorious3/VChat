@@ -112,7 +112,11 @@ public class BotHandler implements IBotHandler
 	{
 		botSender.activeCommand = command;
 		botSender.activeArgs = args;
-		MinecraftServer.getServer().getCommandManager().executeCommand(MinecraftServer.getServer(), command + StringUtils.join(Arrays.asList(args), " "));
+		try {
+			MinecraftServer.getServer().getCommandManager().executeCommand(botSender, command + " " + StringUtils.join(Arrays.asList(args), " "));
+		} catch (Exception e) {
+			botSender.addChatMessage(new ChatComponentText("$COMMADEXECFAILED " + e.getClass().getSimpleName() + ": " + e.getMessage()));
+		}
 	}
 	
 	public class BotCommandSender implements ICommandSender
