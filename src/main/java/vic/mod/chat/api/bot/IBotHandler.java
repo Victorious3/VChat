@@ -24,5 +24,7 @@ public interface IBotHandler
 	
 	public void sendPrivateMessage(IChatEntity entity, String message);
 	
+	public void sendCommand(String command, String[] args);
+	
 	public File getBotDir();
 }

@@ -42,7 +42,7 @@ public class AFKHandler extends ChatHandlerImpl
 		event.registerServerCommand(new AFKCommand());
 	}
 	
-	@SubscribeEvent()
+	@SubscribeEvent
 	public void onPlayerLeft(PlayerEvent.PlayerLoggedOutEvent event)
 	{
 		afk.remove(new ChatEntity(event.player));

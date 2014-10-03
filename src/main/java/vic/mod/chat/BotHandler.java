@@ -2,8 +2,13 @@ package vic.mod.chat;
 
 import java.io.File;
 
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
+
+import org.apache.commons.lang3.StringUtils;
+
+import scala.actors.threadpool.Arrays;
 import vic.mod.chat.api.IChannel;
 import vic.mod.chat.api.bot.IBotHandler;
 import vic.mod.chat.api.bot.IChannelBase;
@@ -94,5 +99,11 @@ public class BotHandler implements IBotHandler
 	public File getBotDir()
 	{
 		return new File("/vBots");
+	}
+
+	@Override
+	public void sendCommand(String command, String[] args) 
+	{
+		MinecraftServer.getServer().getCommandManager().executeCommand(MinecraftServer.getServer(), command + StringUtils.join(Arrays.asList(args), " "));
 	}
 }

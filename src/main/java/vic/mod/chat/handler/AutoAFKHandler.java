@@ -13,6 +13,7 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.relauncher.Side;
 
 public class AutoAFKHandler extends ChatHandlerImpl
 {	
@@ -68,6 +69,17 @@ public class AutoAFKHandler extends ChatHandlerImpl
 	public void onPlayerLeft(PlayerEvent.PlayerLoggedOutEvent event)
 	{
 		tracked.remove(event.player);
+	}
+
+	@SubscribeEvent
+	public void onPlayerClone(net.minecraftforge.event.entity.player.PlayerEvent.Clone event)
+	{
+		if(FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) return;
+		if(tracked.containsKey(event.original))
+		{
+			tracked.remove(event.original);
+			tracked.put((EntityPlayerMP)event.entityPlayer, new TrackedPosition((EntityPlayerMP)event.entityPlayer));
+		}
 	}
 	
 	@Override 
