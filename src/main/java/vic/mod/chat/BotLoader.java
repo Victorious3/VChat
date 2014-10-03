@@ -12,6 +12,8 @@ import vic.mod.chat.api.IChannel;
 import vic.mod.chat.api.bot.IChatBot;
 import vic.mod.chat.handler.ChannelHandler;
 import vic.mod.chat.handler.ChatHandlerImpl;
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.ModClassLoader;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 
@@ -38,6 +40,7 @@ public class BotLoader extends ChatHandlerImpl
 	public void loadBots()
 	{
 		try {
+			long startTime = System.currentTimeMillis();
 			File botDir = new File("vBots/");
 			if(!botDir.exists()) botDir.mkdirs();
 			
@@ -52,9 +55,10 @@ public class BotLoader extends ChatHandlerImpl
 					VChat.logger.info("Attempting to load bots from file \"" + botFile.getName() + "\"...");
 					try {
 						JarFile file = new JarFile(botFile);
-						URLClassLoader classLoader = new URLClassLoader(new URL[]{botFile.toURI().toURL()}, getClass().getClassLoader());
-						Enumeration<JarEntry> enumeration = file.entries();
 						
+						Enumeration<JarEntry> enumeration = file.entries();
+						ModClassLoader classLoader = (ModClassLoader) Loader.instance().getModClassLoader();
+						classLoader.addFile(botFile);
 						while(enumeration.hasMoreElements())
 						{
 							JarEntry entry = enumeration.nextElement();
@@ -88,14 +92,13 @@ public class BotLoader extends ChatHandlerImpl
 						}
 						
 						file.close();
-						classLoader.close();
 					} catch (Exception e) {
 						VChat.logger.error("Loading of bot \"" + botFile.getName() + "\" failed!");
 						e.printStackTrace();
 					}
 				}
 			}	
-			VChat.logger.info("...done! A total of " + loaded + " bots loaded.");
+			VChat.logger.info("...done! A total of " + loaded + " bots loaded in " + (System.currentTimeMillis() - startTime) + " ms");
 		} catch (Exception e) {
 			VChat.logger.error("Loading of the bots failed!");
 		}

@@ -46,3 +46,13 @@ processResources {
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
 }
+
+task apiJar(type: Jar, dependsOn: classes) {
+    from sourceSets.main.output
+    include 'vic/mod/chat/api/**' 
+    appendix = 'API'
+}
+
+artifacts {
+    archives apiJar
+}
