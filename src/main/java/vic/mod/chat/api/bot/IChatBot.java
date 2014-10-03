@@ -13,4 +13,7 @@ public interface IChatBot
 	public void onMessage(String message, IChatEntity sender, IChannelBase channel);
 	
 	public void onPrivateMessage(String message, IChatEntity sender);
+	
+	/** A callback if you use {@link IBotHandler#sendCommand(String, String[])} **/
+	public void onCommandMessage(String command, String[] args, String message);
 }

@@ -3,9 +3,13 @@ package vic.mod.chat;
 import java.io.File;
 import java.util.Arrays;
 
+import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IChatComponent;
+import net.minecraft.world.World;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -20,11 +24,13 @@ public class BotHandler implements IBotHandler
 {
 	public IChatBot owningBot;
 	public ChatEntity botEntity;
+	public BotCommandSender botSender;
 	
 	public BotHandler(IChatBot owningBot) 
 	{
 		this.owningBot = owningBot;
 		botEntity = new ChatEntity(owningBot.getName(), true);
+		botSender = new BotCommandSender();
 	}
 	
 	@Override
@@ -104,6 +110,50 @@ public class BotHandler implements IBotHandler
 	@Override
 	public void sendCommand(String command, String[] args) 
 	{
+		botSender.activeCommand = command;
+		botSender.activeArgs = args;
 		MinecraftServer.getServer().getCommandManager().executeCommand(MinecraftServer.getServer(), command + StringUtils.join(Arrays.asList(args), " "));
+	}
+	
+	public class BotCommandSender implements ICommandSender
+	{
+		public String activeCommand;
+		public String[] activeArgs;
+		
+		@Override
+		public String getCommandSenderName() 
+		{
+			return botEntity.getUsername();
+		}
+
+		@Override
+		public IChatComponent func_145748_c_() 
+		{
+			return MinecraftServer.getServer().func_145748_c_();
+		}
+
+		@Override
+		public void addChatMessage(IChatComponent comp)
+		{
+			owningBot.onCommandMessage(activeCommand, activeArgs, comp.getUnformattedText());
+		}
+
+		@Override
+		public boolean canCommandSenderUseCommand(int par1, String par2) 
+		{
+			return true;
+		}
+
+		@Override
+		public ChunkCoordinates getPlayerCoordinates() 
+		{
+			return MinecraftServer.getServer().getPlayerCoordinates();
+		}
+
+		@Override
+		public World getEntityWorld() 
+		{
+			return MinecraftServer.getServer().getEntityWorld();
+		}	
 	}
 }
