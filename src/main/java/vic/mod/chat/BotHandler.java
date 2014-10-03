@@ -1,6 +1,7 @@
 package vic.mod.chat;
 
 import java.io.File;
+import java.util.Arrays;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
@@ -8,7 +9,6 @@ import net.minecraft.util.EnumChatFormatting;
 
 import org.apache.commons.lang3.StringUtils;
 
-import scala.actors.threadpool.Arrays;
 import vic.mod.chat.api.IChannel;
 import vic.mod.chat.api.bot.IBotHandler;
 import vic.mod.chat.api.bot.IChannelBase;
