@@ -123,7 +123,7 @@ public class AFKHandler extends ChatHandlerImpl
 		ChatComponentText text = new ChatComponentText("*" + nickname + " is now AFK" + (!reason.equalsIgnoreCase("AFK") ? " (" + reason + ")" : "") + ".");
 		text.getChatStyle().setItalic(true);
 		text.getChatStyle().setColor(EnumChatFormatting.GRAY);
-		ChannelHandler.broadcast(text);
+		ChannelHandler.broadcast(text, ChatEntity.SERVER);
 	}
 	
 	public void removeAfk(ChatEntity entity)
@@ -135,7 +135,7 @@ public class AFKHandler extends ChatHandlerImpl
 		ChatComponentText text = new ChatComponentText("*" + nickname + " is no longer AFK.");
 		text.getChatStyle().setItalic(true);
 		text.getChatStyle().setColor(EnumChatFormatting.GRAY);
-		ChannelHandler.broadcast(text);
+		ChannelHandler.broadcast(text, ChatEntity.SERVER);
 		
 		if(!entry.messaged.isEmpty())
 		{

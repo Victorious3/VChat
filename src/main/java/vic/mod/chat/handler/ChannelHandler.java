@@ -276,12 +276,10 @@ public class ChannelHandler extends ChatHandlerImpl
 		return list;
 	}
 	
-	public static void broadcast(IChatComponent component)
+	public static void broadcast(IChatComponent component, ChatEntity sender)
 	{
 		for(ChatEntity player : Misc.getOnlinePlayers())
-		{
-			player.toPlayer().addChatComponentMessage(component);
-		}
+			privateMessageTo(sender, player, component);
 	}
 	
 	public static void broadcastOnChannel(IChannel channel, ChatEntity sender, IChatComponent component)
@@ -299,10 +297,20 @@ public class ChannelHandler extends ChatHandlerImpl
 				ChatComponentText text = new ChatComponentText("");
 				text.appendText("[" + channel.getPrefix() + "] ");
 				text.appendSibling(component);
-				((EntityPlayerMP)receiver.toPlayer()).addChatComponentMessage(text);
+				privateMessageTo(sender, receiver, text);
 			}	
-			else ((EntityPlayerMP)receiver.toPlayer()).addChatComponentMessage(component);
+			else privateMessageTo(sender, receiver, component);
 		}
+	}
+	
+	public static void privateMessageTo(ChatEntity sender, ChatEntity receiver, IChatComponent message)
+	{
+		if(sender.equals(receiver) || receiver == null || sender == null) return;
+		EntityPlayerMP player = Misc.getPlayer(receiver.getUsername());
+		
+		if(player != null) player.addChatComponentMessage(message);
+		else if(receiver.isBot()) VChat.botLoader.getBot(receiver.getUsername()).owningBot.onPrivateMessage(message.getUnformattedText(), sender);
+		else if(receiver.isServer()) MinecraftServer.getServer().addChatMessage(message);
 	}
 	
 	public static void showInfo(EntityPlayerMP player)

@@ -2,8 +2,6 @@ package vic.mod.chat;
 
 import java.io.File;
 
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import vic.mod.chat.api.IChannel;
@@ -67,7 +65,7 @@ public class BotHandler implements IBotHandler
 		ChatComponentText text = new ChatComponentText("");
 		text.appendSibling(Misc.getComponent(botEntity));
 		text.appendText(": " + message);
-		ChannelHandler.broadcast(text);
+		ChannelHandler.broadcast(text, botEntity);
 	}
 
 	@Override
@@ -82,8 +80,6 @@ public class BotHandler implements IBotHandler
 	@Override
 	public void sendPrivateMessage(IChatEntity entity, String message) 
 	{
-		EntityPlayerMP player = Misc.getPlayer(entity.getUsername());
-		
 		ChatComponentText text = new ChatComponentText("");
 		text.appendSibling(Misc.getComponent(botEntity));
 		ChatComponentText mcomp = new ChatComponentText(" whispers to you: " + message);
@@ -91,9 +87,7 @@ public class BotHandler implements IBotHandler
 		mcomp.getChatStyle().setColor(EnumChatFormatting.GRAY);
 		text.appendSibling(mcomp);
 		
-		if(player != null) player.addChatComponentMessage(text);
-		else if(entity.isBot()) VChat.botLoader.getBot(entity.getUsername()).owningBot.onPrivateMessage(message, botEntity);
-		else if(entity.isServer()) MinecraftServer.getServer().addChatMessage(text);
+		ChannelHandler.privateMessageTo(botEntity, (ChatEntity)entity, text);
 	}
 
 	@Override
