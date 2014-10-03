@@ -1,5 +1,8 @@
 package vic.mod.chat;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -22,6 +25,23 @@ public class Misc
 {
 	public static Pattern urlPattern = Pattern.compile("\\b(https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
 	public static Pattern ytVideoPattern = Pattern.compile("(http:|https:)?\\/\\/(www\\.)?(youtube.com|youtu.be)\\/(watch)?(\\?v=)?(\\S+)?");
+	
+	private static OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
+	private static Method getSystemCpuLpad;
+	private static Long deviceMemory;
+	
+	static
+	{
+		try {
+			getSystemCpuLpad = osBean.getClass().getDeclaredMethod("getSystemCpuLoad");
+			getSystemCpuLpad.setAccessible(true);
+			Method memsize = osBean.getClass().getDeclaredMethod("getTotalPhysicalMemorySize");
+			memsize.setAccessible(true);
+			deviceMemory = (Long)memsize.invoke(osBean);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public static String[] parseModt(String modt, EntityPlayerMP player)
 	{
@@ -100,5 +120,22 @@ public class Misc
 			map.put(name, value);
 		}
 		return map;
+	}
+
+	
+	public static double getCPULoad()
+	{	
+		try {
+			double d = (Double)getSystemCpuLpad.invoke(osBean);
+			if(d < 0) d = 0.0D;
+			return d;
+		} catch (Exception e){}
+		return -1.0D;
+	}
+	
+	public static long getDeviceMemory()
+	{	
+		if(deviceMemory != null) return deviceMemory;
+		else return -1;
 	}
 }

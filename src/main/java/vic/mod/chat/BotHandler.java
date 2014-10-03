@@ -115,7 +115,7 @@ public class BotHandler implements IBotHandler
 		try {
 			MinecraftServer.getServer().getCommandManager().executeCommand(botSender, command + " " + StringUtils.join(Arrays.asList(args), " "));
 		} catch (Exception e) {
-			botSender.addChatMessage(new ChatComponentText("$COMMADEXECFAILED " + e.getClass().getSimpleName() + ": " + e.getMessage()));
+			botSender.addChatMessage(new ChatComponentText("$COMMANDEXECFAILED " + e.getClass().getSimpleName() + ": " + e.getMessage()));
 		}
 	}
 	
