@@ -199,10 +199,8 @@ public abstract class ChatFormatter implements IChatFormatter
 	{
 		@Override
 		protected ChatComponentText getComponentReplacement(String match) 
-		{
-			
-			try
-			{
+		{	
+			try {
 				URL apiURL = new URL("http://api.soundcloud.com/resolve.json?url=" + match + "&client_id=00efa1907d5fb9571f5776add950b623");
 				HashMap<String, String> move = new GsonBuilder().create().fromJson(new BufferedReader(new InputStreamReader(apiURL.openStream(), "UTF-8")), HashMap.class);
 				URL trackURL = new URL(move.get("location"));
@@ -228,9 +226,7 @@ public abstract class ChatFormatter implements IChatFormatter
 				c1.appendText("]");
 				
 				return c1;
-			}
-			catch(Exception e)
-			{
+			} catch(Exception e) {
 				e.printStackTrace();
 			}
 			
@@ -247,8 +243,7 @@ public abstract class ChatFormatter implements IChatFormatter
 		public void apply(ChatComponentText text)
 		{
 			super.apply(text, Misc.scSoundPattern);
-		}
-		
+		}	
 	}
 	
 	public static class ChatFormatterColor extends ChatFormatter
