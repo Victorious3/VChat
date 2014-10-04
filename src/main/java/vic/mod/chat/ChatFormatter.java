@@ -1,6 +1,8 @@
 package vic.mod.chat;
 
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +24,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import vic.mod.chat.api.IChatFormatter;
+
+import com.google.gson.GsonBuilder;
 
 public abstract class ChatFormatter implements IChatFormatter
 {
@@ -189,6 +193,62 @@ public abstract class ChatFormatter implements IChatFormatter
 		{
 			super.apply(text, Misc.ytVideoPattern);
 		}
+	}
+	
+	public static class ChatFormatterSoundCloud extends ChatFormatter
+	{
+		@Override
+		protected ChatComponentText getComponentReplacement(String match) 
+		{
+			
+			try
+			{
+				URL apiURL = new URL("http://api.soundcloud.com/resolve.json?url=" + match + "&client_id=00efa1907d5fb9571f5776add950b623");
+				HashMap<String, String> move = new GsonBuilder().create().fromJson(new BufferedReader(new InputStreamReader(apiURL.openStream(), "UTF-8")), HashMap.class);
+				URL trackURL = new URL(move.get("location"));
+				SCTrack track = new GsonBuilder().create().fromJson(new BufferedReader(new InputStreamReader(trackURL.openStream(), "UTF-8")), SCTrack.class);
+				System.out.println(track);
+				int seconds = track.getDuration() / 1000;
+				int minutes = seconds / 60;
+				seconds = seconds % 60;
+				ChatComponentText c1 = new ChatComponentText("");
+				c1.getChatStyle().setColor(EnumChatFormatting.WHITE);
+				c1.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, match));
+				c1.getChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
+					new ChatComponentText("Click to open sound (" + EnumChatFormatting.AQUA + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + EnumChatFormatting.RESET + " - " + EnumChatFormatting.AQUA + track.getPlaybackCount() + EnumChatFormatting.RESET + " plays)")));	
+				
+				c1.appendText("[SC" + ": ");
+				ChatComponentText c2 = new ChatComponentText("\"" + track.getTitle() + "\"");
+				c2.getChatStyle().setColor(EnumChatFormatting.RED);
+				c1.appendSibling(c2);
+				c1.appendText(" by ");
+				ChatComponentText c3 = new ChatComponentText(track.getUser().getUsername());
+				c3.getChatStyle().setColor(EnumChatFormatting.YELLOW);
+				c1.appendSibling(c3);
+				c1.appendText("]");
+				
+				return c1;
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+			
+			ChatComponentText text = new ChatComponentText(match);
+			ChatStyle style = new ChatStyle();
+			style.setColor(EnumChatFormatting.BLUE);
+			style.setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText("Click to open sound - Could not retreive sound data")));
+			style.setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, match));
+			text.setChatStyle(style);
+			return text;
+		}
+
+		@Override
+		public void apply(ChatComponentText text)
+		{
+			super.apply(text, Misc.scSoundPattern);
+		}
+		
 	}
 	
 	public static class ChatFormatterColor extends ChatFormatter

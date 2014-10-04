@@ -84,8 +84,9 @@ public class CommonHandler extends ChatHandlerImpl
 		if(applyFormat && Config.urlEnabled)
 			if(Config.urlPermissionLevel == 0 || event.player.canCommandSenderUseCommand(Config.urlPermissionLevel, null))
 			{
-				new ChatFormatter.ChatFormatterYoutube().apply(computed);
-				if(Config.urlEnabledYoutube) new ChatFormatter.ChatFormatterURL().apply(computed);
+				if(Config.urlEnabledYoutube) new ChatFormatter.ChatFormatterYoutube().apply(computed);
+				if(Config.urlEnabledSoundCloud) new ChatFormatter.ChatFormatterSoundCloud().apply(computed);
+				new ChatFormatter.ChatFormatterURL().apply(computed);
 			}		
 		if(Config.colorPermissionLevel == 0 || event.player.canCommandSenderUseCommand(Config.colorPermissionLevel, null)) new ChatFormatter.ChatFormatterColor().apply(computed);
 

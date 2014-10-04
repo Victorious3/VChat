@@ -19,6 +19,7 @@ public class Config
 	public static boolean globalCrossDim;
 	public static boolean urlEnabled;
 	public static boolean urlEnabledYoutube;
+	public static boolean urlEnabledSoundCloud;
 	
 	public static int nickPermissionLevel;
 	public static int colorPermissionLevel;
@@ -89,6 +90,7 @@ public class Config
 		
 		urlEnabled = config.get("GENERAL", "url_enabled", true, "Disable or enable the option to post clickable links in chat.").getBoolean(true);
 		urlEnabledYoutube = config.get("GENERAL", "url_enabled_yt", true, "Disable or enable the option to post youtube links in chat.").getBoolean(true);
+		urlEnabledSoundCloud = config.get("GENERAL", "url_enabled_sc", true, "Disable or enable the option to post soundcloud links in chat.").getBoolean(true);
 		ytTitleLimit =  config.get("GENERAL", "yt_title_limit", 48, "Specify the size at which video tites will get cut.").getInt(48);
 		urlPermissionLevel = config.get("GENERAL", "url_permlevel", 0, "Change the permission level required to post clickable links in chat. 0 is everyone by default.").getInt();
 		
