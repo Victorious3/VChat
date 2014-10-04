@@ -2,9 +2,12 @@ package vic.mod.chat.handler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import net.minecraft.command.ICommandSender;
+import net.minecraft.command.PlayerNotFoundException;
+import net.minecraft.command.WrongUsageException;
 import net.minecraft.command.server.CommandEmote;
 import net.minecraft.command.server.CommandMessage;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -174,7 +177,56 @@ public class CommonHandler extends ChatHandlerImpl
 	@Override
 	public void onServerLoad(FMLServerStartingEvent event) 
 	{
+		event.registerServerCommand(new CommandPos());
 		event.registerServerCommand(new CommandTop());
+	}
+	
+	public static class CommandPos extends CommandOverrideAccess
+	{
+		@Override
+		public String getCommandName() 
+		{
+			return "checkpos";
+		}
+		
+		@Override
+		public List getCommandAliases() 
+		{
+			return Arrays.asList("pos");
+		}
+		
+		@Override
+		public int getRequiredPermissionLevel() 
+		{
+			return Config.posPermissionLevel;
+		}
+
+		@Override
+		public String getCommandUsage(ICommandSender sender) 
+		{
+			return "/checkpos <player>";
+		}
+
+		@Override
+		public void processCommand(ICommandSender sender, String[] args) 
+		{
+			if(args.length < 1) throw new WrongUsageException(getCommandUsage(sender));
+			EntityPlayerMP player = Misc.getPlayer(args[0]);
+			if(player == null) throw new PlayerNotFoundException();
+			sender.addChatMessage(new ChatComponentText(player.getCommandSenderName() + ": [" + (int)player.posX + ", " + (int)player.posY + ", " + (int)player.posZ + "]"));
+		}
+
+		@Override
+		public List addTabCompletionOptions(ICommandSender sender, String[] args)
+		{
+			return getListOfStringsMatchingLastWord(args, MinecraftServer.getServer().getAllUsernames());
+		}
+		
+		@Override
+		public boolean isUsernameIndex(String[] args, int index) 
+		{
+			return index == 0;
+		}
 	}
 
 	public static class CommandTop extends CommandOverrideAccess

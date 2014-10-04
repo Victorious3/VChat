@@ -24,6 +24,7 @@ public class Config
 	public static int colorPermissionLevel;
 	public static int urlPermissionLevel;
 	public static int topPermissionLevel;
+	public static int posPermissionLevel;
 	
 	public static int autoAfkTime;	
 	public static int localRange;
@@ -91,7 +92,8 @@ public class Config
 		ytTitleLimit =  config.get("GENERAL", "yt_title_limit", 48, "Specify the size at which video tites will get cut.").getInt(48);
 		urlPermissionLevel = config.get("GENERAL", "url_permlevel", 0, "Change the permission level required to post clickable links in chat. 0 is everyone by default.").getInt();
 		
-		topPermissionLevel = config.get("GENERAL", "top_permlevel", 0, "Change the permission level required to use the /top command. 3 is OP by default.").getInt(3);
+		topPermissionLevel = config.get("GENERAL", "top_permlevel", 3, "Change the permission level required to use the /top command. 3 is OP by default.").getInt(3);
+		posPermissionLevel = config.get("GENERAL", "checpos_permlevel", 0, "Change the permission level required to use the /checkpos command. 3 is OP by default.").getInt(3);
 		
 		config.addCustomCategoryComment("STYLE", "Valid colors are: BLACK, DARK_BLUE, DARK_GREEN, DARK_AQUA, DARK_RED, DARK_PURPLE, GOLD, GRAY, DARK_GRAY, BLUE, GREEN, AQUA, RED, LIGHT_PURPLE, YELLOW, WHITE");
 		
