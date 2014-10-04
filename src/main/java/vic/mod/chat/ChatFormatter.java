@@ -2,6 +2,7 @@ package vic.mod.chat;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -9,6 +10,7 @@ import java.util.regex.Pattern;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.event.HoverEvent;
 import net.minecraft.event.HoverEvent.Action;
@@ -219,8 +221,9 @@ public abstract class ChatFormatter implements IChatFormatter
 		private boolean isSelf = false;
 		private ChatEntity player;
 		private boolean replaceNick;
+		private ArrayList<EntityPlayerMP> mentioned;
 		
-		public ChatFormatterUsername(ChatEntity player, ChatEntity receiver, boolean replaceNick)
+		public ChatFormatterUsername(ChatEntity player, ChatEntity receiver, boolean replaceNick, ArrayList<EntityPlayerMP> mentioned)
 		{
 			String nickname = player.getNickname();
 			if(replaceNick && nickname == null) canMatch = false;
@@ -228,6 +231,7 @@ public abstract class ChatFormatter implements IChatFormatter
 			if(player.equals(receiver)) isSelf = true;
 			this.player = player;
 			this.replaceNick = replaceNick;
+			this.mentioned = mentioned;
 		}
 
 		@Override
@@ -239,6 +243,12 @@ public abstract class ChatFormatter implements IChatFormatter
 		@Override
 		protected ChatComponentText getComponentReplacement(String match) 
 		{
+			if(!isSelf) 
+			{
+				EntityPlayerMP playerEntity = player.toPlayer();
+				if(playerEntity != null) mentioned.add(playerEntity);
+			}
+			
 			ChatComponentText text = new ChatComponentText(replaceNick ? player.getNickname() : player.getUsername());
 			ChatStyle style = new ChatStyle();
 			boolean afk = Config.afkEnabled ? VChat.afkHandler.isAfk(player) : false;

@@ -3,6 +3,7 @@ package vic.mod.chat;
 import java.io.File;
 
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.config.Configuration;
 
 public class Config 
@@ -34,6 +35,11 @@ public class Config
 	public static EnumChatFormatting colorHighlightSelf;
 	public static EnumChatFormatting colorNickName;
 	public static EnumChatFormatting colorBot;
+	
+	public static boolean pingHighlighted;
+	public static float pingPitch;
+	public static float pingVolume;
+	public static String pingSound;
 	
 	public static void initialize(File file)
 	{
@@ -67,6 +73,12 @@ public class Config
 		nickPermissionLevel = config.get("GENERAL", "nick_permlevel", 3, "Change the permission level required to use the /nick command. 3 is OP by default.").getInt(3);
 		nickMin = config.get("GENERAL", "nick_size_min", 3, "Change the minimum nick length").getInt(3);
 		nickMax = config.get("GENERAL", "nick_size_max", 14, "Change the maximum nick length").getInt(3);
+		
+		pingHighlighted = config.get("GENERAL", "ping_enabled", true, "Enable to let players get pinged when they get mentioned in chat.").getBoolean(true);
+		pingPitch = (float) config.get("GENERAL", "ping_pitch", 0.8, "Change the pitch of the sound that will be played on player mention.").getDouble();
+		pingVolume = (float) config.get("GENERAL", "ping_pitch", 1.0, "Change the volume of the sound that will be played on player mention. (0.0 - 1.0)").getDouble();
+		pingVolume = MathHelper.clamp_float(pingVolume, 0, 1);
+		pingSound = config.get("GENERAL", "ping_sound", "random.levelup", "Change the sound that will be played on player mention. Here is a complete list: http://minecraft.gamepedia.com/Sounds.json").getString();
 		
 		channelListEnabled = config.get("GENERAL", "channel_list_enabled", true, "Disable or enable to show the list of joined channels when joining the server.").getBoolean(true);
 		colorPermissionLevel = config.get("GENERAL", "color_permlevel", 3, "Change the permission level required to use chat formatting with \"&\" as prefix. 3 is OP by default.").getInt(3);

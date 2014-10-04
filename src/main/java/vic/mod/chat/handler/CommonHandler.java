@@ -1,5 +1,6 @@
 package vic.mod.chat.handler;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
@@ -7,6 +8,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.command.server.CommandEmote;
 import net.minecraft.command.server.CommandMessage;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.play.server.S29PacketSoundEffect;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
@@ -86,28 +88,38 @@ public class CommonHandler extends ChatHandlerImpl
 
 		ChatComponentText componentName = Misc.getComponent(entity);
 		
+		ArrayList<EntityPlayerMP> mentioned = new ArrayList<EntityPlayerMP>();
+		
 		for(Object obj : MinecraftServer.getServer().getConfigurationManager().playerEntityList)
 		{
 			ChatComponentText computed2 = computed.createCopy();
-			ChatEntity receiver = new ChatEntity(obj);		
+			ChatEntity receiver = new ChatEntity(obj);
 			if(applyFormat) 
 			{
 				for(Object obj2 : MinecraftServer.getServer().getConfigurationManager().playerEntityList)
 				{
 					ChatEntity player = new ChatEntity(obj2);
-					new ChatFormatter.ChatFormatterUsername(player, receiver, false).apply(computed2);	
+					new ChatFormatter.ChatFormatterUsername(player, receiver, false, mentioned).apply(computed2);	
 				}
 				if(Config.nickEnabled)
 				{
 					for(Object obj2 : MinecraftServer.getServer().getConfigurationManager().playerEntityList)
 					{
 						ChatEntity player = new ChatEntity(obj2);
-						new ChatFormatter.ChatFormatterUsername(player, receiver, true).apply(computed2);	
+						new ChatFormatter.ChatFormatterUsername(player, receiver, true, mentioned).apply(computed2);	
 					}
-				}	
+				}
+				if(Config.pingHighlighted)
+				{
+					EntityPlayerMP player = receiver.toPlayer();
+					if(player != null && mentioned.contains(player))
+						player.playerNetServerHandler.sendPacket(new S29PacketSoundEffect(Config.pingSound, player.posX, player.posY, player.posZ, Config.pingVolume, Config.pingPitch));
+					mentioned.clear();
+				}			
 			}
 			VChat.channelHandler.privateMessageOnChannel(channel, entity, receiver, new ChatComponentTranslation("chat.type.text", componentName, computed2));
 		}
+		
 		
 		if(!channel.getName().equals("local") && !(channel instanceof ChannelCustom && ((ChannelCustom)channel).hasRange()))
 			for(BotHandler bot : VChat.botLoader.bots.values())
@@ -115,8 +127,9 @@ public class CommonHandler extends ChatHandlerImpl
 		
 		MinecraftServer.getServer().addChatMessage(new ChatComponentTranslation("chat.type.text", componentName, computed));
 		event.setCanceled(true);
-	}
+	}	
 	
+	//FIXME Doesn't work.
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public void onCommand(CommandEvent event)
 	{
@@ -124,8 +137,14 @@ public class CommonHandler extends ChatHandlerImpl
 		{
 			if(event.sender.canCommandSenderUseCommand(Config.colorPermissionLevel, null))
 			{
-				if(event.parameters.length < 2) return;
-				for(int i = 0; i < event.parameters.length; i++) event.parameters[i] = event.parameters[i].replaceAll("&", "\u00A7");
+				if(event.parameters.length < 1) return;
+				String out = "";
+				for(int i = 0; i < event.parameters.length; i++) 
+				{
+					out += event.parameters[i] + " ";
+					if(i != 0) event.parameters[i] = "";
+				}
+				event.parameters[0] = out.replaceAll("&", "\u00A7");
 			}
 		}
 	}
@@ -229,18 +248,14 @@ public class CommonHandler extends ChatHandlerImpl
 			}
 			length = out.length();
 			out += StringUtils.repeat('_', maxLength - out.length());
-			System.out.println(out);
 			
 			ChatComponentText comp = new ChatComponentText("[");
 			
 			int i1 = MathHelper.clamp_int(maxLength / 3, 0, length);
-			System.out.println(i1);
 			ChatComponentText c1 = new ChatComponentText(out.substring(0, i1));
 			int i2 = MathHelper.clamp_int(i1 + maxLength / 3, 0, length);
-			System.out.println(i2);
 			ChatComponentText c2 = new ChatComponentText(out.substring(i1, i2));
 			ChatComponentText c3 = new ChatComponentText(out.substring(i2, length));
-			System.out.println(length);
 			
 			c1.getChatStyle().setColor(EnumChatFormatting.GREEN);
 			c2.getChatStyle().setColor(EnumChatFormatting.YELLOW);

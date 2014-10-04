@@ -305,7 +305,7 @@ public class ChannelHandler extends ChatHandlerImpl
 	
 	public static void privateMessageTo(ChatEntity sender, ChatEntity receiver, IChatComponent message)
 	{
-		if(sender.equals(receiver) || receiver == null || sender == null) return;
+		if(receiver == null || sender == null) return;
 		EntityPlayerMP player = Misc.getPlayer(receiver.getUsername());
 		
 		if(player != null) player.addChatComponentMessage(message);
@@ -355,7 +355,7 @@ public class ChannelHandler extends ChatHandlerImpl
 		public void processCommand(ICommandSender sender, String[] args) 
 		{
 			if(args.length < 1) throw new WrongUsageException(getCommandUsage(sender));
-			MinecraftServer.getServer().getCommandManager().executeCommand(sender, "/channel msg local " + StringUtils.join(args));
+			MinecraftServer.getServer().getCommandManager().executeCommand(sender, "/channel msg local " + StringUtils.join(Arrays.asList(args), " "));
 		}	
 	}
 	
@@ -389,7 +389,7 @@ public class ChannelHandler extends ChatHandlerImpl
 		public void processCommand(ICommandSender sender, String[] args) 
 		{
 			if(args.length < 1) throw new WrongUsageException(getCommandUsage(sender));
-			MinecraftServer.getServer().getCommandManager().executeCommand(sender, "/channel msg global " + StringUtils.join(args));
+			MinecraftServer.getServer().getCommandManager().executeCommand(sender, "/channel msg global " + StringUtils.join(Arrays.asList(args), " "));
 		}	
 	}
 	
