@@ -25,6 +25,7 @@ public class Misc
 {
 	public static Pattern urlPattern = Pattern.compile("\\b(https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
 	public static Pattern ytVideoPattern = Pattern.compile("(http:|https:)?\\/\\/(www\\.)?(youtube.com|youtu.be)\\/(watch)?(\\?v=)?(\\S+)?");
+	public static Pattern scSoundPattern = Pattern.compile("(http:|https)?:\\/\\/soundcloud\\.com\\/\\S*");
 	
 	private static OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
 	private static Method getSystemCpuLpad;
