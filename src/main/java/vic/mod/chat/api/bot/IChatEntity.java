@@ -6,6 +6,9 @@ public interface IChatEntity
 	
 	public boolean isBot();
 	
+	/** Will return true for opped players, bots and the server entity. **/
+	public boolean isOperator();
+	
 	public String getUsername();
 	
 	public String getNickname();

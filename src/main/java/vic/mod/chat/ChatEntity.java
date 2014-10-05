@@ -1,6 +1,7 @@
 package vic.mod.chat;
 
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.server.MinecraftServer;
 import vic.mod.chat.api.bot.IChatEntity;
 import vic.mod.chat.handler.NickHandler;
 
@@ -62,6 +63,15 @@ public class ChatEntity implements IChatEntity
 		return isBot;
 	}
 	
+	@Override
+	public boolean isOperator() 
+	{
+		if(isBot() || isServer()) return true;
+		EntityPlayerMP player = toPlayer();
+		if(player == null) return false;
+		return player.canCommandSenderUseCommand(MinecraftServer.getServer().getOpPermissionLevel(), null);
+	}
+
 	@Override
 	public String getUsername()
 	{
