@@ -16,13 +16,12 @@ public class Track
 	private int timeout;
 	private List<EntityPlayerMP> players;
 	public String name;
-	public int index;
 	
 	private Track() {}
 	
 	public static Track parseTrack(String name, String track)
 	{
-		System.out.println(track);
+		if(track == null) throw new NullPointerException();
 		if(!track.matches("[A-Z0-9\\[\\]:#?\\s]+")) throw new ParseException("Track contains illegal characters.");
 		
 		int level = 0;

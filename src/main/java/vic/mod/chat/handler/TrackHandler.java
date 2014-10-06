@@ -1,9 +1,8 @@
 package vic.mod.chat.handler;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -22,7 +21,7 @@ import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 public class TrackHandler extends ChatHandlerImpl
 {
 	private HashMap<String, Track> tracks = new HashMap<String, Track>();
-	private List<Track> playing = new CopyOnWriteArrayList<Track>();
+	private ArrayList<Track> playing = new ArrayList<Track>();
 	
 	public TrackHandler()
 	{
@@ -40,7 +39,8 @@ public class TrackHandler extends ChatHandlerImpl
 	public void onServerTick(TickEvent.ServerTickEvent event)
 	{
 		if(event.phase == Phase.END)
-			for(Track track : playing) track.play();
+			for(Track track : (ArrayList<Track>) playing.clone()) 
+				track.play();
 	}
 	
 	public Track getTrack(String name)
@@ -51,12 +51,11 @@ public class TrackHandler extends ChatHandlerImpl
 	public void startTrack(Track track)
 	{
 		playing.add(track);
-		track.index = playing.size() - 1;
 	}
 	
 	public void stopTrack(Track track)
 	{
-		playing.remove(track.index);
+		playing.remove(track);
 	}
 	
 	public void stopAll()
