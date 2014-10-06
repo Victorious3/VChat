@@ -116,14 +116,13 @@ public class CommonHandler extends ChatHandlerImpl
 				if(Config.pingHighlighted)
 				{
 					EntityPlayerMP player = receiver.toPlayer();
-					if(player != null && mentioned.contains(player))
+					if(player != null && mentioned.contains(player) && ChannelHandler.getJoinedChannels(receiver).contains(channel))
 						player.playerNetServerHandler.sendPacket(new S29PacketSoundEffect(Config.pingSound, player.posX, player.posY, player.posZ, Config.pingVolume, Config.pingPitch));
 					mentioned.clear();
 				}			
 			}
 			VChat.channelHandler.privateMessageOnChannel(channel, entity, receiver, new ChatComponentTranslation("chat.type.text", componentName, computed2));
 		}
-		
 		
 		if(!channel.getName().equals("local") && !(channel instanceof ChannelCustom && ((ChannelCustom)channel).hasRange()))
 			for(BotHandler bot : VChat.botLoader.bots.values())

@@ -11,6 +11,7 @@ import vic.mod.chat.handler.ChannelHandler;
 import vic.mod.chat.handler.CommonHandler;
 import vic.mod.chat.handler.IChatHandler;
 import vic.mod.chat.handler.NickHandler;
+import vic.mod.chat.handler.TrackHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -32,20 +33,16 @@ public class VChat
 	public static AFKHandler afkHandler;
 	public static AutoAFKHandler autoAfkHandler;
 	public static NickHandler nickHandler;
+	public static TrackHandler trackHandler;
+	
 	public static Config config;
-	
 	public static ArrayList<IChatHandler> handlers = new ArrayList<IChatHandler>();
-	
 	public static Logger logger;
 	
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) 
 	{
 		logger = event.getModLog();
-		/*if(event.getSide() == Side.CLIENT) {
-			logger.fatal("This mod is meant to be used for dedicated servers only! You should remove it!");
-			return;
-		}*/
 		
 		config = new Config();
 		config.initialize(event.getSuggestedConfigurationFile());
@@ -57,6 +54,7 @@ public class VChat
 		botLoader = new BotLoader();
 		
 		if(config.nickEnabled) nickHandler = new NickHandler();
+		if(config.trackEnabled) trackHandler = new TrackHandler();
 		if(config.afkEnabled) 
 		{
 			afkHandler = new AFKHandler();

@@ -16,7 +16,8 @@ public class Config
 	public static boolean afkEnabled;
 	public static boolean autoAfkEnabled;
 	public static boolean localEnabled;
-	public static boolean globalCrossDim;
+	public static boolean globalCrossDimEnabled;
+	
 	public static boolean urlEnabled;
 	public static boolean urlEnabledYoutube;
 	public static boolean urlEnabledSoundCloud;
@@ -43,6 +44,11 @@ public class Config
 	public static float pingVolume;
 	public static String pingSound;
 	
+	public static boolean trackEnabled;
+	public static boolean trackEnabledCustom;
+	public static int trackPermissionLevel;
+	public static int trackPermissionLevelSelf;
+	
 	public static void initialize(File file)
 	{
 		Configuration config = new Configuration(file);
@@ -67,6 +73,11 @@ public class Config
 		
 		modtEnabled = config.get("GENERAL", "modt_enabled", true, "Disable or enable the \"Message of the Day.\"").getBoolean(true);
 		
+		trackEnabled = config.get("GENERAL", "track_enabled", true, "Disable or enable the /track commands for playing tracks.").getBoolean(true);
+		trackEnabledCustom = config.get("GENERAL", "track_custom_enabled", true, "Disable or enable the the possibility to play custom tracks on the fly.").getBoolean(true);
+		trackPermissionLevel = config.get("GENERAL", "track_permlevel", 3, "Change the permission level required to broadcast a track. 3 is OP by default.").getInt(3);
+		trackPermissionLevelSelf = config.get("GENERAL", "track_self_permlevel", 0, "Change the permission level required to play a track. 0 is everyone by default.").getInt();
+		
 		afkEnabled = config.get("GENERAL", "afk_enabled", true, "Disable or enable the /afk command").getBoolean(true);
 		autoAfkEnabled = config.get("GENERAL", "auto_afk_enabled", true, "Disable or enable the auto afk. Needs \"afk_enabled\" to be set to \"true\"").getBoolean(true);
 		autoAfkTime = config.get("GENERAL", "auto_afk_timeout", 120, "Change the timeout at which a player will be marked as afk, in seconds.").getInt(120);
@@ -86,7 +97,7 @@ public class Config
 		colorPermissionLevel = config.get("GENERAL", "color_permlevel", 3, "Change the permission level required to use chat formatting with \"&\" as prefix. 3 is OP by default.").getInt(3);
 		localEnabled = config.get("GENERAL", "local_enabled", true, "Disable or enable the local chat.").getBoolean(true);
 		localRange = config.get("GENERAL", "local_range", 50, "Change the block distance in which players receive the local chat.").getInt(50);
-		globalCrossDim = config.get("GENERAL", "global_cross_dim", true, "Enable if you want the global chat to be cross-dimensional.").getBoolean(true);
+		globalCrossDimEnabled = config.get("GENERAL", "global_cross_dim", true, "Enable if you want the global chat to be cross-dimensional.").getBoolean(true);
 		
 		urlEnabled = config.get("GENERAL", "url_enabled", true, "Disable or enable the option to post clickable links in chat.").getBoolean(true);
 		urlEnabledYoutube = config.get("GENERAL", "url_enabled_yt", true, "Disable or enable the option to post youtube links in chat.").getBoolean(true);
