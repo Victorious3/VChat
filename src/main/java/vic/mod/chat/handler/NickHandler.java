@@ -45,7 +45,7 @@ public class NickHandler extends ChatHandlerImpl
 		super();
 		
 		nickRegistry = HashBiMap.create(new HashMap<String, String>());
-		nickfile = new File("vchat_nicks.json");
+		nickfile = new File("vChat/vchat_nicks.json");
 	}
 	
 	@SubscribeEvent
@@ -98,7 +98,11 @@ public class NickHandler extends ChatHandlerImpl
 	public void saveNicks()
 	{
 		try {
-			if(!nickfile.exists()) nickfile.createNewFile();
+			if(!nickfile.exists()) 
+			{
+				nickfile.mkdirs();
+				nickfile.createNewFile();
+			}
 			JsonArray nickArray = new JsonArray();
 			for(Entry<String, String> entry : nickRegistry.entrySet())
 			{

@@ -1,8 +1,6 @@
 package vic.mod.chat;
 
 import java.io.File;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.jar.JarEntry;
@@ -41,7 +39,7 @@ public class BotLoader extends ChatHandlerImpl
 	{
 		try {
 			long startTime = System.currentTimeMillis();
-			File botDir = new File("vBots/");
+			File botDir = new File("vChat/bots");
 			if(!botDir.exists()) botDir.mkdirs();
 			
 			VChat.logger.info("Attempting to load bots...");
@@ -101,6 +99,7 @@ public class BotLoader extends ChatHandlerImpl
 			VChat.logger.info("...done! A total of " + loaded + " bots loaded in " + (System.currentTimeMillis() - startTime) + " ms");
 		} catch (Exception e) {
 			VChat.logger.error("Loading of the bots failed!");
+			e.printStackTrace();
 		}
 	}
 

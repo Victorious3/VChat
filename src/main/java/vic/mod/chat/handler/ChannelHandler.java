@@ -63,8 +63,8 @@ public class ChannelHandler extends ChatHandlerImpl
 		if(Config.localEnabled) registerChannel(new ChannelLocal());
 		registerChannel(new ChannelGlobal());
 		
-		channelfile = new File("vchat_channels.json");
-		playerfile = new File("vchat_players.json");
+		channelfile = new File("vChat/vchat_channels.json");
+		playerfile = new File("vChat/vchat_players.json");
 	}
 
 	@SubscribeEvent(priority = EventPriority.NORMAL)
@@ -168,7 +168,11 @@ public class ChannelHandler extends ChatHandlerImpl
 	public void onServerUnload(FMLServerStoppingEvent event) 
 	{
 		try {
-			if(!playerfile.exists()) playerfile.createNewFile();
+			if(!playerfile.exists()) 
+			{
+				playerfile.mkdirs();
+				playerfile.createNewFile();
+			}
 			
 			JsonArray players = new JsonArray();
 			for(ChatEntity entity : members.keySet())
@@ -192,7 +196,11 @@ public class ChannelHandler extends ChatHandlerImpl
 		}
 		
 		try {
-			if(!channelfile.exists()) channelfile.createNewFile();
+			if(!channelfile.exists()) 
+			{
+				channelfile.mkdirs();
+				channelfile.createNewFile();
+			}
 			
 			JsonArray chans = new JsonArray();
 			for(IChannel channel : channels.values())
