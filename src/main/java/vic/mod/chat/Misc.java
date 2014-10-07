@@ -19,6 +19,7 @@ import net.minecraft.event.HoverEvent;
 import net.minecraft.event.HoverEvent.Action;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 
 public class Misc 
@@ -99,6 +100,15 @@ public class Misc
 		return nameComponent;
 	}
 	
+	public static boolean checkPermission(ICommandSender sender, int permlevel)
+	{
+		if(sender.canCommandSenderUseCommand(permlevel, null)) return true;
+		ChatComponentTranslation component = new ChatComponentTranslation("commands.generic.permission", new Object[0]);
+		component.getChatStyle().setColor(EnumChatFormatting.RED);
+        sender.addChatMessage(component);
+        return false;
+	}
+	
 	public static abstract class CommandOverrideAccess extends CommandBase 
 	{
 		@Override
@@ -122,7 +132,6 @@ public class Misc
 		}
 		return map;
 	}
-
 	
 	public static double getCPULoad()
 	{	

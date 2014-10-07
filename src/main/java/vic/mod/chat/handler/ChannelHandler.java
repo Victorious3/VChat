@@ -17,7 +17,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.common.ForgeHooks;
 
@@ -189,7 +188,7 @@ public class ChannelHandler extends ChatHandlerImpl
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-			VChat.logger.error("Could save the player file. Maybe it's disrupted or the access is restricted. Try deleting it.");
+			VChat.logger.error("Could not save the player file. Maybe it's disrupted or the access is restricted. Try deleting it.");
 		}
 		
 		try {
@@ -211,7 +210,7 @@ public class ChannelHandler extends ChatHandlerImpl
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-			VChat.logger.error("Could save the channel file. Maybe it's disrupted or the access is restricted. Try deleting it.");
+			VChat.logger.error("Could not save the channel file. Maybe it's disrupted or the access is restricted. Try deleting it.");
 		}
 	}
 	
@@ -342,7 +341,7 @@ public class ChannelHandler extends ChatHandlerImpl
 		@Override
 		public List getCommandAliases() 
 		{
-			return Arrays.asList(new String[]{"l"}); 
+			return Arrays.asList("l"); 
 		}
 
 		@Override
@@ -376,7 +375,7 @@ public class ChannelHandler extends ChatHandlerImpl
 		@Override
 		public List getCommandAliases() 
 		{
-			return Arrays.asList(new String[]{"g"}); 
+			return Arrays.asList("g"); 
 		}
 		
 		@Override
@@ -547,7 +546,7 @@ public class ChannelHandler extends ChatHandlerImpl
 				}
 				else if(args[0].equalsIgnoreCase("ban") || args[0].equalsIgnoreCase("unban") || args[0].equalsIgnoreCase("kick") || args[0].equalsIgnoreCase("mute") || args[0].equalsIgnoreCase("unmute"))
 				{
-					if(checkPermission(sender, 3))
+					if(Misc.checkPermission(sender, 3))
 					{
 						if(args.length != 3) throw new WrongUsageException("/channel " + args[0].toLowerCase(Locale.ROOT) + " <channel> <player>");
 						
@@ -573,7 +572,7 @@ public class ChannelHandler extends ChatHandlerImpl
 				}
 				else if(args[0].equalsIgnoreCase("whitelist"))
 				{
-					if(checkPermission(sender, 3))
+					if(Misc.checkPermission(sender, 3))
 					{
 						if(args.length != 4 || (!args[1].equalsIgnoreCase("add") && !args[1].equalsIgnoreCase("remove"))) 
 							throw new WrongUsageException("/channel whitelist <add/remove> <channel> <player>");
@@ -588,15 +587,6 @@ public class ChannelHandler extends ChatHandlerImpl
 				}
 				else throw new WrongUsageException(getCommandUsage(sender));
 			}
-		}
-		
-		private boolean checkPermission(ICommandSender sender, int permlevel)
-		{
-			if(sender.canCommandSenderUseCommand(permlevel, null)) return true;
-			ChatComponentTranslation component = new ChatComponentTranslation("commands.generic.permission", new Object[0]);
-			component.getChatStyle().setColor(EnumChatFormatting.RED);
-            sender.addChatMessage(component);
-            return false;
 		}
 	}
 	
