@@ -100,7 +100,7 @@ public class NickHandler extends ChatHandlerImpl
 		try {
 			if(!nickfile.exists()) 
 			{
-				nickfile.mkdirs();
+				nickfile.getParentFile().mkdirs();
 				nickfile.createNewFile();
 			}
 			JsonArray nickArray = new JsonArray();
