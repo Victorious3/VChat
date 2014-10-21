@@ -170,7 +170,7 @@ public class ChannelHandler extends ChatHandlerImpl
 		try {
 			if(!playerfile.exists()) 
 			{
-				playerfile.mkdirs();
+				playerfile.getParentFile().mkdirs();
 				playerfile.createNewFile();
 			}
 			
@@ -198,7 +198,7 @@ public class ChannelHandler extends ChatHandlerImpl
 		try {
 			if(!channelfile.exists()) 
 			{
-				channelfile.mkdirs();
+				channelfile.getParentFile().mkdirs();
 				channelfile.createNewFile();
 			}
 			
