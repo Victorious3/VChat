@@ -1,13 +1,13 @@
 package vic.mod.chat.handler;
 
 import java.util.HashMap;
-
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import vic.mod.chat.ChatEntity;
 import vic.mod.chat.Config;
 import vic.mod.chat.VChat;
+import vic.mod.chat.Misc;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -16,9 +16,9 @@ import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.relauncher.Side;
 
 public class AutoAFKHandler extends ChatHandlerImpl
-{	
-	private HashMap<EntityPlayerMP, TrackedPosition> tracked = new HashMap<EntityPlayerMP, TrackedPosition>();
-	
+{
+	private HashMap<String, TrackedPosition> tracked = new HashMap<String, TrackedPosition>();
+
 	public AutoAFKHandler()
 	{
 		FMLCommonHandler.instance().bus().register(this);
@@ -36,7 +36,7 @@ public class AutoAFKHandler extends ChatHandlerImpl
 			for(TrackedPosition pos : tracked.values())
 			{
 				pos.update();
-				ChatEntity entity = new ChatEntity(pos.player);
+				ChatEntity entity = new ChatEntity(pos.getPlayer());
 				
 				if(pos.hitCooldown() && !VChat.afkHandler.isAfk(entity))
 				{
@@ -50,42 +50,41 @@ public class AutoAFKHandler extends ChatHandlerImpl
 				}
 			}
 			lastAction = time;
-		}	
+		}
 	}
 	
 	/** Callback from the /afk command to remove possible auto afks **/
 	public void onAFKRemoved(EntityPlayerMP entity)
 	{
-		tracked.put(entity, new TrackedPosition(entity));
+		updatePlayer(entity);
 	}
 	
 	@SubscribeEvent()
 	public void onPlayerJoined(PlayerEvent.PlayerLoggedInEvent event)
 	{
-		tracked.put((EntityPlayerMP)event.player, new TrackedPosition((EntityPlayerMP)event.player));
+		updatePlayer((EntityPlayerMP)event.player);
 	}
 	
 	@SubscribeEvent()
 	public void onPlayerLeft(PlayerEvent.PlayerLoggedOutEvent event)
 	{
-		tracked.remove(event.player);
+		tracked.remove(event.player.getCommandSenderName());
 	}
 
-	@SubscribeEvent
-	public void onPlayerClone(net.minecraftforge.event.entity.player.PlayerEvent.Clone event)
-	{
-		if(FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) return;
-		if(tracked.containsKey(event.original))
-		{
-			tracked.remove(event.original);
-			tracked.put((EntityPlayerMP)event.entityPlayer, new TrackedPosition((EntityPlayerMP)event.entityPlayer));
-		}
-	}
-	
-	@Override 
+	@Override
 	public void onServerLoad(FMLServerStartingEvent event) 
 	{
 		tracked.clear();
+	}
+
+	public void updatePlayer(EntityPlayerMP player)
+	{
+		tracked.put(player.getCommandSenderName(), new TrackedPosition(player));
+	}
+
+	public void updatePlayer(String username)
+	{
+		updatePlayer(Misc.getPlayer(username));
 	}
 	
 	public static class TrackedPosition
@@ -93,16 +92,17 @@ public class AutoAFKHandler extends ChatHandlerImpl
 		private boolean autoAfk;
 		private int cooldown = Config.autoAfkTime;
 		private Vec3 position;
-		private EntityPlayerMP player;
+		private String playerName;
 		
 		public TrackedPosition(EntityPlayerMP player)
 		{
-			this.player = player;
+			this.playerName = player.getCommandSenderName();
 			position = Vec3.createVectorHelper(player.posX, player.posY, player.posZ);
 		}
 		
 		public void update()
 		{
+			EntityPlayerMP player = getPlayer();
 			Vec3 npos = Vec3.createVectorHelper(player.posX, player.posY, player.posZ);
 
 			if(position.xCoord != npos.xCoord || position.yCoord != npos.yCoord || position.zCoord != npos.zCoord) 
@@ -116,6 +116,11 @@ public class AutoAFKHandler extends ChatHandlerImpl
 		public boolean hitCooldown()
 		{
 			return cooldown == 0;
+		}
+
+		public EntityPlayerMP getPlayer()
+		{
+			return Misc.getPlayer(playerName);
 		}
 	}
 }
