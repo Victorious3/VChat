@@ -83,7 +83,7 @@ public class ChatEntity implements IChatEntity
 	{
 		if(Config.nickEnabled)
 			if(isBot) return username;
-			else return NickHandler.nickRegistry.get(this.username);
+			else return NickHandler.getPlayerFromSenderName(username);
 		return null;
 	}
 

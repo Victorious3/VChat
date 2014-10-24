@@ -36,7 +36,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class NickHandler extends ChatHandlerImpl
 {
-	public static HashBiMap<String, String> nickRegistry;
+	private static HashBiMap<String, String> nickRegistry;
 	
 	private File nickfile;
 	
@@ -80,6 +80,15 @@ public class NickHandler extends ChatHandlerImpl
 			return nickRegistry.inverse().get(nick);
 		}
 		return null;
+	}
+	
+	public static String getPlayerFromSenderName(String sendername)
+	{
+		if(nickRegistry.containsKey(sendername))
+		{
+			return nickRegistry.get(sendername);
+		}
+		return sendername;
 	}
 	
 	@SubscribeEvent(priority = EventPriority.LOW)
