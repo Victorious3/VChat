@@ -1,3 +1,4 @@
+[![Build Status](http://img.shields.io/jenkins/s/http/jenkins.rx14.co.uk/VChat.svg?style=flat-square)](http://jenkins.rx14.co.uk/job/VChat/)
 VChat
 =====
 
@@ -24,3 +25,6 @@ If you did everything right, you should get something like that:
 [11:55:58] [Client thread/INFO] [vchat]: ...done! A total of 1 bots loaded in 12 ms
 ```
 Your bot should respod to incoming messages now, have fun!
+
+Jenkins: [jenkins.rx14.co.uk](http://jenkins.rx14.co.uk)
+*generously served by @RX14*

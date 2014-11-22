@@ -50,9 +50,14 @@ processResources {
 task apiJar(type: Jar, dependsOn: classes) {
     from sourceSets.main.output
     include 'vic/mod/chat/api/**' 
-    appendix = 'API'
+    classifier = 'api'
+}
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
 }
 
 artifacts {
+    archives sourcesJar
     archives apiJar
 }
