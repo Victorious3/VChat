@@ -1,7 +1,11 @@
 package vic.mod.chat.handler;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -16,6 +20,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IChatComponent;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.ServerChatEvent;
@@ -31,19 +36,96 @@ import vic.mod.chat.Misc;
 import vic.mod.chat.Misc.CommandOverrideAccess;
 import vic.mod.chat.VChat;
 import vic.mod.chat.api.IChannel;
+
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
+
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 
 public class CommonHandler extends ChatHandlerImpl
 {
+	private File playerFile;
+	private HashMap<String, OnlineTracker> playerTracker = new HashMap<String, OnlineTracker>();
+	
+	public CommonHandler()
+	{
+		super();
+		playerFile = new File("vChat/vchat_playertracker.json");
+	}
+	
+	public void loadPlayers()
+	{
+		try {
+			if(playerFile.exists())
+			{
+				JsonParser parser = new JsonParser();
+				JsonArray players = (JsonArray)parser.parse(new JsonReader(new FileReader(playerFile)));
+				for(int i = 0; i < players.size(); i++)
+				{
+					JsonObject obj = (JsonObject)players.get(i);
+					String name = obj.get("username").getAsString();
+					playerTracker.put(name, new OnlineTracker(name, obj.get("lastSeen").getAsLong(), obj.get("online").getAsLong()));
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			VChat.logger.error("Could not read the player file. Maybe it's disrupted or the access is restricted. Try deleting it.");
+		}
+	}
+	
+	public void savePlayers()
+	{
+		try {
+			if(!playerFile.exists()) 
+			{
+				playerFile.getParentFile().mkdirs();
+				playerFile.createNewFile();
+			}
+			JsonArray playerArray = new JsonArray();
+			for(OnlineTracker tracker : playerTracker.values())
+			{
+				JsonObject obj = new JsonObject();
+				obj.addProperty("username", tracker.name);
+				obj.addProperty("lastSeen", tracker.lastSeen);
+				obj.addProperty("online", tracker.online);
+				playerArray.add(obj);
+			}
+			
+			FileWriter writer = new FileWriter(playerFile);
+			writer.write(new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create().toJson(playerArray));
+			writer.flush();
+			writer.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			VChat.logger.error("Could not save the player file. Maybe it's disrupted or the access is restricted. Try deleting it.");
+		}
+	}
+	
 	@SubscribeEvent
 	public void onPlayerJoined(PlayerEvent.PlayerLoggedInEvent event)
 	{
 		if(Config.modtEnabled)
 			for(String s : Misc.parseModt(Config.modt, (EntityPlayerMP)event.player))
 				event.player.addChatComponentMessage(new ChatComponentText(s));
+		String name = event.player.getCommandSenderName();
+		if(!playerTracker.containsKey(name))
+			playerTracker.put(name, new OnlineTracker(name, System.currentTimeMillis(), 0));
+	}
+	
+	@SubscribeEvent
+	public void onPlayerLeft(PlayerEvent.PlayerLoggedOutEvent event)
+	{
+		String name = event.player.getCommandSenderName();
+		OnlineTracker tracker = playerTracker.get(name);
+		tracker.online = tracker.getOnlineTime();
+		tracker.lastSeen = System.currentTimeMillis();
 	}
 	
 	@SubscribeEvent(priority = EventPriority.LOWEST)
@@ -132,7 +214,6 @@ public class CommonHandler extends ChatHandlerImpl
 		event.setCanceled(true);
 	}	
 	
-	//FIXME Doesn't work.
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public void onCommand(CommandEvent event)
 	{
@@ -179,6 +260,91 @@ public class CommonHandler extends ChatHandlerImpl
 	{
 		event.registerServerCommand(new CommandPos());
 		event.registerServerCommand(new CommandTop());
+		event.registerServerCommand(new CommandList());
+		loadPlayers();
+	}
+
+	@Override
+	public void onServerUnload(FMLServerStoppingEvent event) 
+	{
+		savePlayers();
+	}
+
+	public static class CommandList extends CommandOverrideAccess
+	{
+		@Override
+		public String getCommandName() 
+		{
+			return "list";
+		}
+		
+		@Override
+		public int getRequiredPermissionLevel() 
+		{
+			return 0;
+		}
+		
+		@Override
+		public String getCommandUsage(ICommandSender sender) 
+		{
+			return "/list";
+		}
+
+		@Override
+		public void processCommand(ICommandSender sender, String[] args) 
+		{
+			sender.addChatMessage(new ChatComponentText("-----Name--------Playtime-----Last seen-----"));
+			for(OnlineTracker tracker : VChat.commonHandler.playerTracker.values())
+			{
+				sender.addChatMessage(tracker.toChatComponent());
+			}
+		}
+	}
+	
+	public static class OnlineTracker implements Comparable<OnlineTracker>
+	{
+		private long lastSeen, online;
+		String name;
+		
+		public OnlineTracker(String name, long lastSeen, long online)
+		{
+			this.name = name;
+			this.lastSeen = lastSeen;
+			this.online = online;
+		}
+		
+		public IChatComponent toChatComponent()
+		{
+			ChatComponentText text = new ChatComponentText("");
+			text.appendText(String.format("%-17s", name));
+			text.appendText(String.format("%-17s", Misc.getDuration(getOnlineTime())));
+			if(isOnline())
+			{
+				ChatComponentText comp1 = new ChatComponentText("online");
+				comp1.getChatStyle().setColor(EnumChatFormatting.GREEN);
+				text.appendSibling(comp1);
+			}
+			else text.appendText(Misc.getDuration(System.currentTimeMillis() - lastSeen));
+			return text;
+		}
+		
+		public long getOnlineTime()
+		{
+			return online + (isOnline() ? System.currentTimeMillis() - lastSeen : 0);
+		}
+		
+		public boolean isOnline()
+		{
+			return Misc.getPlayer(name) != null;
+		}
+		
+		@Override
+		public int compareTo(OnlineTracker arg0) 
+		{
+			if(arg0.isOnline() && !isOnline()) return -1;
+			else if(!arg0.isOnline() && isOnline()) return 1;
+			else return name.compareTo(arg0.name);
+		}
 	}
 	
 	public static class CommandPos extends CommandOverrideAccess

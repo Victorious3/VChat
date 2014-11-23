@@ -6,9 +6,12 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.minecraft.command.CommandBase;
@@ -22,11 +25,14 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class Misc 
 {
 	public static Pattern urlPattern = Pattern.compile("\\b(https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
 	public static Pattern ytVideoPattern = Pattern.compile("(http:|https:)?\\/\\/(www\\.)?(youtube.com|youtu.be)\\/(watch)?(\\?v=)?(\\S+)?");
 	public static Pattern scSoundPattern = Pattern.compile("(http:|https)?:\\/\\/soundcloud\\.com\\/\\S*");
+	public static Pattern splitPattern = Pattern.compile("([^\"]\\S*|\".+?\")\\s*");
 	
 	private static OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
 	private static Method getSystemCpuLpad;
@@ -58,11 +64,16 @@ public class Misc
 		return modt.split("/n");
 	}
 	
-	public static ArrayList<ChatEntity> getOnlinePlayers()
+	public static ArrayList<ChatEntity> getOnlinePlayersAsEntity()
 	{
 		ArrayList<ChatEntity> list = new ArrayList<ChatEntity>();
 		for(Object obj : MinecraftServer.getServer().getConfigurationManager().playerEntityList) list.add(new ChatEntity(obj));
 		return list;
+	}
+	
+	public static ArrayList<EntityPlayerMP> getOnlinePlayers()
+	{
+		return (ArrayList<EntityPlayerMP>) MinecraftServer.getServer().getConfigurationManager().playerEntityList;
 	}
 	
 	public static EntityPlayerMP getPlayer(String player)
@@ -100,6 +111,14 @@ public class Misc
 		return nameComponent;
 	}
 	
+	public static String[] parseArgs(String[] args)
+	{
+		List<String> list = new ArrayList<String>();
+		Matcher m = splitPattern.matcher(StringUtils.join(Arrays.asList(args), " "));
+		while(m.find()) list.add(m.group(1).replaceAll("\"", ""));
+		return list.toArray(new String[list.size()]);
+	}
+	
 	public static boolean checkPermission(ICommandSender sender, int permlevel)
 	{
 		if(sender.canCommandSenderUseCommand(permlevel, null)) return true;
@@ -131,6 +150,20 @@ public class Misc
 			map.put(name, value);
 		}
 		return map;
+	}
+	
+	public static String getDuration(long duration)
+	{ 
+		long days = duration / (1000 * 60 * 60 * 24);
+		duration = duration % (1000 * 60 * 60 * 24);
+		
+		long hours = duration / (1000 * 60 * 60);
+		duration = duration % (1000 * 60 * 60);
+		
+		long minutes = duration / (1000 * 60);
+		duration = duration % (1000 * 60);
+		
+		return (days > 0 ? days + " day " : "") + (hours > 0 ? hours + " hrs " : "") + minutes + " min";
 	}
 	
 	public static double getCPULoad()

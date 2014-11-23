@@ -1,5 +1,6 @@
 package vic.mod.chat;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -14,7 +15,7 @@ public class Track
 	private Element[] elements;
 	private int pointer;
 	private int timeout;
-	private List<EntityPlayerMP> players;
+	private ArrayList<EntityPlayerMP> players;
 	public String name;
 	
 	private Track() {}
@@ -73,7 +74,7 @@ public class Track
 				case 1 : sound = "note.bassattack"; break;
 				case 2 : sound = "note.bd"; break;
 				case 3 : sound = "note.harp"; break;
-				case 4 : sound = "note.bat"; break;
+				case 4 : sound = "note.hat"; break;
 				case 5 : sound = "note.pling"; break;
 				default : sound = "note.snare"; break;
 				}
@@ -152,8 +153,9 @@ public class Track
 		this.pointer = pointer;
 	}
 	
-	public void start(List players)
+	public void start(ArrayList players)
 	{
+		pointer = 0;
 		if(players.isEmpty() || elements.length == 0) return;
 		this.players = players;
 		for(EntityPlayerMP player : this.players)
@@ -161,6 +163,17 @@ public class Track
 		timeout = 0;
 		for(Element element : elements) element.reset();
 		VChat.trackHandler.startTrack(this);
+	}
+	
+	public void start()
+	{
+		start(Misc.getOnlinePlayers());
+	}
+	
+	public void stopTrack(EntityPlayerMP player)
+	{
+		if(player != null) players.remove(player);
+		if(players.isEmpty()) stopTrack();
 	}
 	
 	public void stopTrack()
@@ -173,12 +186,16 @@ public class Track
 		if(timeout > 0) timeout--;
 		else
 		{
+			if(pointer >= elements.length) 
+			{
+				stopTrack();
+				return;
+			}
 			Element element = elements[pointer];
 			if(!(element instanceof ElementRepeat)) timeout = 1;
 			else timeout = 0;
 			pointer++;
 			element.execute();
-			if(pointer >= elements.length) stopTrack();
 			timeout *= 5;
 		}	
 	}
@@ -245,7 +262,7 @@ public class Track
 					parent.pointer--;
 				}
 				else curTimes = times;
-				for(EntityPlayerMP player : parent.players) 
+				for(EntityPlayerMP player : parent.players)
 					player.playerNetServerHandler.sendPacket(new S29PacketSoundEffect(sound, player.posX, player.posY, player.posZ, 1F, pitch));
 			}
 		}

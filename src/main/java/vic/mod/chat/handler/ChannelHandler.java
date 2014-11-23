@@ -285,7 +285,7 @@ public class ChannelHandler extends ChatHandlerImpl
 	
 	public static void broadcast(IChatComponent component, ChatEntity sender)
 	{
-		for(ChatEntity player : Misc.getOnlinePlayers())
+		for(ChatEntity player : Misc.getOnlinePlayersAsEntity())
 			privateMessageTo(sender, player, component);
 	}
 	
