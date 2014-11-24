@@ -114,18 +114,25 @@ public class CommonHandler extends ChatHandlerImpl
 		if(Config.modtEnabled)
 			for(String s : Misc.parseModt(Config.modt, (EntityPlayerMP)event.player))
 				event.player.addChatComponentMessage(new ChatComponentText(s));
-		String name = event.player.getCommandSenderName();
-		if(!playerTracker.containsKey(name))
-			playerTracker.put(name, new OnlineTracker(name, System.currentTimeMillis(), 0));
+		
+		if(Config.onlineTrackerEnabled)
+		{
+			String name = event.player.getCommandSenderName();
+			if(!playerTracker.containsKey(name))
+				playerTracker.put(name, new OnlineTracker(name, System.currentTimeMillis(), 0));
+		}
 	}
 	
 	@SubscribeEvent
 	public void onPlayerLeft(PlayerEvent.PlayerLoggedOutEvent event)
 	{
-		String name = event.player.getCommandSenderName();
-		OnlineTracker tracker = playerTracker.get(name);
-		tracker.online = tracker.getOnlineTime();
-		tracker.lastSeen = System.currentTimeMillis();
+		if(Config.onlineTrackerEnabled)
+		{
+			String name = event.player.getCommandSenderName();
+			OnlineTracker tracker = playerTracker.get(name);
+			tracker.online = tracker.getOnlineTime();
+			tracker.lastSeen = System.currentTimeMillis();
+		}
 	}
 	
 	@SubscribeEvent(priority = EventPriority.LOWEST)
@@ -260,14 +267,15 @@ public class CommonHandler extends ChatHandlerImpl
 	{
 		event.registerServerCommand(new CommandPos());
 		event.registerServerCommand(new CommandTop());
-		event.registerServerCommand(new CommandList());
+		if(Config.onlineTrackerEnabled) 
+			event.registerServerCommand(new CommandList());
 		loadPlayers();
 	}
 
 	@Override
 	public void onServerUnload(FMLServerStoppingEvent event) 
 	{
-		savePlayers();
+		if(Config.onlineTrackerEnabled) savePlayers();
 	}
 
 	public static class CommandList extends CommandOverrideAccess
@@ -293,7 +301,7 @@ public class CommonHandler extends ChatHandlerImpl
 		@Override
 		public void processCommand(ICommandSender sender, String[] args) 
 		{
-			sender.addChatMessage(new ChatComponentText("-----Name--------Playtime-----Last seen-----"));
+			sender.addChatMessage(new ChatComponentText("--Name--Playtime--Last seen--"));
 			for(OnlineTracker tracker : VChat.commonHandler.playerTracker.values())
 			{
 				sender.addChatMessage(tracker.toChatComponent());
@@ -315,9 +323,7 @@ public class CommonHandler extends ChatHandlerImpl
 		
 		public IChatComponent toChatComponent()
 		{
-			ChatComponentText text = new ChatComponentText("");
-			text.appendText(String.format("%-17s", name));
-			text.appendText(String.format("%-17s", Misc.getDuration(getOnlineTime())));
+			ChatComponentText text = new ChatComponentText(name + "--" + Misc.getDuration(getOnlineTime()) + "--");
 			if(isOnline())
 			{
 				ChatComponentText comp1 = new ChatComponentText("online");

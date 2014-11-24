@@ -39,7 +39,7 @@ public class Misc
 	private static Long deviceMemory;
 	
 	static
-	{
+	{		
 		try {
 			getSystemCpuLpad = osBean.getClass().getDeclaredMethod("getSystemCpuLoad");
 			getSystemCpuLpad.setAccessible(true);

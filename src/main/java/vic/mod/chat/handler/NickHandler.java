@@ -95,6 +95,12 @@ public class NickHandler extends ChatHandlerImpl
 		}	
 	}
 	
+	@SubscribeEvent
+	public void onTabCompletion(CommandEvent event)
+	{
+		
+	}
+	
 	public void saveNicks()
 	{
 		try {

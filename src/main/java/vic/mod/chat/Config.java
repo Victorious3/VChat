@@ -17,6 +17,7 @@ public class Config
 	public static boolean autoAfkEnabled;
 	public static boolean localEnabled;
 	public static boolean globalCrossDimEnabled;
+	public static boolean onlineTrackerEnabled;
 	
 	public static boolean urlEnabled;
 	public static boolean urlEnabledYoutube;
@@ -121,6 +122,8 @@ public class Config
 		
 		colorBot = EnumChatFormatting.getValueByName(config.get("STYLE", "color_bot", "GREEN", "Change the color applied to bots").getString());
 		if(colorNickName == null) colorNickName = EnumChatFormatting.GREEN;
+		
+		onlineTrackerEnabled = config.get("GENERAL", "online_tracker_enabled", true, "Enable if you want to log player's online times.").getBoolean(true);
 		
 		config.save();
 	}
