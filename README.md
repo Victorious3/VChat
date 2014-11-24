@@ -1,4 +1,4 @@
-[![Build Status](http://img.shields.io/jenkins/s/http/jenkins.rx14.co.uk/VChat.svg?style=flat-square)](http://jenkins.rx14.co.uk/job/VChat/)
+[![Build Status](http://img.shields.io/jenkins/s/http/jenkins.rx14.co.uk/job/Vic/VChat.svg?style=flat-square)](http://jenkins.rx14.co.uk/job/Vic/job/VChat/)
 VChat
 =====
 
