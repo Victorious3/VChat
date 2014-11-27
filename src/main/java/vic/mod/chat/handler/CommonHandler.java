@@ -130,6 +130,7 @@ public class CommonHandler extends ChatHandlerImpl
 		{
 			String name = event.player.getCommandSenderName();
 			OnlineTracker tracker = playerTracker.get(name);
+			if(tracker == null) return;
 			tracker.online = tracker.getOnlineTime();
 			tracker.lastSeen = System.currentTimeMillis();
 		}
