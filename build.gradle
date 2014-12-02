@@ -36,7 +36,7 @@ archivesBaseName = "vChat"
 
 minecraft {
     version = "${config.minecraft.version}-${config.forge.version}"
-    assetDir = "eclipse/assets"
+    runDir = "eclipse"
 
     replaceIn "Constants.java"
     replace "\${version}", "${config.mod.version}"
