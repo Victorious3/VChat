@@ -33,6 +33,7 @@ version = config.mod.version
 group = "vic.mod.chat"
 archivesBaseName = "vChat"
 
+if (System.env.BUILD_NUMBER != null) version = "$version.$System.env.BUILD_NUMBER"
 
 minecraft {
     version = "${config.minecraft.version}-${config.forge.version}"
