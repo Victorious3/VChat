@@ -104,7 +104,7 @@ public class BotHandler implements IBotHandler
 	@Override
 	public File getBotDir()
 	{
-		return new File("/vBots");
+		return new File("vChat/bots");
 	}
 
 	@Override
