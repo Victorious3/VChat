@@ -41,6 +41,7 @@ minecraft {
 
     replaceIn "Constants.java"
     replace "\${version}", "${config.mod.version}"
+    replace "\${api_version}", "${config.api.version}"
 }
 
 processResources {

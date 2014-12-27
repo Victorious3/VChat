@@ -2,6 +2,7 @@ package vic.mod.chat;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.logging.Level;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
@@ -159,5 +160,33 @@ public class BotHandler implements IBotHandler
 		{
 			return MinecraftServer.getServer().getEntityWorld();
 		}	
+	}
+
+	@Override
+	public void log(Level level, String message) 
+	{
+		message = "[" + owningBot.getName() + "]: " + message;
+		VChat.logger.log(org.apache.logging.log4j.Level.toLevel(level.getName(), org.apache.logging.log4j.Level.INFO), message);
+	}
+
+	@Override
+	public void log(String message) 
+	{
+		message = "[" + owningBot.getName() + "]: " + message;
+		VChat.logger.log(org.apache.logging.log4j.Level.INFO, message);
+	}
+
+	@Override
+	public void logf(Level level, String message, Object... args)
+	{
+		message = "[" + owningBot.getName() + "]: " + message;
+		VChat.logger.log(org.apache.logging.log4j.Level.toLevel(level.getName(), org.apache.logging.log4j.Level.INFO), message, args);
+	}
+
+	@Override
+	public void logf(String message, Object... args) 
+	{
+		message = "[" + owningBot.getName() + "]: " + message;
+		VChat.logger.log(org.apache.logging.log4j.Level.INFO, message, args);
 	}
 }

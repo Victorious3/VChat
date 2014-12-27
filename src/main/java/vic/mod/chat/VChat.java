@@ -21,8 +21,7 @@ import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 
 @Mod(modid = "vchat", name = "vChat", version = Constants.version, acceptableRemoteVersions = "*")
 public class VChat
-{
-	
+{	
 	@Instance("vchat")
 	public static VChat instance;  
 	

@@ -1,7 +1,6 @@
 package vic.mod.chat;
 
 import java.io.File;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -16,6 +15,7 @@ import org.apache.commons.io.filefilter.TrueFileFilter;
 
 import vic.mod.chat.api.IChannel;
 import vic.mod.chat.api.bot.IChatBot;
+import vic.mod.chat.api.bot.Version;
 import vic.mod.chat.handler.ChannelHandler;
 import vic.mod.chat.handler.ChatHandlerImpl;
 
@@ -25,6 +25,9 @@ import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModClassLoader;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.event.FMLServerStoppingEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
+import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
 import cpw.mods.fml.relauncher.CoreModManager;
 
 public class BotLoader extends ChatHandlerImpl
@@ -77,9 +80,6 @@ public class BotLoader extends ChatHandlerImpl
 					.addAll(CoreModManager.getReparseableCoremods())
 					.build();
 				
-				Method m = ClassLoader.class.getDeclaredMethod("findLoadedClass", String.class); 
-				m.setAccessible(true);
-
 				for(File f : sources)
 				{
 					if(knownLibraries.contains(f.getName())) continue;
@@ -167,6 +167,21 @@ public class BotLoader extends ChatHandlerImpl
 	{
 		if(IChatBot.class.isAssignableFrom(clazz))
 		{
+			Version version = (Version)clazz.getAnnotation(Version.class);
+			if(version != null)
+			{
+				if(!version.version().equals(Constants.apiVersion))
+				{
+					VChat.logger.error("The bot from class file " + clazz.getName() + " is using the API version " + version.version() +  ". Your version: " + Constants.apiVersion);
+					return;
+				}
+			}
+			else 
+			{
+				VChat.logger.error("The bot from class file " + clazz.getName() + " doesn't specify a version! Please contact the owner!");
+				return;
+			}
+			
 			IChatBot bot = (IChatBot)clazz.newInstance();
 			if(containsBot(bot.getName()))
 			{
@@ -203,6 +218,18 @@ public class BotLoader extends ChatHandlerImpl
 		for(BotHandler bot : bots.values())
 		{
 			bot.owningBot.onServerUnload();
+		}
+	}
+	
+	@SubscribeEvent
+	public void onServerTick(ServerTickEvent event)
+	{
+		if(event.phase == Phase.END)
+		{
+			for(BotHandler bot : bots.values())
+			{
+				bot.owningBot.onTick();
+			}
 		}
 	}
 }
