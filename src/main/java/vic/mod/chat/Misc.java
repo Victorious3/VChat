@@ -90,6 +90,11 @@ public class Misc
 	public static ChatComponentText getComponent(ChatEntity entity)
 	{
 		String nick = entity.getNickname();
+		if(entity.isBot())
+		{
+			BotHandler handler = VChat.botLoader.getBot(entity.getUsername());
+			nick = handler.owningBot.getDisplayName();
+		}
 		ChatComponentText nameComponent = new ChatComponentText(nick != null ? nick : entity.getUsername());
 		if(nick != null)
 		{

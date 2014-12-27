@@ -12,4 +12,6 @@ public interface IChatEntity
 	public String getUsername();
 	
 	public String getNickname();
+	
+	public String getDisplayName();
 }

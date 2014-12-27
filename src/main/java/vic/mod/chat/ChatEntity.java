@@ -119,4 +119,12 @@ public class ChatEntity implements IChatEntity
 	{
 		return username.hashCode();
 	}
+
+	@Override
+	public String getDisplayName() 
+	{
+		String nick = getNickname();
+		if(nick != null) return nick;
+		return toString();
+	}
 }

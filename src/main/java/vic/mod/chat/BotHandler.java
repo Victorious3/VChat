@@ -1,7 +1,9 @@
 package vic.mod.chat;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
@@ -191,5 +193,21 @@ public class BotHandler implements IBotHandler
 	{
 		message = "[" + owningBot.getName() + "]: " + message;
 		VChat.logger.log(Level.INFO, message, args);
+	}
+
+	@Override
+	public List<IChatEntity> getAllChatEntities() 
+	{
+		List<IChatEntity> list = new ArrayList<IChatEntity>();
+		list.addAll(Misc.getOnlinePlayersAsEntity());
+		for(BotHandler bot : VChat.botLoader.bots.values())
+			list.add(bot.botEntity);
+		return list;
+	}
+
+	@Override
+	public IChatBot getBotForName(String name) 
+	{
+		return VChat.botLoader.getBot(name).owningBot;
 	}
 }

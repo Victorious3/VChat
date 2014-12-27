@@ -1,6 +1,7 @@
 package vic.mod.chat.api.bot;
 
 import java.io.File;
+import java.util.List;
 
 public interface IBotHandler 
 {
@@ -12,6 +13,11 @@ public interface IBotHandler
 	public IChatEntity getChatEntityForName(String name);
 	
 	public IChatEntity getServer();
+	
+	/** A list of every {@link IChatEntity} connected to the server. Includes bots.**/
+	public List<IChatEntity> getAllChatEntities();
+	
+	public IChatBot getBotForName(String name);
 	
 	public boolean isPlayerOnline(String name);
 	

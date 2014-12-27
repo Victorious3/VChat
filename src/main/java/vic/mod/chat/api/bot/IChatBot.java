@@ -21,7 +21,13 @@ public interface IChatBot
 	 * For time-intensive tasks, please create your own {@link Thread}. **/
 	public void onTick();
 	
+	/** The name that will be used upon registering the bot. 
+	 * {@link IChatEntity#getUsername()} will return this when used for a bot. **/
 	public String getName();
+	
+	/** The name that will be sent to the clients when they receive a message from the bot. 
+	 * May be changed at runtime. **/
+	public String getDisplayName();
 	
 	public void onMessage(String message, IChatEntity sender, IChannelBase channel);
 	
