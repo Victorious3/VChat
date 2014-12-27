@@ -50,6 +50,8 @@ public class Config
 	public static int trackPermissionLevel;
 	public static int trackPermissionLevelSelf;
 	
+	public static boolean classPathBot;
+	
 	public static void initialize(File file)
 	{
 		Configuration config = new Configuration(file);
@@ -124,6 +126,7 @@ public class Config
 		if(colorNickName == null) colorNickName = EnumChatFormatting.GREEN;
 		
 		onlineTrackerEnabled = config.get("GENERAL", "online_tracker_enabled", true, "Enable if you want to log player's online times.").getBoolean(true);
+		classPathBot = config.get("GENERAL", "classpath_bots_enabled", false, "Enable if you want to load bots from the current classpath, can be useful if any mods add bots or you want to debug your own.").getBoolean(false);
 		
 		config.save();
 	}
