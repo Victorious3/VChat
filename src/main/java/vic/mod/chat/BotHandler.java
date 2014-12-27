@@ -79,6 +79,7 @@ public class BotHandler implements IBotHandler
 		text.appendSibling(Misc.getComponent(botEntity));
 		text.appendText(": " + message);
 		ChannelHandler.broadcast(text, botEntity);
+		MinecraftServer.getServer().addChatMessage(text);
 	}
 
 	@Override
@@ -88,6 +89,7 @@ public class BotHandler implements IBotHandler
 		text.appendSibling(Misc.getComponent(botEntity));
 		text.appendText(": " + message);
 		ChannelHandler.broadcastOnChannel((IChannel)channel, botEntity, text);
+		MinecraftServer.getServer().addChatMessage(text);
 	}
 
 	@Override
