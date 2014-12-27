@@ -29,7 +29,7 @@ public class ChannelLocal extends ChannelBase
 	public IChatComponent formatChat(ChatEntity sender, ChatEntity receiver, IChatComponent message) 
 	{
 		message = super.formatChat(sender, receiver, message);
-		if(sender.equals(ChatEntity.SERVER)) return message;
+		if(sender.isServer() || sender.isBot()) return message;
 		if(sender.equals(receiver)) return message;
 		
 		int distance = (int)(sender.toPlayer()).getDistanceToEntity(receiver.toPlayer());
@@ -42,10 +42,12 @@ public class ChannelLocal extends ChannelBase
 	@Override
 	public boolean canReceiveChat(ChatEntity sender, ChatEntity receiver, IChatComponent message) 
 	{
-		if(receiver.isServer() || sender.isServer() || sender.equals(receiver)) return true;
+		if(sender.equals(receiver)) return true;
 		
 		EntityPlayerMP player1 = sender.toPlayer();
 		EntityPlayerMP player2 = receiver.toPlayer();
+		
+		if(player1 == null || player2 == null) return true;
 		
 		int distance = (int)player1.getDistanceToEntity(player2);
 		return distance <= Config.localRange && player1.worldObj.provider.dimensionId == player2.worldObj.provider.dimensionId;

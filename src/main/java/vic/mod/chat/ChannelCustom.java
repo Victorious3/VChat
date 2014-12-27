@@ -77,10 +77,12 @@ public class ChannelCustom extends ChannelBase
 	@Override
 	public boolean canReceiveChat(ChatEntity sender, ChatEntity receiver, IChatComponent message) 
 	{
-		if(receiver.isServer() || sender.isServer() || sender.equals(receiver)) return true;
+		if(sender.equals(receiver)) return true;
 		
 		EntityPlayerMP player1 = sender.toPlayer();
 		EntityPlayerMP player2 = receiver.toPlayer();
+		
+		if(player1 == null || player2 == null) return true;
 		
 		if(range == 0)
 		{
@@ -98,7 +100,7 @@ public class ChannelCustom extends ChannelBase
 		message = super.formatChat(sender, receiver, message);
 		if(range == 0) return message;
 		
-		if(sender.equals(ChatEntity.SERVER)) return message;
+		if(sender.isServer() || sender.isBot()) return message;
 		if(sender.equals(receiver)) return message;
 		
 		int distance = (int)sender.toPlayer().getDistanceToEntity(receiver.toPlayer());

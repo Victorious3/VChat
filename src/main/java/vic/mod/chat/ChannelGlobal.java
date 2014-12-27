@@ -22,10 +22,12 @@ public class ChannelGlobal extends ChannelBase
 	@Override
 	public boolean canReceiveChat(ChatEntity sender, ChatEntity receiver, IChatComponent message) 
 	{
-		if(receiver.isServer() || sender.isServer() || sender.equals(receiver)) return true;
+		if(sender.equals(receiver)) return true;
 		
 		EntityPlayerMP player1 = sender.toPlayer();
 		EntityPlayerMP player2 = receiver.toPlayer();
+		
+		if(player1 == null || player2 == null) return true;
 
 		return (player1.worldObj.provider.dimensionId == player2.worldObj.provider.dimensionId) || Config.globalCrossDimEnabled;
 	}
