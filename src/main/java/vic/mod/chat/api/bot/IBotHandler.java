@@ -1,7 +1,6 @@
 package vic.mod.chat.api.bot;
 
 import java.io.File;
-import java.util.logging.Level;
 
 public interface IBotHandler 
 {
@@ -27,15 +26,15 @@ public interface IBotHandler
 	
 	public void sendCommand(String command, String[] args);
 	
-	public void log(Level level, String message);
+	public void log(LogLevel level, String message);
 	
-	/** Uses {@link Level#INFO} **/
+	/** Uses {@link LogLevel#INFO} **/
 	public void log(String message);
 	
 	/** Equivalent of log(level, String.format(message, args)) **/
-	public void logf(Level level, String message, Object... args);
+	public void logf(LogLevel level, String message, Object... args);
 	
-	/** Uses {@link Level#INFO} **/
+	/** Uses {@link LogLevel#INFO} **/
 	public void logf(String message, Object... args);
 	
 	public File getBotDir();

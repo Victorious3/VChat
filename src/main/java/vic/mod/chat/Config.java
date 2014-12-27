@@ -51,6 +51,7 @@ public class Config
 	public static int trackPermissionLevelSelf;
 	
 	public static boolean classPathBot;
+	public static boolean skipVersionCheck;
 	
 	public static void initialize(File file)
 	{
@@ -127,7 +128,8 @@ public class Config
 		
 		onlineTrackerEnabled = config.get("GENERAL", "online_tracker_enabled", true, "Enable if you want to log player's online times.").getBoolean(true);
 		classPathBot = config.get("GENERAL", "classpath_bots_enabled", false, "Enable if you want to load bots from the current classpath, can be useful if any mods add bots or you want to debug your own.").getBoolean(false);
-		
+		skipVersionCheck = config.get("GENERAL", "skip_version_enabled", false, "Enable if you want to skip the version check of a bot before attempting to load it. Has to be enabled for use with a dev environement.").getBoolean(false);
+				
 		config.save();
 	}
 }

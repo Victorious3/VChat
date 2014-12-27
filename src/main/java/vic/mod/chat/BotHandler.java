@@ -2,7 +2,6 @@ package vic.mod.chat;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.logging.Level;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
@@ -13,12 +12,14 @@ import net.minecraft.util.IChatComponent;
 import net.minecraft.world.World;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
 
 import vic.mod.chat.api.IChannel;
 import vic.mod.chat.api.bot.IBotHandler;
 import vic.mod.chat.api.bot.IChannelBase;
 import vic.mod.chat.api.bot.IChatBot;
 import vic.mod.chat.api.bot.IChatEntity;
+import vic.mod.chat.api.bot.LogLevel;
 import vic.mod.chat.handler.ChannelHandler;
 
 public class BotHandler implements IBotHandler
@@ -163,30 +164,30 @@ public class BotHandler implements IBotHandler
 	}
 
 	@Override
-	public void log(Level level, String message) 
+	public void log(LogLevel level, String message) 
 	{
 		message = "[" + owningBot.getName() + "]: " + message;
-		VChat.logger.log(org.apache.logging.log4j.Level.toLevel(level.getName(), org.apache.logging.log4j.Level.INFO), message);
+		VChat.logger.log(Level.toLevel(level.name(), Level.INFO), message);
 	}
 
 	@Override
 	public void log(String message) 
 	{
 		message = "[" + owningBot.getName() + "]: " + message;
-		VChat.logger.log(org.apache.logging.log4j.Level.INFO, message);
+		VChat.logger.log(Level.INFO, message);
 	}
 
 	@Override
-	public void logf(Level level, String message, Object... args)
+	public void logf(LogLevel level, String message, Object... args)
 	{
 		message = "[" + owningBot.getName() + "]: " + message;
-		VChat.logger.log(org.apache.logging.log4j.Level.toLevel(level.getName(), org.apache.logging.log4j.Level.INFO), message, args);
+		VChat.logger.log(Level.toLevel(level.name(), Level.INFO), message, args);
 	}
 
 	@Override
 	public void logf(String message, Object... args) 
 	{
 		message = "[" + owningBot.getName() + "]: " + message;
-		VChat.logger.log(org.apache.logging.log4j.Level.INFO, message, args);
+		VChat.logger.log(Level.INFO, message, args);
 	}
 }

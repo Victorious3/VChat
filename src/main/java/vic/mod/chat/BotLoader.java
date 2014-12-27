@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -57,6 +58,7 @@ public class BotLoader extends ChatHandlerImpl
 	}
 	
 	int loaded = 0;
+	private HashSet<Class> loadedBots = new HashSet<Class>();
 	
 	public void loadBots()
 	{
@@ -70,6 +72,7 @@ public class BotLoader extends ChatHandlerImpl
 			LaunchClassLoader launchClassLoader = (LaunchClassLoader)Loader.class.getClassLoader();
 			
 			loaded = 0;
+			loadedBots.clear();
 			if(Config.classPathBot)
 			{
 				VChat.logger.info("Searching the classpath for bots, this may take a while. If you don't need this, disable it from the config file.");
@@ -165,22 +168,27 @@ public class BotLoader extends ChatHandlerImpl
 	
 	public void loadBot(Class clazz) throws InstantiationException, IllegalAccessException
 	{
+		if(loadedBots.contains(clazz)) return;
 		if(IChatBot.class.isAssignableFrom(clazz))
 		{
-			Version version = (Version)clazz.getAnnotation(Version.class);
-			if(version != null)
+			if(!Config.skipVersionCheck)
 			{
-				if(!version.version().equals(Constants.apiVersion))
+				Version version = (Version)clazz.getAnnotation(Version.class);
+				if(version != null)
 				{
-					VChat.logger.error("The bot from class file " + clazz.getName() + " is using the API version " + version.version() +  ". Your version: " + Constants.apiVersion);
+					if(!version.version().equals(Constants.apiVersion))
+					{
+						VChat.logger.error("The bot from class file " + clazz.getName() + " is using the API version " + version.version() +  ". Your version: " + Constants.apiVersion);
+						return;
+					}
+				}
+				else 
+				{
+					VChat.logger.error("The bot from class file " + clazz.getName() + " doesn't specify a version! Please contact the owner!");
 					return;
 				}
 			}
-			else 
-			{
-				VChat.logger.error("The bot from class file " + clazz.getName() + " doesn't specify a version! Please contact the owner!");
-				return;
-			}
+			else VChat.logger.warn("Version check disabled! You might run into serious problems when using bots that use an outdated version!");
 			
 			IChatBot bot = (IChatBot)clazz.newInstance();
 			if(containsBot(bot.getName()))
@@ -199,6 +207,7 @@ public class BotLoader extends ChatHandlerImpl
 			}
 			
 			loaded++;
+			loadedBots.add(clazz);
 			VChat.logger.info("Bot \"" + bot.getName() + "\" was successfully loaded and is ready for use!");
 		}
 	}
