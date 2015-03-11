@@ -4,5 +4,5 @@
 !LICENSE.txt
 !build.gradle
 !/src/
-!build.properties
+!gradle.properties
 !README.md

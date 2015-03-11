@@ -17,31 +17,19 @@ buildscript {
 
 apply plugin: 'forge'
 
-// Read properties file
-ext {
-    configFile = file "build.properties"
-
-    configFile.withReader {
-        // Load config.  It shall from now be referenced as simply config or project.config
-        def prop = new Properties()
-        prop.load(it)
-        config = new ConfigSlurper().parse prop
-    }
-}
-
-version = config.mod.version
+version = modVersion
 group = "vic.mod.chat"
 archivesBaseName = "vChat"
 
 if (System.env.BUILD_NUMBER != null) version = "$version.$System.env.BUILD_NUMBER"
 
 minecraft {
-    version = "${config.minecraft.version}-${config.forge.version}"
-    runDir = "eclipse"
+    version = "${mcVersion}-latest"
+    runDir = "run"
 
     replaceIn "Constants.java"
-    replace "\${version}", "${config.mod.version}"
-    replace "\${api_version}", "${config.api.version}"
+    replace "\${version}", "${modVersion}"
+    replace "\${api_version}", "${apiVersion}"
 }
 
 processResources {
