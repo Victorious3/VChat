@@ -29,7 +29,7 @@ minecraft {
 
     replaceIn "Constants.java"
     replace "\${version}", "${modVersion}"
-    replace "\${api_version}", "${apiVersion}"
+    replace "\${api_version}", "${modAPIVersion}"
 }
 
 processResources {
