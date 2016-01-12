@@ -25,12 +25,12 @@ public class ChatEntity implements IChatEntity
 	
 	public ChatEntity(EntityPlayerMP player)
 	{
-		this.username = player.getCommandSenderName();
+		this.username = player.getName();
 	}
 	
 	public ChatEntity(Object obj) 
 	{
-		if(obj instanceof EntityPlayerMP) this.username = ((EntityPlayerMP)obj).getCommandSenderName();
+		if(obj instanceof EntityPlayerMP) this.username = ((EntityPlayerMP)obj).getName();
 		else if(obj instanceof String)
 		{
 			if(Misc.getPlayer((String)obj) != null) 
@@ -95,7 +95,7 @@ public class ChatEntity implements IChatEntity
 		else if(obj instanceof ChatEntity)
 			return this.username.equalsIgnoreCase(((ChatEntity)obj).username);
 		else if(obj instanceof EntityPlayerMP)
-			return this.username.equalsIgnoreCase(((EntityPlayerMP)obj).getCommandSenderName());
+			return this.username.equalsIgnoreCase(((EntityPlayerMP)obj).getName());
 		else if(obj instanceof String)
 			if(((String)obj).equalsIgnoreCase(this.username)) return true;
 			else if(Config.nickEnabled)

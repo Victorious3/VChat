@@ -29,7 +29,7 @@ public class ChannelGlobal extends ChannelBase
 		
 		if(player1 == null || player2 == null) return true;
 
-		return (player1.worldObj.provider.dimensionId == player2.worldObj.provider.dimensionId) || Config.globalCrossDimEnabled;
+		return (player1.worldObj.provider.getDimensionId() == player2.worldObj.provider.getDimensionId()) || Config.globalCrossDimEnabled;
 	}
 
 	@Override

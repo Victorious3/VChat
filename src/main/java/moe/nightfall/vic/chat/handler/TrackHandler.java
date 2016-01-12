@@ -8,8 +8,14 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import moe.nightfall.vic.chat.Config;
 import moe.nightfall.vic.chat.Misc;
 import moe.nightfall.vic.chat.Track;
+import moe.nightfall.vic.chat.VChat;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
@@ -20,17 +26,10 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.MathHelper;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import moe.nightfall.vic.chat.Config;
-import moe.nightfall.vic.chat.VChat;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 
 public class TrackHandler extends ChatHandlerImpl
 {
@@ -140,7 +139,7 @@ public class TrackHandler extends ChatHandlerImpl
 		}
 
 		@Override
-		public void processCommand(ICommandSender sender, String[] args) 
+		public void processCommand(ICommandSender sender, String[] args) throws CommandException 
 		{
 			args = Misc.parseArgs(args);
 			if(args.length == 0 || StringUtils.isNumeric(args[0]))

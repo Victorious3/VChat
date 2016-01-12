@@ -10,9 +10,24 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.stream.JsonReader;
+
 import moe.nightfall.vic.chat.ChannelCustom;
+import moe.nightfall.vic.chat.ChannelGlobal;
+import moe.nightfall.vic.chat.ChannelLocal;
 import moe.nightfall.vic.chat.ChatEntity;
+import moe.nightfall.vic.chat.Config;
 import moe.nightfall.vic.chat.Misc;
+import moe.nightfall.vic.chat.VChat;
 import moe.nightfall.vic.chat.api.IChannel;
 import moe.nightfall.vic.chat.api.bot.IChatEntity;
 import net.minecraft.command.CommandException;
@@ -25,27 +40,11 @@ import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.common.ForgeHooks;
 
-import org.apache.commons.lang3.StringUtils;
-
-import moe.nightfall.vic.chat.ChannelGlobal;
-import moe.nightfall.vic.chat.ChannelLocal;
-import moe.nightfall.vic.chat.Config;
-import moe.nightfall.vic.chat.VChat;
-
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.stream.JsonReader;
-
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.event.FMLServerStoppingEvent;
-import cpw.mods.fml.common.eventhandler.EventPriority;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.PlayerEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 
 public class ChannelHandler extends ChatHandlerImpl
 {
@@ -358,7 +357,7 @@ public class ChannelHandler extends ChatHandlerImpl
 		}
 
 		@Override
-		public void processCommand(ICommandSender sender, String[] args) 
+		public void processCommand(ICommandSender sender, String[] args) throws WrongUsageException 
 		{
 			if(args.length < 1) throw new WrongUsageException(getCommandUsage(sender));
 			MinecraftServer.getServer().getCommandManager().executeCommand(sender, "/channel msg local " + StringUtils.join(Arrays.asList(args), " "));
@@ -392,7 +391,7 @@ public class ChannelHandler extends ChatHandlerImpl
 		}
 
 		@Override
-		public void processCommand(ICommandSender sender, String[] args) 
+		public void processCommand(ICommandSender sender, String[] args) throws WrongUsageException 
 		{
 			if(args.length < 1) throw new WrongUsageException(getCommandUsage(sender));
 			MinecraftServer.getServer().getCommandManager().executeCommand(sender, "/channel msg global " + StringUtils.join(Arrays.asList(args), " "));
@@ -427,7 +426,7 @@ public class ChannelHandler extends ChatHandlerImpl
 		}
 
 		@Override
-		public void processCommand(ICommandSender sender, String[] args) 
+		public void processCommand(ICommandSender sender, String[] args) throws CommandException 
 		{
 			boolean isPlayer = sender instanceof EntityPlayerMP;
 			EntityPlayerMP player = (EntityPlayerMP)(isPlayer ? sender : null);
@@ -495,7 +494,7 @@ public class ChannelHandler extends ChatHandlerImpl
 						if(!channel.isOnChannel(new ChatEntity(player))) throw new ChannelNotJoinedException(channel);		
 						
 						String message = StringUtils.join(Arrays.asList(args).subList(2, args.length).toArray(), " ");
-						ChatComponentTranslation component = new ChatComponentTranslation("chat.type.text", player.func_145748_c_(), message);
+						ChatComponentTranslation component = new ChatComponentTranslation("chat.type.text", player.getTabListDisplayName(), message);
 						
 						ChatEntity entity = new ChatEntity(player);
 						IChannel current = getActiveChannel(entity);

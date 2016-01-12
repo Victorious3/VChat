@@ -5,14 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import net.minecraft.command.ICommandSender;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChunkCoordinates;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IChatComponent;
-import net.minecraft.world.World;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
@@ -23,6 +15,16 @@ import moe.nightfall.vic.chat.api.bot.IChatBot;
 import moe.nightfall.vic.chat.api.bot.IChatEntity;
 import moe.nightfall.vic.chat.api.bot.LogLevel;
 import moe.nightfall.vic.chat.handler.ChannelHandler;
+import net.minecraft.command.CommandResultStats.Type;
+import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.Entity;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IChatComponent;
+import net.minecraft.util.Vec3;
+import net.minecraft.world.World;
 
 public class BotHandler implements IBotHandler
 {
@@ -131,18 +133,6 @@ public class BotHandler implements IBotHandler
 		public String[] activeArgs;
 		
 		@Override
-		public String getCommandSenderName() 
-		{
-			return botEntity.getUsername();
-		}
-
-		@Override
-		public IChatComponent func_145748_c_() 
-		{
-			return MinecraftServer.getServer().func_145748_c_();
-		}
-
-		@Override
 		public void addChatMessage(IChatComponent comp)
 		{
 			owningBot.onCommandMessage(activeCommand, activeArgs, comp.getUnformattedText());
@@ -154,16 +144,55 @@ public class BotHandler implements IBotHandler
 			return true;
 		}
 
-		@Override
-		public ChunkCoordinates getPlayerCoordinates() 
-		{
-			return MinecraftServer.getServer().getPlayerCoordinates();
-		}
 
 		@Override
 		public World getEntityWorld() 
 		{
 			return MinecraftServer.getServer().getEntityWorld();
+		}
+
+		@Override
+		public String getName()
+		{
+			return botEntity.getUsername();
+
+		}
+
+		@Override
+		public IChatComponent getDisplayName()
+		{
+			return MinecraftServer.getServer().getDisplayName();
+		}
+
+		@Override
+		public BlockPos getPosition()
+		{
+			return MinecraftServer.getServer().getPosition();
+		}
+
+		@Override
+		public Vec3 getPositionVector()
+		{
+			return null;
+		}
+
+		@Override
+		public Entity getCommandSenderEntity()
+		{
+			return null;
+		}
+
+		@Override
+		public boolean sendCommandFeedback()
+		{
+			return false;
+		}
+
+		@Override
+		public void setCommandStat(Type type, int amount)
+		{
+			// TODO Auto-generated method stub
+			
 		}	
 	}
 
