@@ -2,7 +2,6 @@ package moe.nightfall.vic.chat.handler;
 
 import moe.nightfall.vic.chat.VChat;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 
