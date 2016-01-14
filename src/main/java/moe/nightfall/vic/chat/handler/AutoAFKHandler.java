@@ -1,18 +1,18 @@
 package moe.nightfall.vic.chat.handler;
 
 import java.util.HashMap;
+
+import moe.nightfall.vic.chat.ChatEntity;
+import moe.nightfall.vic.chat.Config;
+import moe.nightfall.vic.chat.Misc;
+import moe.nightfall.vic.chat.VChat;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.common.MinecraftForge;
-import moe.nightfall.vic.chat.ChatEntity;
-import moe.nightfall.vic.chat.Config;
-import moe.nightfall.vic.chat.VChat;
-import moe.nightfall.vic.chat.Misc;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.PlayerEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class AutoAFKHandler extends ChatHandlerImpl
 {
@@ -20,7 +20,6 @@ public class AutoAFKHandler extends ChatHandlerImpl
 
 	public AutoAFKHandler()
 	{
-		FMLCommonHandler.instance().bus().register(this);
 		MinecraftForge.EVENT_BUS.register(this);
 	}
 	
@@ -67,7 +66,7 @@ public class AutoAFKHandler extends ChatHandlerImpl
 	@SubscribeEvent()
 	public void onPlayerLeft(PlayerEvent.PlayerLoggedOutEvent event)
 	{
-		tracked.remove(event.player.getCommandSenderName());
+		tracked.remove(event.player.getName());
 	}
 
 	@Override
@@ -78,7 +77,7 @@ public class AutoAFKHandler extends ChatHandlerImpl
 
 	public void updatePlayer(EntityPlayerMP player)
 	{
-		tracked.put(player.getCommandSenderName(), new TrackedPosition(player));
+		tracked.put(player.getName(), new TrackedPosition(player));
 	}
 
 	public void updatePlayer(String username)
@@ -95,14 +94,14 @@ public class AutoAFKHandler extends ChatHandlerImpl
 		
 		public TrackedPosition(EntityPlayerMP player)
 		{
-			this.playerName = player.getCommandSenderName();
-			position = Vec3.createVectorHelper(player.posX, player.posY, player.posZ);
+			this.playerName = player.getName();
+			position = new Vec3(player.posX, player.posY, player.posZ);
 		}
 		
 		public void update()
 		{
 			EntityPlayerMP player = getPlayer();
-			Vec3 npos = Vec3.createVectorHelper(player.posX, player.posY, player.posZ);
+			Vec3 npos = new Vec3(player.posX, player.posY, player.posZ);
 
 			if(position.xCoord != npos.xCoord || position.yCoord != npos.yCoord || position.zCoord != npos.zCoord) 
 				cooldown = Config.autoAfkTime;

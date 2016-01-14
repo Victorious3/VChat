@@ -9,10 +9,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
+
 import moe.nightfall.vic.chat.BotHandler;
+import moe.nightfall.vic.chat.ChannelCustom;
 import moe.nightfall.vic.chat.ChatEntity;
 import moe.nightfall.vic.chat.ChatFormatter;
+import moe.nightfall.vic.chat.Config;
 import moe.nightfall.vic.chat.Misc;
+import moe.nightfall.vic.chat.VChat;
 import moe.nightfall.vic.chat.api.IChannel;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.PlayerNotFoundException;
@@ -29,24 +40,11 @@ import net.minecraft.util.IChatComponent;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.ServerChatEvent;
-
-import org.apache.commons.lang3.StringUtils;
-
-import moe.nightfall.vic.chat.ChannelCustom;
-import moe.nightfall.vic.chat.Config;
-import moe.nightfall.vic.chat.VChat;
-
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
-
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.event.FMLServerStoppingEvent;
-import cpw.mods.fml.common.eventhandler.EventPriority;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.PlayerEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 
 public class CommonHandler extends ChatHandlerImpl
 {
@@ -116,7 +114,7 @@ public class CommonHandler extends ChatHandlerImpl
 		
 		if(Config.onlineTrackerEnabled)
 		{
-			String name = event.player.getCommandSenderName();
+			String name = event.player.getName();
 			if(!playerTracker.containsKey(name))
 				playerTracker.put(name, new OnlineTracker(name, System.currentTimeMillis(), 0));
 		}
@@ -127,7 +125,7 @@ public class CommonHandler extends ChatHandlerImpl
 	{
 		if(Config.onlineTrackerEnabled)
 		{
-			String name = event.player.getCommandSenderName();
+			String name = event.player.getName();
 			OnlineTracker tracker = playerTracker.get(name);
 			if(tracker == null) return;
 			tracker.online = tracker.getOnlineTime();
@@ -380,15 +378,14 @@ public class CommonHandler extends ChatHandlerImpl
 		}
 
 		@Override
-		public void processCommand(ICommandSender sender, String[] args) 
+		public void processCommand(ICommandSender sender, String[] args) throws WrongUsageException, PlayerNotFoundException 
 		{
 			if(args.length < 1) throw new WrongUsageException(getCommandUsage(sender));
 			EntityPlayerMP player = Misc.getPlayer(args[0]);
 			if(player == null) throw new PlayerNotFoundException();
-			sender.addChatMessage(new ChatComponentText(player.getCommandSenderName() + ": [" + (int)player.posX + ", " + (int)player.posY + ", " + (int)player.posZ + "]"));
+			sender.addChatMessage(new ChatComponentText(player.getName() + ": [" + (int)player.posX + ", " + (int)player.posY + ", " + (int)player.posZ + "]"));
 		}
 
-		@Override
 		public List addTabCompletionOptions(ICommandSender sender, String[] args)
 		{
 			return getListOfStringsMatchingLastWord(args, MinecraftServer.getServer().getAllUsernames());

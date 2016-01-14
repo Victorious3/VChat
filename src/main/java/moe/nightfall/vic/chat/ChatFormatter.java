@@ -1,7 +1,6 @@
 package moe.nightfall.vic.chat;
 
 import java.io.BufferedReader;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
@@ -12,6 +11,12 @@ import java.util.regex.Pattern;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import com.google.gson.GsonBuilder;
+
+import moe.nightfall.vic.chat.api.IChatFormatter;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.event.HoverEvent;
@@ -19,13 +24,6 @@ import net.minecraft.event.HoverEvent.Action;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
-import moe.nightfall.vic.chat.api.IChatFormatter;
-
-import com.google.gson.GsonBuilder;
 
 public abstract class ChatFormatter implements IChatFormatter
 {
@@ -147,7 +145,6 @@ public abstract class ChatFormatter implements IChatFormatter
 					URL apiURL = new URL("http://gdata.youtube.com/feeds/api/videos/" + ytid + "?v=2");
 					DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 					DocumentBuilder db = dbf.newDocumentBuilder();
-					InputStream in = apiURL.openStream();
 					Document doc = db.parse(apiURL.openStream());
 					String title = doc.getElementsByTagName("title").item(0).getTextContent();
 					String author = ((Element)doc.getElementsByTagName("author").item(0)).getElementsByTagName("name").item(0).getTextContent();

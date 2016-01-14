@@ -9,27 +9,25 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import moe.nightfall.vic.chat.api.IChannel;
-import moe.nightfall.vic.chat.api.bot.Version;
-import moe.nightfall.vic.chat.handler.ChatHandlerImpl;
-import net.minecraft.launchwrapper.LaunchClassLoader;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 
-import moe.nightfall.vic.chat.api.bot.IChatBot;
-import moe.nightfall.vic.chat.handler.ChannelHandler;
-
 import com.google.common.collect.ImmutableList;
 
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.ModClassLoader;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.event.FMLServerStoppingEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
-import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
-import cpw.mods.fml.relauncher.CoreModManager;
+import moe.nightfall.vic.chat.api.IChannel;
+import moe.nightfall.vic.chat.api.bot.IChatBot;
+import moe.nightfall.vic.chat.api.bot.Version;
+import moe.nightfall.vic.chat.handler.ChannelHandler;
+import moe.nightfall.vic.chat.handler.ChatHandlerImpl;
+import net.minecraft.launchwrapper.LaunchClassLoader;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.ModClassLoader;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
+import net.minecraftforge.fml.relauncher.CoreModManager;
 
 public class BotLoader extends ChatHandlerImpl
 {
@@ -79,7 +77,6 @@ public class BotLoader extends ChatHandlerImpl
 				File[] sources = classLoader.getParentSources();
 				List<String> knownLibraries = ImmutableList.<String>builder()
 					.addAll(classLoader.getDefaultLibraries())
-					.addAll(CoreModManager.getLoadedCoremods())
 					.addAll(CoreModManager.getReparseableCoremods())
 					.build();
 				

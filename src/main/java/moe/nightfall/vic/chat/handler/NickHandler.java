@@ -7,21 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-import moe.nightfall.vic.chat.ChatEntity;
-import moe.nightfall.vic.chat.Misc;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommandSender;
-import net.minecraft.command.PlayerNotFoundException;
-import net.minecraft.command.WrongUsageException;
-import net.minecraft.command.server.CommandMessage;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ChatComponentText;
-import net.minecraftforge.event.CommandEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import moe.nightfall.vic.chat.Config;
-import moe.nightfall.vic.chat.VChat;
-
 import com.google.common.collect.HashBiMap;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -29,10 +14,25 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.event.FMLServerStoppingEvent;
-import cpw.mods.fml.common.eventhandler.EventPriority;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import moe.nightfall.vic.chat.ChatEntity;
+import moe.nightfall.vic.chat.Config;
+import moe.nightfall.vic.chat.Misc;
+import moe.nightfall.vic.chat.VChat;
+import net.minecraft.command.CommandException;
+import net.minecraft.command.ICommandSender;
+import net.minecraft.command.PlayerNotFoundException;
+import net.minecraft.command.WrongUsageException;
+import net.minecraft.command.server.CommandMessage;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.ChatComponentText;
+import net.minecraftforge.event.CommandEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class NickHandler extends ChatHandlerImpl
 {
@@ -163,7 +163,7 @@ public class NickHandler extends ChatHandlerImpl
 		}
 
 		@Override
-		public void processCommand(ICommandSender sender, String[] args) 
+		public void processCommand(ICommandSender sender, String[] args) throws CommandException 
 		{
 			if(args.length > 0 && args.length < 3)
 			{			
@@ -202,7 +202,7 @@ public class NickHandler extends ChatHandlerImpl
 		}
 
 		@Override
-		public List addTabCompletionOptions(ICommandSender sender, String[] args) 
+	    public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos)
 		{
 			return args.length == 1 ? getListOfStringsMatchingLastWord(args, MinecraftServer.getServer().getAllUsernames()) : null;
 		}

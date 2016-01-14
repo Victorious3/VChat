@@ -53,11 +53,11 @@ public class Misc
 	
 	public static String[] parseModt(String modt, EntityPlayerMP player)
 	{
-		if(modt.contains("%NAME%")) modt = modt.replaceAll("%NAME%", player.getDisplayName());
+		if(modt.contains("%NAME%")) modt = modt.replaceAll("%NAME%", player.getDisplayNameString());
 		if(modt.contains("%TIME%")) modt = modt.replaceAll("%TIME%", new SimpleDateFormat("HH:mm").format(Calendar.getInstance().getTime()));
 		if(modt.contains("%ONLINE%")) modt = modt.replaceAll("%ONLINE%", String.valueOf(player.mcServer.getCurrentPlayerCount()));
 		if(modt.contains("%ONLINE_MAX%")) modt = modt.replaceAll("%ONLINE_MAX%", String.valueOf(player.mcServer.getMaxPlayers()));
-		if(modt.contains("%DIM%")) modt = modt.replaceAll("%DIM%", String.valueOf(player.worldObj.provider.dimensionId));
+		if(modt.contains("%DIM%")) modt = modt.replaceAll("%DIM%", String.valueOf(player.worldObj.provider.getDimensionId()));
 		if(modt.contains("%DIM_NAME%")) modt = modt.replaceAll("%DIM_NAME%", player.worldObj.provider.getDimensionName());
 		if(modt.contains("%MODT%")) modt = modt.replaceAll("%MODT%", player.mcServer.getMOTD());
 		
@@ -82,7 +82,7 @@ public class Misc
 		while(iterator.hasNext())
 		{
 			EntityPlayerMP entity = (EntityPlayerMP)iterator.next();
-			if(entity.getCommandSenderName().equalsIgnoreCase(player)) return entity;
+			if(entity.getName().equalsIgnoreCase(player)) return entity;
 		}
 		return null;
 	}

@@ -12,14 +12,14 @@ import moe.nightfall.vic.chat.handler.CommonHandler;
 import moe.nightfall.vic.chat.handler.IChatHandler;
 import moe.nightfall.vic.chat.handler.NickHandler;
 import moe.nightfall.vic.chat.handler.TrackHandler;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.event.FMLServerStoppingEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 
-@Mod(modid = "vchat", name = "vChat", version = Constants.version, acceptableRemoteVersions = "*")
+@Mod(modid = "vchat", name = "vChat", version = Constants.version, acceptableRemoteVersions = "*", acceptedMinecraftVersions = "1.8, 1.8.8, 1.8.9")
 public class VChat
 {	
 	@Instance("vchat")

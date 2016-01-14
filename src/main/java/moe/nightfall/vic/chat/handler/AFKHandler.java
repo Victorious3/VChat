@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.apache.commons.lang3.StringUtils;
+
 import moe.nightfall.vic.chat.ChatEntity;
 import moe.nightfall.vic.chat.Config;
 import moe.nightfall.vic.chat.Misc;
@@ -15,14 +17,10 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
-
-import org.apache.commons.lang3.StringUtils;
-
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.eventhandler.EventPriority;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.PlayerEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 
 public class AFKHandler extends ChatHandlerImpl
 {
@@ -31,7 +29,6 @@ public class AFKHandler extends ChatHandlerImpl
 	public AFKHandler()
 	{
 		super();
-		FMLCommonHandler.instance().bus().register(this);
 		MinecraftForge.EVENT_BUS.register(this);
 	}
 	
@@ -55,7 +52,7 @@ public class AFKHandler extends ChatHandlerImpl
 			if(event.parameters.length > 0)
 			{
 				ChatEntity entity = new ChatEntity((Object)event.parameters[0]);
-				if(entity.getUsername() != null && isAfk(entity) && !entity.equals(new ChatEntity(event.sender.getCommandSenderName())))
+				if(entity.getUsername() != null && isAfk(entity) && !entity.equals(new ChatEntity(event.sender.getName())))
 				{
 					ChatComponentText comp = new ChatComponentText("The player you tired to message is currently AFK (Reason: " + getReason(entity) + ")");
 					comp.getChatStyle().setColor(EnumChatFormatting.RED);

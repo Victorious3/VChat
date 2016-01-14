@@ -1,16 +1,14 @@
 package moe.nightfall.vic.chat.handler;
 
-import net.minecraftforge.common.MinecraftForge;
 import moe.nightfall.vic.chat.VChat;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.event.FMLServerStoppingEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 
 public abstract class ChatHandlerImpl implements IChatHandler
 {
 	public ChatHandlerImpl()
 	{
-		FMLCommonHandler.instance().bus().register(this);
 		MinecraftForge.EVENT_BUS.register(this);
 		VChat.handlers.add(this);
 	}
