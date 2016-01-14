@@ -20,9 +20,12 @@ archivesBaseName = "vChat"
 if (System.env.BUILD_NUMBER != null) version = "$version.$System.env.BUILD_NUMBER"
 
 minecraft {
-    version = "1.8.9-11.15.0.1695"
-    runDir = "run"
-    
+    version = "1.8.9-11.15.0.1697"
+	if (file('../run').exists()){
+		runDir = "../run"
+	} else {
+		runDir = "run"
+	}    
 	replaceIn "Constants.java"
     replace "\${version}", "${modVersion}"
     replace "\${api_version}", "${modAPIVersion}"
