@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 
 public class SoundCloudChatFormatter extends ChatFormatter
 {
-    private static final Pattern PATTERN = Pattern.compile("(http:|https)?://soundcloud\\.com/\\S*");
+    private static final Pattern PATTERN = Pattern.compile("(http|https)?://(www\\.)?soundcloud\\.com/\\S*");
     private static final String API_KEY = "00efa1907d5fb9571f5776add950b623";
 
     public SoundCloudChatFormatter(VChat instance)

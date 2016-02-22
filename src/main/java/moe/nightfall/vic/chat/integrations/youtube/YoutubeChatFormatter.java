@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 
 public class YoutubeChatFormatter extends ChatFormatter
 {
-    private static final Pattern PATTERN = Pattern.compile("(http:|https:)?//(www\\.)?(youtube.com|youtu.be)/(watch)?(\\?v=)?(\\S+)?");
+    private static final Pattern PATTERN = Pattern.compile("(http|https)?://(www\\.)?(youtube.com|youtu.be)/(watch)?(\\?v=)?(\\S+)?");
     private static final String API_KEY = "AIzaSyBvlMpa7lLAuuqDY-FhNQhIauu0__-qTg0";
 
     public YoutubeChatFormatter(VChat instance)
@@ -149,6 +149,7 @@ public class YoutubeChatFormatter extends ChatFormatter
 
     private static int getDigits(String string, int charPosition)
     {
+        System.out.println("DURATION BEFORE DIGITS: " + string);
         String digits = "";
 
         for (int i = charPosition - 1; i >= 0; i--)
