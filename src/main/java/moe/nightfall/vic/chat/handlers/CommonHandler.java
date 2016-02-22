@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import com.sun.istack.internal.NotNull;
 import moe.nightfall.vic.chat.commands.CommandList;
 import moe.nightfall.vic.chat.commands.CommandPos;
 import moe.nightfall.vic.chat.commands.CommandTop;
@@ -378,7 +377,7 @@ public class CommonHandler extends ChatHandler
         }
 
         @Override
-        public int compareTo(@NotNull OnlineTracker other)
+        public int compareTo(OnlineTracker other)
         {
             if(other.isOnline() && !this.isOnline())
                 return -1;
