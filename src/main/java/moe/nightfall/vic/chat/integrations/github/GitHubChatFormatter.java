@@ -10,14 +10,11 @@ import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
 
 import java.net.URL;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GitHubChatFormatter extends ChatFormatter
 {
-    private static final Pattern PATTERN = Pattern.compile("(http:|https)?://github\\.com/\\S*");
-    private static final Pattern PROFILE_PATTERN = Pattern.compile("(http:|https)?://github\\.com/\\S*/");
-    private static final Pattern PROJECT_PATTERN = Pattern.compile("(http:|https)?://github\\.com/\\S*/\\S*/");
+    private static final Pattern PATTERN = Pattern.compile("(http|https)?://(www\\.)?github\\.com\\S*");
 
     public GitHubChatFormatter(VChat instance)
     {
@@ -36,49 +33,64 @@ public class GitHubChatFormatter extends ChatFormatter
         ChatComponentText text = new ChatComponentText("[GitHub - ");
 
         ChatStyle style = new ChatStyle();
-        style.setColor(EnumChatFormatting.GRAY);
+        style.setColor(EnumChatFormatting.DARK_GRAY);
 
         try
         {
             URL url = new URL(match);
-            String pageTitle = Misc.getPageTitle(url);
 
-            Matcher profileMatcher = PROFILE_PATTERN.matcher(match);
-            Matcher projectMatcher = PROJECT_PATTERN.matcher(match);
+            String path = url.getPath();
+            path = path.startsWith("/") ? path.substring(1) : path;
+
+            String subtitle = "Unknown page";
 
             ChatComponentText toolTipText = new ChatComponentText(BULLET + " GitHub\n\n");
-            toolTipText.getChatStyle().setColor(EnumChatFormatting.GRAY);
+            toolTipText.getChatStyle().setColor(EnumChatFormatting.DARK_GRAY);
 
-            if (profileMatcher.matches())
+            if (match.endsWith("github.com") || match.endsWith("github.com/"))
             {
-                toolTipText.appendText(EnumChatFormatting.YELLOW + "Profile: " + EnumChatFormatting.WHITE + track.getTitle() + "\n");
+                subtitle = "Home page";
+                toolTipText.appendText(EnumChatFormatting.GRAY + "Home page");
             }
+            else
+            {
+                String[] pages = path.split("/");
 
-            toolTipText.appendText(EnumChatFormatting.YELLOW + "Title: " + EnumChatFormatting.WHITE + track.getTitle() + " (" + EnumChatFormatting.GOLD + track.getPlaybackCount() + EnumChatFormatting.WHITE + " plays)\n");
-            toolTipText.appendText(EnumChatFormatting.YELLOW + "Publisher: " + EnumChatFormatting.WHITE + track.getUser().getUsername() + "\n");
-            toolTipText.appendText(EnumChatFormatting.YELLOW + "Duration: " + EnumChatFormatting.GOLD + minutes + EnumChatFormatting.WHITE + " minutes and " + EnumChatFormatting.GOLD + seconds + EnumChatFormatting.WHITE + " seconds");
+                if (pages.length == 1)
+                {
+                    subtitle = "Profile of " + EnumChatFormatting.GRAY + pages[0];
+                    toolTipText.appendText(EnumChatFormatting.GRAY + "Profile of: " + EnumChatFormatting.WHITE + pages[0]);
+                }
+                else if (pages.length > 1)
+                {
+                    subtitle = "Project " + EnumChatFormatting.GRAY  + "\"" + pages[1] + "\"" + EnumChatFormatting.WHITE + " of " + EnumChatFormatting.GRAY + pages[0];
+                    toolTipText.appendText(EnumChatFormatting.GRAY + "Project: " + EnumChatFormatting.WHITE + pages[1] + "\n");
+                    toolTipText.appendText(EnumChatFormatting.GRAY + "Creator: " + EnumChatFormatting.WHITE + pages[0]);
+                }
+            }
 
             style.setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, match));
             style.setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, toolTipText));
 
-            ChatComponentText title = new ChatComponentText("\"" + Misc.getPageTitle(url) + "\"");
+            ChatComponentText title = new ChatComponentText(subtitle);
             title.getChatStyle().setColor(EnumChatFormatting.WHITE);
 
-            text.appendSibling(publisher);
+            text.appendSibling(title);
         }
         catch(Exception e)
         {
-            this.instance.getLogger().warn("Failed to retrieve the SoundCloud track's data of '" + match + "' (" + e.getMessage() + ")");
+            e.printStackTrace();
+            this.instance.getLogger().warn("Failed to retrieve the GitHub page's data of '" + match + "' (" + e.getMessage() + ")");
 
             style.setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, match));
 
-            ChatComponentText toolTipText = new ChatComponentText("Click to open this SoundCloud track (Failed to retrieve track's data)");
-            toolTipText.getChatStyle().setColor(EnumChatFormatting.GOLD);
+            ChatComponentText toolTipText = new ChatComponentText("Click to open this GitHub page (Failed to retrieve page's data)");
+            toolTipText.getChatStyle().setColor(EnumChatFormatting.GRAY);
 
             style.setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, toolTipText));
 
             ChatComponentText link = new ChatComponentText(match);
-            link.getChatStyle().setColor(EnumChatFormatting.YELLOW);
+            link.getChatStyle().setColor(EnumChatFormatting.GRAY);
 
             text.appendSibling(link);
         }
