@@ -11,28 +11,28 @@ package moe.nightfall.vic.chat.api.bot;
  */
 public interface IChatBot
 {
-	public void onLoad(IBotHandler handler);
-	
-	public void onServerLoad();
-	
-	public void onServerUnload();
-	
-	/** Is getting called on the server tick, every 50ms. 
-	 * For time-intensive tasks, please create your own {@link Thread}. **/
-	public void onTick();
-	
-	/** The name that will be used upon registering the bot. 
-	 * {@link IChatEntity#getUsername()} will return this when used for a bot. **/
-	public String getName();
-	
-	/** The name that will be sent to the clients when they receive a message from the bot. 
-	 * May be changed at runtime. **/
-	public String getDisplayName();
-	
-	public void onMessage(String message, IChatEntity sender, IChannelBase channel);
-	
-	public void onPrivateMessage(String message, IChatEntity sender);
-	
-	/** A callback if you use {@link IBotHandler#sendCommand(String, String[])} **/
-	public void onCommandMessage(String command, String[] args, String message);
+    void onLoad(IBotHandler handler);
+
+    void onServerLoad();
+
+    void onServerUnload();
+
+    /** Is getting called on the server tick, every 50ms.
+     * For time-intensive tasks, please create your own {@link Thread}. **/
+    void onTick();
+
+    /** The name that will be used upon registering the bot.
+     * {@link IChatEntity#getUsername()} will return this when used for a bot. **/
+    String getName();
+
+    /** The name that will be sent to the clients when they receive a message from the bot.
+     * May be changed at runtime. **/
+    String getDisplayName();
+
+    void onMessage(String message, IChatEntity sender, IChannelBase channel);
+
+    void onPrivateMessage(String message, IChatEntity sender);
+
+    /** A callback if you use {@link IBotHandler#sendCommand(String, String[])} **/
+    void onCommandMessage(String command, String[] args, String message);
 }
