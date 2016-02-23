@@ -23,14 +23,14 @@ import moe.nightfall.vic.chat.api.IChannel;
 import moe.nightfall.vic.chat.api.bot.IChatBot;
 import moe.nightfall.vic.chat.api.bot.Version;
 import net.minecraft.launchwrapper.LaunchClassLoader;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.ModClassLoader;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
-import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
-import net.minecraftforge.fml.relauncher.CoreModManager;
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.ModClassLoader;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.event.FMLServerStoppingEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
+import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
+import cpw.mods.fml.relauncher.CoreModManager;
 
 public class BotLoader extends ChatHandler
 {
@@ -76,7 +76,7 @@ public class BotLoader extends ChatHandler
 
             this.instance.getLogger().info("Attempting to load bots...");
 
-            ModClassLoader classLoader = Loader.instance().getModClassLoader();
+            ModClassLoader classLoader = (ModClassLoader) Loader.instance().getModClassLoader();
             LaunchClassLoader launchClassLoader = (LaunchClassLoader)Loader.class.getClassLoader();
 
             this.loadedBots.clear();

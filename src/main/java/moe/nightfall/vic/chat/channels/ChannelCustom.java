@@ -131,11 +131,11 @@ public class ChannelCustom extends ChannelBase
 
         if(this.range == 0)
         {
-            return this.multiDim || player1.worldObj.provider.getDimensionId() == player2.worldObj.provider.getDimensionId();
+            return this.multiDim || player1.worldObj.provider.dimensionId == player2.worldObj.provider.dimensionId;
         }
 
         int distance = (int) player1.getDistanceToEntity(player2);
-        return distance <= this.range && player1.worldObj.provider.getDimensionId() == player2.worldObj.provider.getDimensionId();
+        return distance <= this.range && player1.worldObj.provider.dimensionId == player2.worldObj.provider.dimensionId;
     }
 
     @Override

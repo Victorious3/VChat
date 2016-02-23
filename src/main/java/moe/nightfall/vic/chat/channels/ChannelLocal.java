@@ -61,6 +61,6 @@ public class ChannelLocal extends ChannelBase
             return true;
 
         int distance = (int)player1.getDistanceToEntity(player2);
-        return distance <= Config.localRange && player1.worldObj.provider.getDimensionId() == player2.worldObj.provider.getDimensionId();
+        return distance <= Config.localRange && player1.worldObj.provider.dimensionId == player2.worldObj.provider.dimensionId;
     }
 }

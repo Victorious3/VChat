@@ -37,11 +37,11 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.ServerChatEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.event.FMLServerStoppingEvent;
+import cpw.mods.fml.common.eventhandler.EventPriority;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent;
 
 public class CommonHandler extends ChatHandler
 {
@@ -149,7 +149,7 @@ public class CommonHandler extends ChatHandler
 
         if(Config.onlineTrackerEnabled)
         {
-            String name = event.player.getName();
+            String name = event.player.getCommandSenderName();
 
             if(!this.playerTrackers.containsKey(name))
                 this.playerTrackers.put(name, new OnlineTracker(name, System.currentTimeMillis(), 0));
@@ -161,7 +161,7 @@ public class CommonHandler extends ChatHandler
     {
         if(Config.onlineTrackerEnabled)
         {
-            String name = event.player.getName();
+            String name = event.player.getCommandSenderName();
             OnlineTracker tracker = this.playerTrackers.get(name);
 
             if(tracker == null)

@@ -144,7 +144,7 @@ public class CommandChannel extends CommandOverrideAccess
                         throw new ChannelHandler.ChannelNotJoinedException(channel);
 
                     String message = StringUtils.join(Arrays.asList(args).subList(2, args.length).toArray(), " ");
-                    ChatComponentTranslation text = new ChatComponentTranslation("chat.type.text", player.getTabListDisplayName(), message);
+                    ChatComponentTranslation text = new ChatComponentTranslation("chat.type.text", player.getFormattedCommandSenderName(), message);
 
                     ChatEntity entity = new ChatEntity(player);
                     IChannel current = this.channelHandler.getActiveChannel(entity);

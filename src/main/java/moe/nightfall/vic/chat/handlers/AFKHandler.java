@@ -13,10 +13,10 @@ import net.minecraft.command.server.CommandMessage;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.event.CommandEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.eventhandler.EventPriority;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent;
 
 public class AFKHandler extends ChatHandler
 {
@@ -50,7 +50,7 @@ public class AFKHandler extends ChatHandler
             {
                 ChatEntity entity = new ChatEntity((Object)event.parameters[0]);
 
-                if(entity.getUsername() != null && this.isAFK(entity) && !entity.equals(new ChatEntity(event.sender.getName())))
+                if(entity.getUsername() != null && this.isAFK(entity) && !entity.equals(new ChatEntity(event.sender.getCommandSenderName())))
                 {
                     ChatComponentText text = new ChatComponentText("The player you tired to message is currently AFK (Reason: " + getReason(entity) + ")");
                     text.getChatStyle().setColor(EnumChatFormatting.RED);

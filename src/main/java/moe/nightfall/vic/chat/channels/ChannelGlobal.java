@@ -41,7 +41,7 @@ public class ChannelGlobal extends ChannelBase
         EntityPlayerMP player1 = sender.toPlayer();
         EntityPlayerMP player2 = receiver.toPlayer();
 
-        return player1 == null || player2 == null || (player1.worldObj.provider.getDimensionId() == player2.worldObj.provider.getDimensionId()) || Config.globalCrossDimEnabled;
+        return player1 == null || player2 == null || (player1.worldObj.provider.dimensionId == player2.worldObj.provider.dimensionId) || Config.globalCrossDimEnabled;
 
     }
 }

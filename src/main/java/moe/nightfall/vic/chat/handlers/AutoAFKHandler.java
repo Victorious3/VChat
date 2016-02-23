@@ -8,10 +8,10 @@ import moe.nightfall.vic.chat.Misc;
 import moe.nightfall.vic.chat.VChat;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.Vec3;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
 
 public class AutoAFKHandler extends ChatHandler
 {
@@ -69,7 +69,7 @@ public class AutoAFKHandler extends ChatHandler
     @SubscribeEvent
     public void onPlayerLeft(PlayerEvent.PlayerLoggedOutEvent event)
     {
-        this.tracked.remove(event.player.getName());
+        this.tracked.remove(event.player.getCommandSenderName());
     }
 
     /** Callback from the /afk command to remove possible auto afks **/
@@ -80,7 +80,7 @@ public class AutoAFKHandler extends ChatHandler
 
     public void updatePlayer(EntityPlayerMP player)
     {
-        this.tracked.put(player.getName(), new TrackedPosition(player));
+        this.tracked.put(player.getCommandSenderName(), new TrackedPosition(player));
     }
 
     public static class TrackedPosition
@@ -92,14 +92,14 @@ public class AutoAFKHandler extends ChatHandler
 
         public TrackedPosition(EntityPlayerMP player)
         {
-            this.playerName = player.getName();
-            this.position = new Vec3(player.posX, player.posY, player.posZ);
+            this.playerName = player.getCommandSenderName();
+            this.position = Vec3.createVectorHelper(player.posX, player.posY, player.posZ);
         }
 
         public void update()
         {
             EntityPlayerMP player = getPlayer();
-            Vec3 npos = new Vec3(player.posX, player.posY, player.posZ);
+            Vec3 npos = Vec3.createVectorHelper(player.posX, player.posY, player.posZ);
 
             if(this.position.xCoord != npos.xCoord || this.position.yCoord != npos.yCoord || this.position.zCoord != npos.zCoord)
                 this.cooldown = Config.autoAfkTime;

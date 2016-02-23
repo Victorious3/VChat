@@ -2,11 +2,10 @@ package moe.nightfall.vic.chat.bots;
 
 import moe.nightfall.vic.chat.ChatEntity;
 import moe.nightfall.vic.chat.api.bot.IChatBot;
-import net.minecraft.command.CommandResultStats;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
@@ -30,12 +29,6 @@ public class BotCommandSender implements ICommandSender
         this.owningBot.onCommandMessage(this.activeCommand, this.activeArgs, comp.getUnformattedText());
     }
 
-    @Override
-    public boolean sendCommandFeedback()
-    {
-        return false;
-    }
-
     public void setActiveCommand(String command)
     {
         this.activeCommand = command;
@@ -53,38 +46,23 @@ public class BotCommandSender implements ICommandSender
     }
 
     @Override
-    public String getName()
+    public String getCommandSenderName()
     {
         return this.botEntity.getUsername();
 
     }
 
     @Override
-    public IChatComponent getDisplayName()
+    public IChatComponent getFormattedCommandSenderName()
     {
-        return MinecraftServer.getServer().getDisplayName();
+        return MinecraftServer.getServer().getFormattedCommandSenderName();
     }
 
     @Override
-    public BlockPos getPosition()
+    public ChunkCoordinates getCommandSenderPosition()
     {
-        return MinecraftServer.getServer().getPosition();
+        return MinecraftServer.getServer().getCommandSenderPosition();
     }
-
-    @Override
-    public Vec3 getPositionVector()
-    {
-        return null;
-    }
-
-    @Override
-    public Entity getCommandSenderEntity()
-    {
-        return null;
-    }
-
-    @Override
-    public void setCommandStat(CommandResultStats.Type type, int amount) {}
 
     @Override
     public boolean canCommandSenderUseCommand(int par1, String par2)

@@ -24,14 +24,14 @@ public class ChatEntity implements IChatEntity
 
     public ChatEntity(EntityPlayerMP player)
     {
-        this(player.getName());
+        this(player.getCommandSenderName());
     }
 
     public ChatEntity(Object obj)
     {
         if(obj instanceof EntityPlayerMP)
         {
-            this.username = ((EntityPlayerMP) obj).getName();
+            this.username = ((EntityPlayerMP) obj).getCommandSenderName();
         }
         else if(obj instanceof String)
         {
@@ -99,7 +99,7 @@ public class ChatEntity implements IChatEntity
         }
         else if(obj instanceof EntityPlayerMP)
         {
-            return this.username.equalsIgnoreCase(((EntityPlayerMP) obj).getName());
+            return this.username.equalsIgnoreCase(((EntityPlayerMP) obj).getCommandSenderName());
         }
         else if(obj instanceof String)
         {
