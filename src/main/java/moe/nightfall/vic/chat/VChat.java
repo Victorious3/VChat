@@ -19,7 +19,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 
-@Mod(modid = "vchat", name = "vChat", version = Constants.VERSION, acceptableRemoteVersions = "*", acceptedMinecraftVersions = "1.8, 1.8.8, 1.8.9")
+@Mod(modid = "vchat", name = "vChat", version = Constants.VERSION, acceptableRemoteVersions = "*", acceptedMinecraftVersions = "1.7.10")
 public class VChat
 {	
     @Instance("vchat")
