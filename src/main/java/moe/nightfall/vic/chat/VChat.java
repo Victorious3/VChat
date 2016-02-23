@@ -3,6 +3,7 @@ package moe.nightfall.vic.chat;
 import java.io.File;
 import java.util.ArrayList;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import moe.nightfall.vic.chat.bots.BotLoader;
 import moe.nightfall.vic.chat.handlers.*;
 import moe.nightfall.vic.chat.integrations.ChatFormatter;
@@ -94,6 +95,7 @@ public class VChat
 
     public void registerChatHandler(ChatHandler chatHandler)
     {
+        FMLCommonHandler.instance().bus().register(chatHandler);
         MinecraftForge.EVENT_BUS.register(chatHandler);
         this.chatHandlers.add(chatHandler);
     }
