@@ -33,6 +33,10 @@ minecraft {
     mappings = "stable_20"
 }
 
+dependencies {
+    compile group: "org.twitter4j", name: "twitter4j-core", version: "4.0.4"
+}
+
 processResources {
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version

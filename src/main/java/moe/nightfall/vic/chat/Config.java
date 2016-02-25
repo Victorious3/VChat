@@ -8,6 +8,10 @@ import net.minecraftforge.common.config.Configuration;
 
 public class Config 
 {
+    /**
+     * General
+     */
+
     public static String modt;
 
     public static boolean modtEnabled;
@@ -19,27 +23,15 @@ public class Config
     public static boolean globalCrossDimEnabled;
     public static boolean onlineTrackerEnabled;
 
-    public static boolean urlEnabled;
-    public static boolean urlEnabledYoutube;
-    public static boolean urlEnabledSoundCloud;
-    public static boolean urlEnabledGitHub;
-
     public static int nickPermissionLevel;
     public static int colorPermissionLevel;
-    public static int urlPermissionLevel;
     public static int topPermissionLevel;
     public static int posPermissionLevel;
 
     public static int autoAfkTime;
     public static int localRange;
-    public static int ytTitleLimit;
     public static int nickMin;
     public static int nickMax;
-
-    public static EnumChatFormatting colorHighlight;
-    public static EnumChatFormatting colorHighlightSelf;
-    public static EnumChatFormatting colorNickName;
-    public static EnumChatFormatting colorBot;
 
     public static boolean pingHighlighted;
     public static float pingPitch;
@@ -54,10 +46,43 @@ public class Config
     public static boolean classPathBot;
     public static boolean skipVersionCheck;
 
+
+    /**
+     * Integrations
+     */
+
+    public static boolean urlEnabled;
+    public static boolean urlEnabledYoutube;
+    public static boolean urlEnabledSoundCloud;
+    public static boolean urlEnabledGitHub;
+    public static boolean urlEnabledTwitter;
+
+    public static String twitterConsumerKey;
+    public static String twitterConsumerSecret;
+    public static String twitterAccessKey;
+    public static String twitterAccessSecret;
+
+    public static int urlPermissionLevel;
+
+
+    /**
+     * Style
+     */
+
+    public static EnumChatFormatting colorHighlight;
+    public static EnumChatFormatting colorHighlightSelf;
+    public static EnumChatFormatting colorNickName;
+    public static EnumChatFormatting colorBot;
+
     public static void initialize(File file)
     {
         Configuration config = new Configuration(file);
         config.load();
+
+
+        /**
+         * General
+         */
 
         modt = config.get("GENERAL", "modt",
                 "Welcome, \u00A7e\u00A7l%NAME%\u00A7r to \u00A7o%MODT%\u00A7r!/n"
@@ -103,15 +128,35 @@ public class Config
         localRange = config.get("GENERAL", "local_range", 50, "Change the block distance in which players receive the local chat.").getInt(50);
         globalCrossDimEnabled = config.get("GENERAL", "global_cross_dim", true, "Enable if you want the global chat to be cross-dimensional.").getBoolean(true);
 
-        urlEnabled = config.get("GENERAL", "url_enabled", true, "Disable or enable the option to post clickable links in chat.").getBoolean(true);
-        urlEnabledYoutube = config.get("GENERAL", "url_enabled_yt", true, "Disable or enable the option to post YouTube links in chat.").getBoolean(true);
-        urlEnabledSoundCloud = config.get("GENERAL", "url_enabled_sc", true, "Disable or enable the option to post SoundCloud links in chat.").getBoolean(true);
-        urlEnabledGitHub = config.get("GENERAL", "url_enabled_gh", true, "Disable or enable the option to post GitHub links in chat.").getBoolean(true);
-        ytTitleLimit =  config.get("GENERAL", "yt_title_limit", 48, "Specify the size at which video tites will get cut.").getInt(48);
-        urlPermissionLevel = config.get("GENERAL", "url_permlevel", 0, "Change the permission level required to post clickable links in chat. 0 is everyone by default.").getInt();
+        onlineTrackerEnabled = config.get("GENERAL", "online_tracker_enabled", true, "Enable if you want to log player's online times.").getBoolean(true);
+        classPathBot = config.get("GENERAL", "classpath_bots_enabled", false, "Enable if you want to load bots from the current classpath, can be useful if any mods add bots or you want to debug your own.").getBoolean(false);
+        skipVersionCheck = config.get("GENERAL", "skip_version_enabled", false, "Enable if you want to skip the version check of a bot before attempting to load it. Has to be enabled for use with a dev environement.").getBoolean(false);
 
         topPermissionLevel = config.get("GENERAL", "top_permlevel", 3, "Change the permission level required to use the /top command. 3 is OP by default.").getInt(3);
         posPermissionLevel = config.get("GENERAL", "checkpos_permlevel", 3, "Change the permission level required to use the /checkpos command. 3 is OP by default.").getInt(3);
+
+
+        /**
+         * Integrations
+         */
+
+        urlEnabled = config.get("INTEGRATIONS", "url_enabled", true, "Disable or enable the option to post clickable links in chat.").getBoolean(true);
+        urlEnabledYoutube = config.get("INTEGRATIONS", "url_enabled_youtube", true, "Disable or enable the option to post YouTube links in chat.").getBoolean(true);
+        urlEnabledSoundCloud = config.get("INTEGRATIONS", "url_enabled_soundcloud", true, "Disable or enable the option to post SoundCloud links in chat.").getBoolean(true);
+        urlEnabledGitHub = config.get("INTEGRATIONS", "url_enabled_github", true, "Disable or enable the option to post GitHub links in chat.").getBoolean(true);
+        urlEnabledTwitter = config.get("INTEGRATIONS", "url_enabled_twitter", true, "Disable or enable the option to post Twitter links in chat.").getBoolean(true);
+
+        twitterConsumerKey = config.get("INTEGRATIONS", "twitter_consumer_key", "", "Specify a Twitter application's consumer key to enable Twitter links integration into the chat.").getString();
+        twitterConsumerSecret = config.get("INTEGRATIONS", "twitter_consumer_secret", "", "Specify a Twitter application's consumer secret to enable Twitter links integration into the chat.").getString();
+        twitterAccessKey = config.get("INTEGRATIONS", "twitter_access_token_key", "", "Specify a Twitter application's access token key to enable Twitter links integration into the chat.").getString();
+        twitterAccessSecret = config.get("INTEGRATIONS", "twitter_access_token_secret", "", "Specify a Twitter application's access token secret to enable Twitter links integration into the chat.").getString();
+
+        urlPermissionLevel = config.get("GENERAL", "url_permlevel", 0, "Change the permission level required to post clickable links in chat. 0 is everyone by default.").getInt();
+
+
+        /**
+         * Style
+         */
 
         config.addCustomCategoryComment("STYLE", "Valid colors are: BLACK, DARK_BLUE, DARK_GREEN, DARK_AQUA, DARK_RED, DARK_PURPLE, GOLD, GRAY, DARK_GRAY, BLUE, GREEN, AQUA, RED, LIGHT_PURPLE, YELLOW, WHITE");
 
@@ -126,10 +171,6 @@ public class Config
 
         colorBot = EnumChatFormatting.getValueByName(config.get("STYLE", "color_bot", "GREEN", "Change the color applied to bots").getString());
         if(colorNickName == null) colorNickName = EnumChatFormatting.GREEN;
-
-        onlineTrackerEnabled = config.get("GENERAL", "online_tracker_enabled", true, "Enable if you want to log player's online times.").getBoolean(true);
-        classPathBot = config.get("GENERAL", "classpath_bots_enabled", false, "Enable if you want to load bots from the current classpath, can be useful if any mods add bots or you want to debug your own.").getBoolean(false);
-        skipVersionCheck = config.get("GENERAL", "skip_version_enabled", false, "Enable if you want to skip the version check of a bot before attempting to load it. Has to be enabled for use with a dev environement.").getBoolean(false);
 
         config.save();
     }

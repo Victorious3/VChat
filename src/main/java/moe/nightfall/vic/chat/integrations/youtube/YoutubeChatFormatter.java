@@ -149,7 +149,6 @@ public class YoutubeChatFormatter extends ChatFormatter
 
     private static int getDigits(String string, int charPosition)
     {
-        System.out.println("DURATION BEFORE DIGITS: " + string);
         String digits = "";
 
         for (int i = charPosition - 1; i >= 0; i--)
