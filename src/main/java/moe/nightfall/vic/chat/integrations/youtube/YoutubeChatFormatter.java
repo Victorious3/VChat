@@ -2,7 +2,7 @@ package moe.nightfall.vic.chat.integrations.youtube;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import moe.nightfall.vic.chat.Misc;
+import moe.nightfall.vic.chat.util.Misc;
 import moe.nightfall.vic.chat.VChat;
 import moe.nightfall.vic.chat.integrations.ChatFormatter;
 import net.minecraft.event.ClickEvent;

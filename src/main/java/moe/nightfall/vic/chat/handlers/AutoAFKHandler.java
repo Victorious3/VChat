@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import moe.nightfall.vic.chat.ChatEntity;
 import moe.nightfall.vic.chat.Config;
-import moe.nightfall.vic.chat.Misc;
+import moe.nightfall.vic.chat.util.Misc;
 import moe.nightfall.vic.chat.VChat;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.Vec3;

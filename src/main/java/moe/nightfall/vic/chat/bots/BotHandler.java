@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import moe.nightfall.vic.chat.ChatEntity;
-import moe.nightfall.vic.chat.Misc;
+import moe.nightfall.vic.chat.util.Misc;
 import moe.nightfall.vic.chat.VChat;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;

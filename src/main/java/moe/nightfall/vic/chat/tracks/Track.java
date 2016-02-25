@@ -3,7 +3,7 @@ package moe.nightfall.vic.chat.tracks;
 import java.util.ArrayList;
 import java.util.List;
 
-import moe.nightfall.vic.chat.Misc;
+import moe.nightfall.vic.chat.util.Misc;
 import moe.nightfall.vic.chat.VChat;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentText;

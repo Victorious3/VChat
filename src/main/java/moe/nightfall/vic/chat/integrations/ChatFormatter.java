@@ -1,11 +1,9 @@
 package moe.nightfall.vic.chat.integrations;
 
-import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import moe.nightfall.vic.chat.*;
-
+import moe.nightfall.vic.chat.ChatEntity;
+import moe.nightfall.vic.chat.Config;
+import moe.nightfall.vic.chat.util.Misc;
+import moe.nightfall.vic.chat.VChat;
 import moe.nightfall.vic.chat.api.IChatFormatter;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.event.ClickEvent;
@@ -14,6 +12,10 @@ import net.minecraft.event.HoverEvent.Action;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
+
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public abstract class ChatFormatter implements IChatFormatter
 {
@@ -118,11 +120,25 @@ public abstract class ChatFormatter implements IChatFormatter
         @Override
         protected ChatComponentText getComponentReplacement(String match)
         {
-            ChatComponentText text = new ChatComponentText(match);
             ChatStyle style = new ChatStyle();
             style.setColor(EnumChatFormatting.BLUE);
             style.setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText("Click to open URL")));
             style.setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, match));
+            ChatComponentText text;
+            try
+            {
+                String url = match;
+                String title = Misc.getPageTitle(url);
+                if (title == null)
+                    throw new NullPointerException();
+                text = new ChatComponentText("[" + title.substring(0, Math.min(title.length(), 200)));
+                if (!title.contains("-"))
+                    text.appendText(" - " + Misc.getDomainName(match));
+                text.appendText("]");
+            } catch (Exception e)
+            {
+                text = new ChatComponentText(match);
+            }
             text.setChatStyle(style);
             return text;
         }

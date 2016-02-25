@@ -1,6 +1,5 @@
 package moe.nightfall.vic.chat.integrations.github;
 
-import moe.nightfall.vic.chat.Misc;
 import moe.nightfall.vic.chat.VChat;
 import moe.nightfall.vic.chat.integrations.ChatFormatter;
 import net.minecraft.event.ClickEvent;
