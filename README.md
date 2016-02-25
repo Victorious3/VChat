@@ -26,5 +26,17 @@ If you did everything right, you should get something like that:
 ```
 Your bot should respod to incoming messages now, have fun!
 
+How to enable the Twitter links integration
+--------------------------
+
+You need to create an application into the Twitter Developer Center to enable this. Why? Just because there is a request quota into the Twitter API. So we cannot share the same application and you have to create your own.
+
+- Go to the Twitter Application Development Center: [Twitter Application Development Center](https://apps.twitter.com/).
+- Click "Create New App".
+- Fill the blanks with a name, a description and a website. ("https://github.com/Victorious3/VChat" for example)
+- After the filling phase, send the form and you'll be redirected to your application "dashboard".
+- Select the "Keys and Access Tokens" tab, and you'll see your "Consumer Key" and "Consumer Secret" to put into the mod configuration file.
+- It's almost finished! Now scroll a little down and click the button to create an access token. After that, you'll se your "Access Token" and "Access Token Secret" to put into the mod configuration file!
+
 Jenkins: [jenkins.rx14.co.uk](http://jenkins.rx14.co.uk)
 *generously served by @RX14*
