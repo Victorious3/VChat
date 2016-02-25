@@ -1,7 +1,7 @@
 package moe.nightfall.vic.chat.commands;
 
 import moe.nightfall.vic.chat.Config;
-import moe.nightfall.vic.chat.Misc;
+import moe.nightfall.vic.chat.util.Misc;
 import moe.nightfall.vic.chat.handlers.TrackHandler;
 import moe.nightfall.vic.chat.tracks.Track;
 import net.minecraft.command.CommandException;

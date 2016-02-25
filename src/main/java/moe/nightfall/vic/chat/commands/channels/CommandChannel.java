@@ -1,7 +1,7 @@
 package moe.nightfall.vic.chat.commands.channels;
 
 import moe.nightfall.vic.chat.ChatEntity;
-import moe.nightfall.vic.chat.Misc;
+import moe.nightfall.vic.chat.util.Misc;
 import moe.nightfall.vic.chat.VChat;
 import moe.nightfall.vic.chat.api.IChannel;
 import moe.nightfall.vic.chat.commands.CommandOverrideAccess;
