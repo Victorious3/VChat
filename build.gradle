@@ -17,6 +17,17 @@ version = modVersion
 group = "moe.nightfall.vic.chat"
 archivesBaseName = "vChat"
 
+configurations {
+    packed {
+        description = 'lib packed during build'
+    }
+    compile {
+        description = 'compile classpath'
+        transitive = true
+        extendsFrom packed
+    }
+}
+
 if (System.env.BUILD_NUMBER != null) version = "$version.$System.env.BUILD_NUMBER"
 
 minecraft {
@@ -34,12 +45,17 @@ minecraft {
 }
 
 dependencies {
-    compile group: "org.twitter4j", name: "twitter4j-core", version: "4.0.4"
+    packed group: "org.twitter4j", name: "twitter4j-core", version: "4.0.4"
 }
 
 processResources {
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
+}
+
+jar {
+    from { configurations.packed.collect { it.isDirectory() ? it : zipTree(it) } }
+    include '**'
 }
 
 task apiJar(type: Jar, dependsOn: classes) {
@@ -55,6 +71,8 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 
 task deobfJar(type: Jar) {
     from sourceSets.main.output
+    from { configurations.packed.collect { it.isDirectory() ? it : zipTree(it) } }
+    include '**'
     classifier = 'deobf'
 }
 
