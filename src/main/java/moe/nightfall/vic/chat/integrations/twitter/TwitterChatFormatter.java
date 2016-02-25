@@ -120,19 +120,4 @@ public class TwitterChatFormatter extends ChatFormatter
 
         return text;
     }
-
-    private static int getDigits(String string, int charPosition)
-    {
-        String digits = "";
-
-        for (int i = charPosition - 1; i >= 0; i--)
-        {
-            if (!Character.isDigit(string.charAt(i)))
-                break;
-            else
-                digits = string.charAt(i) + digits;
-        }
-
-        return Integer.parseInt(digits);
-    }
 }
