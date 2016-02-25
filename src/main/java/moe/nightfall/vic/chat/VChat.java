@@ -8,6 +8,7 @@ import moe.nightfall.vic.chat.handlers.*;
 import moe.nightfall.vic.chat.integrations.ChatFormatter;
 import moe.nightfall.vic.chat.integrations.github.GitHubChatFormatter;
 import moe.nightfall.vic.chat.integrations.soundcloud.SoundCloudChatFormatter;
+import moe.nightfall.vic.chat.integrations.twitter.TwitterChatFormatter;
 import moe.nightfall.vic.chat.integrations.youtube.YoutubeChatFormatter;
 import net.minecraftforge.common.MinecraftForge;
 import org.apache.logging.log4j.Logger;
@@ -74,6 +75,7 @@ public class VChat
         if(Config.urlEnabledYoutube) this.commonHandler.registerChatFormatter(new YoutubeChatFormatter(this));
         if(Config.urlEnabledSoundCloud) this.commonHandler.registerChatFormatter(new SoundCloudChatFormatter(this));
         if(Config.urlEnabledGitHub) this.commonHandler.registerChatFormatter(new GitHubChatFormatter(this));
+        if(Config.urlEnabledTwitter) this.commonHandler.registerChatFormatter(new TwitterChatFormatter(this));
 
         this.commonHandler.registerChatFormatter(new ChatFormatter.ChatFormatterURL(this));
     }
