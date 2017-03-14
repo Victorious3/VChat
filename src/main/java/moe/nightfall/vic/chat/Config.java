@@ -56,6 +56,7 @@ public class Config
     public static boolean urlEnabledSoundCloud;
     public static boolean urlEnabledGitHub;
     public static boolean urlEnabledTwitter;
+    public static boolean urlEnabledReddit;
 
     public static String twitterConsumerKey;
     public static String twitterConsumerSecret;
@@ -145,6 +146,7 @@ public class Config
         urlEnabledSoundCloud = config.get("INTEGRATIONS", "url_enabled_soundcloud", true, "Disable or enable the option to post SoundCloud links in chat.").getBoolean(true);
         urlEnabledGitHub = config.get("INTEGRATIONS", "url_enabled_github", true, "Disable or enable the option to post GitHub links in chat.").getBoolean(true);
         urlEnabledTwitter = config.get("INTEGRATIONS", "url_enabled_twitter", true, "Disable or enable the option to post Twitter links in chat.").getBoolean(true);
+        urlEnabledReddit = config.get("INTEGRATIONS", "url_enabled_reddit", true, "Disable or enable the option to post Reddit links in chat.").getBoolean(true);
 
         twitterConsumerKey = config.get("INTEGRATIONS", "twitter_consumer_key", "", "Specify a Twitter application's consumer key to enable Twitter links integration into the chat.").getString();
         twitterConsumerSecret = config.get("INTEGRATIONS", "twitter_consumer_secret", "", "Specify a Twitter application's consumer secret to enable Twitter links integration into the chat.").getString();
