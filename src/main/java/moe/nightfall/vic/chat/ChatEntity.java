@@ -138,7 +138,7 @@ public class ChatEntity implements IChatEntity
             return true;
 
         EntityPlayerMP player = toPlayer();
-        return player != null && player.canCommandSenderUseCommand(MinecraftServer.getServer().getOpPermissionLevel(), null);
+        return player != null && player.canUseCommand(player.getServer().getOpPermissionLevel(), null);
     }
 
     @Override

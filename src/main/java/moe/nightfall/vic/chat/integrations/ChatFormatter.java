@@ -8,12 +8,11 @@ import moe.nightfall.vic.chat.*;
 
 import moe.nightfall.vic.chat.api.IChatFormatter;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.event.ClickEvent;
-import net.minecraft.event.HoverEvent;
-import net.minecraft.event.HoverEvent.Action;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatStyle;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.event.ClickEvent;
+import net.minecraft.util.text.event.HoverEvent;
 
 public abstract class ChatFormatter implements IChatFormatter
 {
@@ -28,16 +27,16 @@ public abstract class ChatFormatter implements IChatFormatter
         this.matched = false;
     }
 
-    public void apply(ChatComponentText component, Pattern pattern)
+    public void apply(TextComponentString component, Pattern pattern)
     {
         for(int i = 0; i < component.getSiblings().size(); i++)
         {
             Object obj = component.getSiblings().get(i);
 
-            if(obj instanceof ChatComponentText && ((ChatComponentText)obj).getChatStyle().isEmpty())
+            if(obj instanceof TextComponentString && ((TextComponentString)obj).getStyle().isEmpty())
             {
-                ChatComponentText baseComponent = (ChatComponentText)obj;
-                String text = baseComponent.getUnformattedTextForChat();
+                TextComponentString baseComponent = (TextComponentString)obj;
+                String text = baseComponent.getUnformattedComponentText();
                 Matcher matcher = pattern.matcher(text);
 
                 this.matched = matcher.find();
@@ -60,14 +59,14 @@ public abstract class ChatFormatter implements IChatFormatter
 
                         if(start != end)
                         {
-                            component.getSiblings().add(index, new ChatComponentText(text.substring(start, end)));
+                            component.getSiblings().add(index, new TextComponentString(text.substring(start, end)));
                             index++;
                         }
 
                         if(find)
                         {
                             String matched = text.substring(matcher.start(), matcher.end());
-                            ChatComponentText comp = getComponentReplacement(matched);
+                            TextComponentString comp = getComponentReplacement(matched);
                             component.getSiblings().add(index, comp);
                             start = matcher.end();
                             end = text.length();
@@ -79,7 +78,7 @@ public abstract class ChatFormatter implements IChatFormatter
                 else
                 {
                     component.getSiblings().remove(i);
-                    component.getSiblings().add(i, new ChatComponentText(matcher.replaceAll(getReplacement())));
+                    component.getSiblings().add(i, new TextComponentString(matcher.replaceAll(getReplacement())));
                 }
             }
         }
@@ -91,9 +90,9 @@ public abstract class ChatFormatter implements IChatFormatter
         return this.matched;
     }
 
-    protected ChatComponentText getComponentReplacement(String match)
+    protected TextComponentString getComponentReplacement(String match)
     {
-        return new ChatComponentText(match);
+        return new TextComponentString(match);
     }
 
     protected boolean appliesCustomStyle()
@@ -116,19 +115,19 @@ public abstract class ChatFormatter implements IChatFormatter
         }
 
         @Override
-        protected ChatComponentText getComponentReplacement(String match)
+        protected TextComponentString getComponentReplacement(String match)
         {
-            ChatComponentText text = new ChatComponentText(match);
-            ChatStyle style = new ChatStyle();
-            style.setColor(EnumChatFormatting.BLUE);
-            style.setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText("Click to open URL")));
-            style.setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, match));
-            text.setChatStyle(style);
+            TextComponentString text = new TextComponentString(match);
+            Style style = new Style();
+            style.setColor(TextFormatting.BLUE);
+            style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponentString("Click to open URL")));
+            style.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, match));
+            text.setStyle(style);
             return text;
         }
 
         @Override
-        public void apply(ChatComponentText text)
+        public void apply(TextComponentString text)
         {
             super.apply(text, PATTERN);
         }
@@ -144,7 +143,7 @@ public abstract class ChatFormatter implements IChatFormatter
         }
 
         @Override
-        public void apply(ChatComponentText text)
+        public void apply(TextComponentString text)
         {
             super.apply(text, pattern);
         }
@@ -191,14 +190,14 @@ public abstract class ChatFormatter implements IChatFormatter
         }
 
         @Override
-        public void apply(ChatComponentText text)
+        public void apply(TextComponentString text)
         {
             if(this.canMatch)
                 super.apply(text, this.pattern);
         }
 
         @Override
-        protected ChatComponentText getComponentReplacement(String match)
+        protected TextComponentString getComponentReplacement(String match)
         {
             if(!this.isSelf)
             {
@@ -208,28 +207,28 @@ public abstract class ChatFormatter implements IChatFormatter
                     this.mentioned.add(playerEntity);
             }
 
-            ChatComponentText text = new ChatComponentText(this.replaceNick ? this.player.getNickname() : this.player.getUsername());
-            ChatStyle style = new ChatStyle();
+            TextComponentString text = new TextComponentString(this.replaceNick ? this.player.getNickname() : this.player.getUsername());
+            Style style = new Style();
             boolean afk = Config.afkEnabled && this.instance.getAfkHandler().isAFK(player);
 
             if(this.isSelf)
                 style.setColor(Config.colorHighlightSelf);
             else if(afk)
-                style.setColor(EnumChatFormatting.GRAY);
+                style.setColor(TextFormatting.GRAY);
             else
                 style.setColor(Config.colorHighlight);
 
             if(!this.isSelf)
             {
                 if(afk)
-                    style.setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(this.player.getUsername() + " (AFK - " + this.instance.getAfkHandler().getReason(this.player) + ")")));
+                    style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponentString(this.player.getUsername() + " (AFK - " + this.instance.getAfkHandler().getReason(this.player) + ")")));
                 else if(this.replaceNick)
-                    style.setChatHoverEvent(new HoverEvent(Action.SHOW_TEXT, new ChatComponentText(this.player.getUsername())));
+                    style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponentString(this.player.getUsername())));
                 if(!afk)
-                    style.setChatClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/msg " + this.player.getUsername()));
+                    style.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/msg " + this.player.getUsername()));
             }
 
-            text.setChatStyle(style);
+            text.setStyle(style);
 
             return text;
         }

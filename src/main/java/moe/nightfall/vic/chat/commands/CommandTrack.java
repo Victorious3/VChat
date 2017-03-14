@@ -8,12 +8,12 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.event.ClickEvent;
-import net.minecraft.event.HoverEvent;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.IChatComponent;
-import net.minecraft.util.MathHelper;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.event.ClickEvent;
+import net.minecraft.util.text.event.HoverEvent;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
@@ -28,19 +28,19 @@ public class CommandTrack extends CommandOverrideAccess
     }
 
     @Override
-    public String getCommandName()
+    public String getName()
     {
         return "track";
     }
 
     @Override
-    public String getCommandUsage(ICommandSender sender)
+    public String getUsage(ICommandSender sender)
     {
         return "/track <broadcast/stopbr/play/stop> [name] [track]";
     }
 
     @Override
-    public void processCommand(ICommandSender sender, String[] args) throws CommandException
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
         args = Misc.parseArgs(args);
 
@@ -50,7 +50,7 @@ public class CommandTrack extends CommandOverrideAccess
 
             if(tracks.isEmpty())
             {
-                sender.addChatMessage(new ChatComponentText("There are no tracks loaded on the server."));
+                sender.sendMessage(new TextComponentString("There are no tracks loaded on the server."));
                 return;
             }
 
@@ -62,17 +62,17 @@ public class CommandTrack extends CommandOverrideAccess
             if(page >= numPages)
                 throw new CommandException("Exceeded the number of pages, " + numPages + ".");
 
-            List<Track> trackList = new ArrayList(tracks.values()).subList(page * 6, MathHelper.clamp_int(((page + 1) * 6) - 1, 0, tracks.size()));
-            sender.addChatMessage(new ChatComponentTranslation("Currently loaded tracks (Page %s of %s):", page + 1, numPages));
+            List<Track> trackList = new ArrayList(tracks.values()).subList(page * 6, MathHelper.clamp(((page + 1) * 6) - 1, 0, tracks.size()));
+            sender.sendMessage(new TextComponentTranslation("Currently loaded tracks (Page %s of %s):", page + 1, numPages));
 
             for(int i = 0; i < trackList.size(); i++)
             {
                 int num = page * 6 + i + 1;
 
-                IChatComponent text = new ChatComponentTranslation("%s: \"%s\"", num, trackList.get(i).getName());
-                text.getChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText("Click to play!")));
-                text.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/track play " + num));
-                sender.addChatMessage(text);
+                TextComponentTranslation text = new TextComponentTranslation("%s: \"%s\"", num, trackList.get(i).getName());
+                text.getStyle().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponentString("Click to play!")));
+                text.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/track play " + num));
+                sender.sendMessage(text);
             }
         }
         else if(args[0].equalsIgnoreCase("broadcast") || args[0].equalsIgnoreCase("play"))
@@ -107,7 +107,7 @@ public class CommandTrack extends CommandOverrideAccess
                     }
                 }
 
-                sender.addChatMessage(new ChatComponentText("Broadcasting track \"" + args[1] + "\""));
+                sender.sendMessage(new TextComponentString("Broadcasting track \"" + args[1] + "\""));
 
                 if(broadcast)
                 {
@@ -123,7 +123,7 @@ public class CommandTrack extends CommandOverrideAccess
             }
             else
             {
-                throw new WrongUsageException(getCommandUsage(sender));
+                throw new WrongUsageException(getUsage(sender));
             }
         }
         else if(args[0].equalsIgnoreCase("stopbr"))
@@ -134,7 +134,7 @@ public class CommandTrack extends CommandOverrideAccess
             if(args.length == 1)
             {
                 this.trackHandler.stopAll();
-                sender.addChatMessage(new ChatComponentText("Stopped all tracks."));
+                sender.sendMessage(new TextComponentString("Stopped all tracks."));
             }
             else
             {
@@ -144,7 +144,7 @@ public class CommandTrack extends CommandOverrideAccess
                     throw new CommandException("No track with the specified name/index " + args[1] + " found!");
 
                 this.trackHandler.stopTrack(track);
-                sender.addChatMessage(new ChatComponentText("Stopped track \"" + args[1] + "\"."));
+                sender.sendMessage(new TextComponentString("Stopped track \"" + args[1] + "\"."));
             }
         }
         else if(args[0].equalsIgnoreCase("stop"))
@@ -157,7 +157,7 @@ public class CommandTrack extends CommandOverrideAccess
             if(args.length == 1)
             {
                 this.trackHandler.stopAll(player);
-                sender.addChatMessage(new ChatComponentText("Stopped all tracks."));
+                sender.sendMessage(new TextComponentString("Stopped all tracks."));
             }
             else
             {
@@ -167,12 +167,12 @@ public class CommandTrack extends CommandOverrideAccess
                     throw new CommandException("No track with the specified name/index " + args[1] + " found!");
 
                 track.stopTrack(player);
-                sender.addChatMessage(new ChatComponentText("Stopped track \"" + args[1] + "\"."));
+                sender.sendMessage(new TextComponentString("Stopped track \"" + args[1] + "\"."));
             }
         }
         else
         {
-            throw new WrongUsageException(getCommandUsage(sender));
+            throw new WrongUsageException(getUsage(sender));
         }
     }
 }

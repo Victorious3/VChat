@@ -10,6 +10,13 @@ import java.util.HashMap;
 import moe.nightfall.vic.chat.commands.CommandList;
 import moe.nightfall.vic.chat.commands.CommandPos;
 import moe.nightfall.vic.chat.commands.CommandTop;
+import net.minecraft.network.play.server.SPacketSoundEffect;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.gson.GsonBuilder;
@@ -29,12 +36,7 @@ import moe.nightfall.vic.chat.api.IChannel;
 import net.minecraft.command.server.CommandEmote;
 import net.minecraft.command.server.CommandMessage;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.network.play.server.S29PacketSoundEffect;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IChatComponent;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
@@ -145,7 +147,7 @@ public class CommonHandler extends ChatHandler
     {
         if(Config.modtEnabled)
             for(String s : Misc.parseModt(Config.modt, (EntityPlayerMP) event.player))
-                event.player.addChatComponentMessage(new ChatComponentText(s));
+                event.player.sendMessage(new TextComponentString(s));
 
         if(Config.onlineTrackerEnabled)
         {
@@ -175,23 +177,23 @@ public class CommonHandler extends ChatHandler
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onChat(ServerChatEvent event)
     {
-        ChatEntity entity = new ChatEntity(event.player);
+        ChatEntity entity = new ChatEntity(event.getPlayer());
         IChannel channel = this.instance.getChannelHandler().getActiveChannel(entity);
 
         if(channel == null)
         {
-            ChatComponentText text = new ChatComponentText("You have to join a channel to use the chat!");
-            text.getChatStyle().setColor(EnumChatFormatting.RED);
+            TextComponentString text = new TextComponentString("You have to join a channel to use the chat!");
+            text.getStyle().setColor(TextFormatting.RED);
 
-            event.player.addChatComponentMessage(text);
+            event.getPlayer().sendMessage(text);
             event.setCanceled(true);
 
             return;
         }
         else if(channel.isMuted(entity))
         {
-            ChatComponentText text = new ChatComponentText("You are muted on this channel!");
-            text.getChatStyle().setColor(EnumChatFormatting.RED);
+            TextComponentString text = new TextComponentString("You are muted on this channel!");
+            text.getStyle().setColor(TextFormatting.RED);
 
             this.instance.getChannelHandler().privateMessageOnChannel(channel, ChatEntity.SERVER, entity, text);
 
@@ -200,7 +202,7 @@ public class CommonHandler extends ChatHandler
             return;
         }
 
-        String message = event.message;
+        String message = event.getMessage();
 
         boolean applyFormat = true;
 
@@ -210,39 +212,39 @@ public class CommonHandler extends ChatHandler
             applyFormat = false;
         }
 
-        ChatComponentText computed = new ChatComponentText("");
-        computed.appendSibling(new ChatComponentText(message));
-        computed.getChatStyle().setColor(channel.getColor());
+        TextComponentString computed = new TextComponentString("");
+        computed.appendSibling(new TextComponentString(message));
+        computed.getStyle().setColor(channel.getColor());
 
         if(applyFormat && Config.urlEnabled)
-            if(Config.urlPermissionLevel == 0 || event.player.canCommandSenderUseCommand(Config.urlPermissionLevel, null))
+            if(Config.urlPermissionLevel == 0 || event.getPlayer().canUseCommand(Config.urlPermissionLevel, null))
                 for (ChatFormatter chatFormatter : this.chatFormatters)
                     chatFormatter.apply(computed);
 
-        if(Config.colorPermissionLevel == 0 || event.player.canCommandSenderUseCommand(Config.colorPermissionLevel, null))
+        if(Config.colorPermissionLevel == 0 || event.getPlayer().canUseCommand(Config.colorPermissionLevel, null))
             this.chatFormatterColor.apply(computed);
 
-        ChatComponentText componentName = Misc.getComponent(entity);
+        TextComponentString componentName = Misc.getComponent(entity);
         ArrayList<EntityPlayerMP> mentioned = new ArrayList<EntityPlayerMP>();
 
-        for(Object obj : MinecraftServer.getServer().getConfigurationManager().playerEntityList)
+        for(EntityPlayerMP playerMp : event.getPlayer().getServer().getPlayerList().getPlayers())
         {
-            ChatComponentText computed2 = computed.createCopy();
-            ChatEntity receiver = new ChatEntity(obj);
+            TextComponentString computed2 = computed.createCopy();
+            ChatEntity receiver = new ChatEntity(playerMp);
 
             if(applyFormat)
             {
-                for(Object obj2 : MinecraftServer.getServer().getConfigurationManager().playerEntityList)
+                for(Object playerMp2 : event.getPlayer().getServer().getPlayerList().getPlayers())
                 {
-                    ChatEntity player = new ChatEntity(obj2);
+                    ChatEntity player = new ChatEntity(playerMp2);
                     new ChatFormatter.ChatFormatterUsername(this.instance, player, receiver, false, mentioned).apply(computed2);
                 }
 
                 if(Config.nickEnabled)
                 {
-                    for(Object obj2 : MinecraftServer.getServer().getConfigurationManager().playerEntityList)
+                    for(Object playerMp2 : event.getPlayer().getServer().getPlayerList().getPlayers())
                     {
-                        ChatEntity player = new ChatEntity(obj2);
+                        ChatEntity player = new ChatEntity(playerMp2);
                         new ChatFormatter.ChatFormatterUsername(this.instance, player, receiver, true, mentioned).apply(computed2);
                     }
                 }
@@ -252,44 +254,44 @@ public class CommonHandler extends ChatHandler
                     EntityPlayerMP player = receiver.toPlayer();
 
                     if(player != null && mentioned.contains(player) && this.instance.getChannelHandler().getJoinedChannels(receiver).contains(channel))
-                        player.playerNetServerHandler.sendPacket(new S29PacketSoundEffect(Config.pingSound, player.posX, player.posY, player.posZ, Config.pingVolume, Config.pingPitch));
+                        player.connection.sendPacket(new SPacketSoundEffect(SoundEvent.REGISTRY.getObject(new ResourceLocation(Config.pingSound)), SoundCategory.MASTER, player.posX, player.posY, player.posZ, Config.pingVolume, Config.pingPitch));
 
                     mentioned.clear();
                 }
             }
 
-            this.instance.getChannelHandler().privateMessageOnChannel(channel, entity, receiver, new ChatComponentTranslation("chat.type.text", componentName, computed2));
+            this.instance.getChannelHandler().privateMessageOnChannel(channel, entity, receiver, new TextComponentTranslation("chat.type.text", componentName, computed2));
         }
 
         if(!channel.getName().equals("local") && !(channel instanceof ChannelCustom && ((ChannelCustom)channel).hasRange()))
             for(BotHandler bot : this.instance.getBotLoader().getBots().values())
                 bot.getOwningBot().onMessage(message, entity, channel);
 
-        MinecraftServer.getServer().addChatMessage(new ChatComponentTranslation("chat.type.text", componentName, computed));
+        event.getPlayer().getServer().sendMessage(new TextComponentTranslation("chat.type.text", componentName, computed));
         event.setCanceled(true);
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public void onCommand(CommandEvent event)
     {
-        if(event.command instanceof CommandEmote)
+        if(event.getCommand() instanceof CommandEmote)
         {
-            if(event.sender.canCommandSenderUseCommand(Config.colorPermissionLevel, null))
+            if(event.getSender().canUseCommand(Config.colorPermissionLevel, null))
             {
-                if(event.parameters.length < 1)
+                if(event.getParameters().length < 1)
                     return;
 
                 String out = "";
 
-                for(int i = 0; i < event.parameters.length; i++)
+                for(int i = 0; i < event.getParameters().length; i++)
                 {
-                    out += event.parameters[i] + " ";
+                    out += event.getParameters()[i] + " ";
 
                     if(i != 0)
-                        event.parameters[i] = "";
+                        event.getParameters()[i] = "";
                 }
 
-                event.parameters[0] = out.replaceAll("&", "\u00A7");
+                event.getParameters()[0] = out.replaceAll("&", "\u00A7");
             }
         }
     }
@@ -297,20 +299,20 @@ public class CommonHandler extends ChatHandler
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onCommandPost(CommandEvent event)
     {
-        if(event.command instanceof CommandMessage)
+        if(event.getCommand() instanceof CommandMessage)
         {
-            if(event.parameters.length > 0)
+            if(event.getParameters().length > 0)
             {
-                String name = event.parameters[0];
+                String name = event.getParameters()[0];
 
                 if(Misc.getPlayer(name) == null && this.instance.getBotLoader().containsBot(name))
                 {
                     BotHandler bot = this.instance.getBotLoader().getBot(name);
-                    String message = StringUtils.join(Arrays.asList(event.parameters).subList(1, event.parameters.length).toArray(), " ");
+                    String message = StringUtils.join(Arrays.asList(event.getParameters()).subList(1, event.getParameters().length).toArray(), " ");
                     ChatEntity entity;
 
-                    if(event.sender instanceof EntityPlayerMP)
-                        entity = new ChatEntity(event.sender);
+                    if(event.getSender() instanceof EntityPlayerMP)
+                        entity = new ChatEntity(event.getSender());
                     else
                         entity = ChatEntity.SERVER;
 
@@ -338,14 +340,14 @@ public class CommonHandler extends ChatHandler
             this.onlineTime = onlineTime;
         }
 
-        public IChatComponent toChatComponent()
+        public TextComponentString toChatComponent()
         {
-            ChatComponentText text = new ChatComponentText(this.name + "--" + Misc.getDuration(getOnlineTime()) + "--");
+            TextComponentString text = new TextComponentString(this.name + "--" + Misc.getDuration(getOnlineTime()) + "--");
 
             if(this.isOnline())
             {
-                ChatComponentText comp1 = new ChatComponentText("online");
-                comp1.getChatStyle().setColor(EnumChatFormatting.GREEN);
+                TextComponentString comp1 = new TextComponentString("online");
+                comp1.getStyle().setColor(TextFormatting.GREEN);
                 text.appendSibling(comp1);
             }
             else

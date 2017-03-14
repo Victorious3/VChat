@@ -11,8 +11,10 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.ForgeHooks;
 import org.apache.commons.lang3.StringUtils;
 
@@ -28,13 +30,13 @@ public class CommandChannel extends CommandOverrideAccess
     }
 
     @Override
-    public String getCommandName()
+    public String getName()
     {
         return "channel";
     }
 
     @Override
-    public String getCommandUsage(ICommandSender sender)
+    public String getUsage(ICommandSender sender)
     {
         if(sender instanceof EntityPlayerMP)
             return "/channel [join/leave/msg/list/ban/unban/whitelist add/whitelist remove/kick/mute/unmute] [...]";
@@ -49,13 +51,13 @@ public class CommandChannel extends CommandOverrideAccess
     }
 
     @Override
-    public List<String> getCommandAliases()
+    public List<String> getAliases()
     {
         return Collections.singletonList("ch");
     }
 
     @Override
-    public void processCommand(ICommandSender sender, String[] args) throws CommandException
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
         boolean isPlayer = sender instanceof EntityPlayerMP;
         EntityPlayerMP player = (EntityPlayerMP)(isPlayer ? sender : null);
@@ -65,7 +67,7 @@ public class CommandChannel extends CommandOverrideAccess
             if(isPlayer)
                 this.channelHandler.showInfo(player);
             else
-                throw new WrongUsageException(getCommandUsage(sender));
+                throw new WrongUsageException(getUsage(sender));
         }
         else
         {
@@ -83,16 +85,16 @@ public class CommandChannel extends CommandOverrideAccess
 
                 if(this.channelHandler.joinChannel(new ChatEntity(player), channel))
                 {
-                    sender.addChatMessage(new ChatComponentText("You are now talking on \"" + channel.getName() + "\"."));
+                    sender.sendMessage(new TextComponentString("You are now talking on \"" + channel.getName() + "\"."));
 
-                    ChatComponentText text = new ChatComponentText("Currently active: ");
+                    TextComponentString text = new TextComponentString("Currently active: ");
                     text.appendText("[");
 
                     Iterator<ChatEntity> iterator = channel.getMembers().iterator();
 
                     while(iterator.hasNext())
                     {
-                        ChatComponentText nameComponent = Misc.getComponent(iterator.next());
+                        TextComponentString nameComponent = Misc.getComponent(iterator.next());
                         text.appendSibling(nameComponent);
 
                         if(iterator.hasNext())
@@ -100,7 +102,7 @@ public class CommandChannel extends CommandOverrideAccess
                     }
 
                     text.appendText("]");
-                    sender.addChatMessage(text);
+                    sender.sendMessage(text);
                 }
             }
             else if(args[0].equalsIgnoreCase("leave") && isPlayer)
@@ -126,7 +128,7 @@ public class CommandChannel extends CommandOverrideAccess
                 }
 
                 this.channelHandler.leaveChannel(new ChatEntity(player), channel);
-                sender.addChatMessage(new ChatComponentText("You left channel \"" + channel.getName() + "\"."));
+                sender.sendMessage(new TextComponentString("You left channel \"" + channel.getName() + "\"."));
             }
             else if(args[0].equalsIgnoreCase("msg"))
             {
@@ -144,16 +146,16 @@ public class CommandChannel extends CommandOverrideAccess
                         throw new ChannelHandler.ChannelNotJoinedException(channel);
 
                     String message = StringUtils.join(Arrays.asList(args).subList(2, args.length).toArray(), " ");
-                    ChatComponentTranslation text = new ChatComponentTranslation("chat.type.text", player.getTabListDisplayName(), message);
+                    ITextComponent text = new TextComponentTranslation("chat.type.text", player.getTabListDisplayName(), message);
 
                     ChatEntity entity = new ChatEntity(player);
                     IChannel current = this.channelHandler.getActiveChannel(entity);
 
                     this.channelHandler.joinChannel(entity, channel, true);
-                    text = ForgeHooks.onServerChatEvent(player.playerNetServerHandler, message, text);
+                    text = ForgeHooks.onServerChatEvent(player.connection, message, text);
 
                     if(text != null)
-                        MinecraftServer.getServer().getConfigurationManager().sendChatMsg(text);
+                        server.sendMessage(text);
 
                     this.channelHandler.joinChannel(entity, current, true);
                 }
@@ -168,14 +170,14 @@ public class CommandChannel extends CommandOverrideAccess
                         throw new ChannelHandler.ChannelNotFoundException(args[1]);
 
                     String message = StringUtils.join(Arrays.asList(args).subList(2, args.length).toArray(), " ");
-                    this.channelHandler.broadcastOnChannel(channel, ChatEntity.SERVER, new ChatComponentText(message));
+                    this.channelHandler.broadcastOnChannel(channel, ChatEntity.SERVER, new TextComponentString(message));
                 }
             }
             else if(args[0].equalsIgnoreCase("list"))
             {
                 if(args.length == 1)
                 {
-                    ChatComponentText text = new ChatComponentText("Currently active channels: ");
+                    TextComponentString text = new TextComponentString("Currently active channels: ");
                     Iterator<IChannel> iterator = this.channelHandler.getChannels().values().iterator();
 
                     while(iterator.hasNext())
@@ -184,7 +186,7 @@ public class CommandChannel extends CommandOverrideAccess
                         text.appendText(channel.getName() + " [" + channel.getMembers().size() + "]" + (iterator.hasNext() ? ", " : ""));
                     }
 
-                    sender.addChatMessage(text);
+                    sender.sendMessage(text);
                 }
                 else if(args.length == 2)
                 {
@@ -196,16 +198,16 @@ public class CommandChannel extends CommandOverrideAccess
                     if(isPlayer && !channel.isOnChannel(new ChatEntity(player)))
                         throw new ChannelHandler.ChannelNotJoinedException(channel);
 
-                    sender.addChatMessage(new ChatComponentText(channel.getMembers().size() + " player(s) active on channel \"" + channel.getName() +"\":"));
+                    sender.sendMessage(new TextComponentString(channel.getMembers().size() + " player(s) active on channel \"" + channel.getName() +"\":"));
 
-                    ChatComponentText text = new ChatComponentText("");
+                    TextComponentString text = new TextComponentString("");
                     text.appendText("[");
 
                     Iterator<ChatEntity> iterator = channel.getMembers().iterator();
 
                     while(iterator.hasNext())
                     {
-                        ChatComponentText nameComponent = Misc.getComponent(iterator.next());
+                        TextComponentString nameComponent = Misc.getComponent(iterator.next());
                         text.appendSibling(nameComponent);
 
                         if(iterator.hasNext())
@@ -214,7 +216,7 @@ public class CommandChannel extends CommandOverrideAccess
 
                     text.appendText("]");
 
-                    sender.addChatMessage(text);
+                    sender.sendMessage(text);
                 }
                 else
                 {
@@ -275,7 +277,7 @@ public class CommandChannel extends CommandOverrideAccess
             }
             else
             {
-                throw new WrongUsageException(getCommandUsage(sender));
+                throw new WrongUsageException(getUsage(sender));
             }
         }
     }

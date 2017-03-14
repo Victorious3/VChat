@@ -110,19 +110,19 @@ public class NickHandler extends ChatHandler
     @SubscribeEvent
     public void onPlayerNameFormatting(PlayerEvent.NameFormat event)
     {
-        if(this.nickRegistry.containsKey(event.username))
-            event.displayname = this.nickRegistry.get(event.username);
+        if(this.nickRegistry.containsKey(event.getUsername()))
+            event.setDisplayname(this.nickRegistry.get(event.getUsername()));
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public void onCommand(CommandEvent event)
     {
-        if(event.command instanceof CommandMessage && event.parameters.length > 0)
+        if(event.getCommand() instanceof CommandMessage && event.getParameters().length > 0)
         {
-            ChatEntity entity = new ChatEntity((Object) event.parameters[0]);
+            ChatEntity entity = new ChatEntity((Object) event.getParameters()[0]);
 
             if(entity.getUsername() != null)
-                event.parameters[0] = entity.getUsername();
+                event.getParameters()[0] = entity.getUsername();
         }
     }
 

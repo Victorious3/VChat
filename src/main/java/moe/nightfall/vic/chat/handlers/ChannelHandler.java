@@ -32,9 +32,9 @@ import moe.nightfall.vic.chat.api.bot.IChatEntity;
 import net.minecraft.command.CommandException;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.IChatComponent;
 
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -319,19 +319,19 @@ public class ChannelHandler extends ChatHandler
         this.channels.put(channel.getName(), channel);
     }
 
-    public void broadcast(IChatComponent component, ChatEntity sender)
+    public void broadcast(TextComponentString component, ChatEntity sender)
     {
         for(ChatEntity player : Misc.getOnlinePlayersAsEntity())
             this.privateMessageTo(sender, player, component);
     }
 
-    public void broadcastOnChannel(IChannel channel, ChatEntity sender, IChatComponent component)
+    public void broadcastOnChannel(IChannel channel, ChatEntity sender, ITextComponent component)
     {
         for(ChatEntity receiver : channel.getMembers())
             this.privateMessageOnChannel(channel, sender, receiver, component);
     }
 
-    public void privateMessageOnChannel(IChannel channel, ChatEntity sender, ChatEntity receiver, IChatComponent component)
+    public void privateMessageOnChannel(IChannel channel, ChatEntity sender, ChatEntity receiver, ITextComponent component)
     {
         if((channel.isOnChannel(receiver) || receiver.isServer() || receiver.isBot()) && channel.canReceiveChat(sender, receiver, component))
         {
@@ -339,7 +339,7 @@ public class ChannelHandler extends ChatHandler
 
             if(channel.getPrefix() != null)
             {
-                ChatComponentText text = new ChatComponentText("");
+                TextComponentString text = new TextComponentString("");
                 text.appendText("[" + channel.getPrefix() + "] ");
                 text.appendSibling(component);
 
@@ -352,7 +352,7 @@ public class ChannelHandler extends ChatHandler
         }
     }
 
-    public void privateMessageTo(ChatEntity sender, ChatEntity receiver, IChatComponent message)
+    public void privateMessageTo(ChatEntity sender, ChatEntity receiver, ITextComponent message)
     {
         if(receiver == null || sender == null)
             return;
@@ -360,11 +360,11 @@ public class ChannelHandler extends ChatHandler
         EntityPlayerMP player = Misc.getPlayer(receiver.getUsername());
 
         if(player != null)
-            player.addChatComponentMessage(message);
+            player.sendMessage(message);
         else if(receiver.isBot())
             this.instance.getBotLoader().getBot(receiver.getUsername()).getOwningBot().onPrivateMessage(message.getUnformattedText(), sender);
         else if(receiver.isServer())
-            MinecraftServer.getServer().addChatMessage(message);
+            sender.toPlayer().getServer().sendMessage(message);
     }
 
     public void showInfo(EntityPlayerMP player)
@@ -374,12 +374,12 @@ public class ChannelHandler extends ChatHandler
 
         if(channel != null)
         {
-            player.addChatMessage(new ChatComponentText("You are talking on channel \"" + channel.getName() + "\"."));
-            player.addChatMessage(new ChatComponentText("Currently joined channels: " + this.members.get(entity).toString()));
+            player.sendMessage(new TextComponentString("You are talking on channel \"" + channel.getName() + "\"."));
+            player.sendMessage(new TextComponentString("Currently joined channels: " + this.members.get(entity).toString()));
         }
         else
         {
-            player.addChatMessage(new ChatComponentText("You haven't joined any channel."));
+            player.sendMessage(new TextComponentString("You haven't joined any channel."));
         }
     }
 

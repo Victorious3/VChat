@@ -6,9 +6,9 @@ import java.util.List;
 import moe.nightfall.vic.chat.Misc;
 import moe.nightfall.vic.chat.VChat;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.ChatComponentText;
 
 import com.google.common.collect.Lists;
+import net.minecraft.util.text.TextComponentString;
 
 public class Track 
 {
@@ -184,7 +184,7 @@ public class Track
         this.players = players;
 
         for(EntityPlayerMP player : this.players)
-            player.addChatComponentMessage(new ChatComponentText("\u25B6 Now playing: \"" + name + "\""));
+            player.sendMessage(new TextComponentString("\u25B6 Now playing: \"" + name + "\""));
 
         this.timeout = 0;
 

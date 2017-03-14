@@ -1,7 +1,10 @@
 package moe.nightfall.vic.chat.tracks;
 
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.network.play.server.S29PacketSoundEffect;
+import net.minecraft.network.play.server.SPacketSoundEffect;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 
 public abstract class TrackElement
 {
@@ -64,7 +67,7 @@ public abstract class TrackElement
             }
 
             for(EntityPlayerMP player : this.parent.getPlayers())
-                player.playerNetServerHandler.sendPacket(new S29PacketSoundEffect(this.sound, player.posX, player.posY, player.posZ, 1F, this.pitch));
+                player.connection.sendPacket(new SPacketSoundEffect(SoundEvent.REGISTRY.getObject(new ResourceLocation(this.sound)), SoundCategory.MUSIC, player.posX, player.posY, player.posZ, 1F, this.pitch));
         }
     }
 

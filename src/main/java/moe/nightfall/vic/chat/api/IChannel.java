@@ -3,15 +3,15 @@ package moe.nightfall.vic.chat.api;
 import java.util.Collection;
 
 import moe.nightfall.vic.chat.ChatEntity;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IChatComponent;
 import moe.nightfall.vic.chat.api.bot.IChannelBase;
 
 import com.google.gson.JsonObject;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
 
 public interface IChannel extends IChannelBase
 {
-    IChatComponent formatChat(ChatEntity sender, ChatEntity receiver, IChatComponent message);
+    ITextComponent formatChat(ChatEntity sender, ChatEntity receiver, ITextComponent message);
 
     @Override
     String getPrefix();
@@ -33,7 +33,7 @@ public interface IChannel extends IChannelBase
 
     void read(JsonObject obj);
 
-    EnumChatFormatting getColor();
+    TextFormatting getColor();
 
     Collection<ChatEntity> getMembers();
 
@@ -46,7 +46,7 @@ public interface IChannel extends IChannelBase
     @Override
     boolean isWhitelisted();
 
-    boolean canReceiveChat(ChatEntity sender, ChatEntity receiver, IChatComponent message);
+    boolean canReceiveChat(ChatEntity sender, ChatEntity receiver, ITextComponent message);
 
     boolean canJoin(ChatEntity player);
 }

@@ -7,8 +7,8 @@ import net.minecraft.command.PlayerNotFoundException;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 
 import java.util.Collections;
 import java.util.List;
@@ -16,13 +16,13 @@ import java.util.List;
 public class CommandPos extends CommandOverrideAccess
 {
     @Override
-    public String getCommandName()
+    public String getName()
     {
         return "checkpos";
     }
 
     @Override
-    public List<String> getCommandAliases()
+    public List<String> getAliases()
     {
         return Collections.singletonList("pos");
     }
@@ -34,29 +34,29 @@ public class CommandPos extends CommandOverrideAccess
     }
 
     @Override
-    public String getCommandUsage(ICommandSender sender)
+    public String getUsage(ICommandSender sender)
     {
         return "/checkpos <player>";
     }
 
     @Override
-    public void processCommand(ICommandSender sender, String[] args) throws WrongUsageException, PlayerNotFoundException
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws WrongUsageException, PlayerNotFoundException
     {
         if(args.length < 1)
-            throw new WrongUsageException(getCommandUsage(sender));
+            throw new WrongUsageException(getUsage(sender));
 
         EntityPlayerMP player = Misc.getPlayer(args[0]);
 
         if(player == null)
-            throw new PlayerNotFoundException();
+            throw new PlayerNotFoundException(args[0]);
 
-        sender.addChatMessage(new ChatComponentText(player.getName() + ": [" + (int)player.posX + ", " + (int)player.posY + ", " + (int)player.posZ + "]"));
+        sender.sendMessage(new TextComponentString(player.getName() + ": [" + (int)player.posX + ", " + (int)player.posY + ", " + (int)player.posZ + "]"));
     }
 
     @Override
-    public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos)
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos)
     {
-        return getListOfStringsMatchingLastWord(args, MinecraftServer.getServer().getAllUsernames());
+        return getListOfStringsMatchingLastWord(args, server.getPlayerList().getOnlinePlayerNames());
     }
 
     @Override

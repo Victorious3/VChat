@@ -3,11 +3,11 @@ package moe.nightfall.vic.chat.integrations.soundcloud;
 import com.google.gson.GsonBuilder;
 import moe.nightfall.vic.chat.VChat;
 import moe.nightfall.vic.chat.integrations.ChatFormatter;
-import net.minecraft.event.ClickEvent;
-import net.minecraft.event.HoverEvent;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatStyle;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.event.ClickEvent;
+import net.minecraft.util.text.event.HoverEvent;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -26,18 +26,18 @@ public class SoundCloudChatFormatter extends ChatFormatter
     }
 
     @Override
-    public void apply(ChatComponentText text)
+    public void apply(TextComponentString text)
     {
         super.apply(text, PATTERN);
     }
 
     @Override
-    protected ChatComponentText getComponentReplacement(String match)
+    protected TextComponentString getComponentReplacement(String match)
     {
-        ChatComponentText text = new ChatComponentText("[SoundCloud - ");
+        TextComponentString text = new TextComponentString("[SoundCloud - ");
 
-        ChatStyle style = new ChatStyle();
-        style.setColor(EnumChatFormatting.GOLD);
+        Style style = new Style();
+        style.setColor(TextFormatting.GOLD);
 
         try
         {
@@ -50,23 +50,23 @@ public class SoundCloudChatFormatter extends ChatFormatter
             int minutes = seconds / 60;
             seconds = seconds % 60;
 
-            ChatComponentText toolTipText = new ChatComponentText(BULLET + " SoundCloud\n\n");
-            toolTipText.getChatStyle().setColor(EnumChatFormatting.GOLD);
-            toolTipText.appendText(EnumChatFormatting.YELLOW + "Title: " + EnumChatFormatting.WHITE + track.getTitle() + " (" + EnumChatFormatting.GOLD + track.getPlaybackCount() + EnumChatFormatting.WHITE + " plays)\n");
-            toolTipText.appendText(EnumChatFormatting.YELLOW + "Publisher: " + EnumChatFormatting.WHITE + track.getUser().getUsername() + "\n");
-            toolTipText.appendText(EnumChatFormatting.YELLOW + "Duration: " + EnumChatFormatting.GOLD + minutes + EnumChatFormatting.WHITE + " minutes and " + EnumChatFormatting.GOLD + seconds + EnumChatFormatting.WHITE + " seconds");
+            TextComponentString toolTipText = new TextComponentString(BULLET + " SoundCloud\n\n");
+            toolTipText.getStyle().setColor(TextFormatting.GOLD);
+            toolTipText.appendText(TextFormatting.YELLOW + "Title: " + TextFormatting.WHITE + track.getTitle() + " (" + TextFormatting.GOLD + track.getPlaybackCount() + TextFormatting.WHITE + " plays)\n");
+            toolTipText.appendText(TextFormatting.YELLOW + "Publisher: " + TextFormatting.WHITE + track.getUser().getUsername() + "\n");
+            toolTipText.appendText(TextFormatting.YELLOW + "Duration: " + TextFormatting.GOLD + minutes + TextFormatting.WHITE + " minutes and " + TextFormatting.GOLD + seconds + TextFormatting.WHITE + " seconds");
 
-            style.setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, match));
-            style.setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, toolTipText));
+            style.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, match));
+            style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, toolTipText));
 
-            ChatComponentText title = new ChatComponentText("\"" + track.getTitle() + "\"");
-            title.getChatStyle().setColor(EnumChatFormatting.YELLOW);
+            TextComponentString title = new TextComponentString("\"" + track.getTitle() + "\"");
+            title.getStyle().setColor(TextFormatting.YELLOW);
 
             text.appendSibling(title);
             text.appendText(" by ");
 
-            ChatComponentText publisher = new ChatComponentText(track.getUser().getUsername());
-            publisher.getChatStyle().setColor(EnumChatFormatting.YELLOW);
+            TextComponentString publisher = new TextComponentString(track.getUser().getUsername());
+            publisher.getStyle().setColor(TextFormatting.YELLOW);
 
             text.appendSibling(publisher);
         }
@@ -74,21 +74,21 @@ public class SoundCloudChatFormatter extends ChatFormatter
         {
             this.instance.getLogger().warn("Failed to retrieve the SoundCloud track's data of '" + match + "' (" + e.getMessage() + ")");
 
-            style.setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, match));
+            style.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, match));
 
-            ChatComponentText toolTipText = new ChatComponentText("Click to open this SoundCloud track (Failed to retrieve track's data)");
-            toolTipText.getChatStyle().setColor(EnumChatFormatting.GOLD);
+            TextComponentString toolTipText = new TextComponentString("Click to open this SoundCloud track (Failed to retrieve track's data)");
+            toolTipText.getStyle().setColor(TextFormatting.GOLD);
 
-            style.setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, toolTipText));
+            style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, toolTipText));
 
-            ChatComponentText link = new ChatComponentText(match);
-            link.getChatStyle().setColor(EnumChatFormatting.YELLOW);
+            TextComponentString link = new TextComponentString(match);
+            link.getStyle().setColor(TextFormatting.YELLOW);
 
             text.appendSibling(link);
         }
 
         text.appendText("]");
-        text.setChatStyle(style);
+        text.setStyle(style);
 
         return text;
     }

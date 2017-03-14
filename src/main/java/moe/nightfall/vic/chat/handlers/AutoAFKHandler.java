@@ -7,7 +7,7 @@ import moe.nightfall.vic.chat.Config;
 import moe.nightfall.vic.chat.Misc;
 import moe.nightfall.vic.chat.VChat;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
@@ -87,19 +87,19 @@ public class AutoAFKHandler extends ChatHandler
     {
         private boolean autoAfk;
         private int cooldown = Config.autoAfkTime;
-        private Vec3 position;
+        private Vec3d position;
         private String playerName;
 
         public TrackedPosition(EntityPlayerMP player)
         {
             this.playerName = player.getName();
-            this.position = new Vec3(player.posX, player.posY, player.posZ);
+            this.position = new Vec3d(player.posX, player.posY, player.posZ);
         }
 
         public void update()
         {
             EntityPlayerMP player = getPlayer();
-            Vec3 npos = new Vec3(player.posX, player.posY, player.posZ);
+            Vec3d npos = new Vec3d(player.posX, player.posY, player.posZ);
 
             if(this.position.xCoord != npos.xCoord || this.position.yCoord != npos.yCoord || this.position.zCoord != npos.zCoord)
                 this.cooldown = Config.autoAfkTime;

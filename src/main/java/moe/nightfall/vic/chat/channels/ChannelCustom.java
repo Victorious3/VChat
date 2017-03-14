@@ -3,11 +3,11 @@ package moe.nightfall.vic.chat.channels;
 import moe.nightfall.vic.chat.ChatEntity;
 import moe.nightfall.vic.chat.VChat;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IChatComponent;
 
 import com.google.gson.JsonObject;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 
 public class ChannelCustom extends ChannelBase
 {
@@ -15,7 +15,7 @@ public class ChannelCustom extends ChannelBase
     private String prefix;
     private int range = 0;
     private boolean multiDim = true;
-    private EnumChatFormatting color = EnumChatFormatting.WHITE;
+    private TextFormatting color = TextFormatting.WHITE;
     private boolean whitelisted = false;
     private boolean autojoin = false;
 
@@ -39,7 +39,7 @@ public class ChannelCustom extends ChannelBase
     }
 
     @Override
-    public IChatComponent formatChat(ChatEntity sender, ChatEntity receiver, IChatComponent message)
+    public ITextComponent formatChat(ChatEntity sender, ChatEntity receiver, ITextComponent message)
     {
         message = super.formatChat(sender, receiver, message);
 
@@ -48,7 +48,7 @@ public class ChannelCustom extends ChannelBase
         if(sender.equals(receiver)) return message;
 
         int distance = (int) sender.toPlayer().getDistanceToEntity(receiver.toPlayer());
-        ChatComponentText text = new ChatComponentText("[" + distance + "m] ");
+        TextComponentString text = new TextComponentString("[" + distance + "m] ");
         text.appendSibling(message);
 
         return text;
@@ -79,10 +79,10 @@ public class ChannelCustom extends ChannelBase
             this.range = obj.get("range").getAsInt();
 
         if(obj.has("color"))
-            this.color = EnumChatFormatting.getValueByName(obj.get("color").getAsString());
+            this.color = TextFormatting.getValueByName(obj.get("color").getAsString());
 
         if(this.color == null)
-            this.color = EnumChatFormatting.WHITE;
+            this.color = TextFormatting.WHITE;
 
         if(obj.has("whitelisted"))
             this.whitelisted = obj.get("whitelisted").getAsBoolean();
@@ -100,7 +100,7 @@ public class ChannelCustom extends ChannelBase
     }
 
     @Override
-    public EnumChatFormatting getColor()
+    public TextFormatting getColor()
     {
         return this.color;
     }
@@ -118,7 +118,7 @@ public class ChannelCustom extends ChannelBase
     }
 
     @Override
-    public boolean canReceiveChat(ChatEntity sender, ChatEntity receiver, IChatComponent message)
+    public boolean canReceiveChat(ChatEntity sender, ChatEntity receiver, ITextComponent message)
     {
         if(sender.equals(receiver))
             return true;
@@ -131,11 +131,11 @@ public class ChannelCustom extends ChannelBase
 
         if(this.range == 0)
         {
-            return this.multiDim || player1.worldObj.provider.getDimensionId() == player2.worldObj.provider.getDimensionId();
+            return this.multiDim || player1.getEntityWorld().provider.getDimension() == player2.getEntityWorld().provider.getDimension();
         }
 
         int distance = (int) player1.getDistanceToEntity(player2);
-        return distance <= this.range && player1.worldObj.provider.getDimensionId() == player2.worldObj.provider.getDimensionId();
+        return distance <= this.range && player1.getEntityWorld().provider.getDimension() == player2.getEntityWorld().provider.getDimension();
     }
 
     @Override

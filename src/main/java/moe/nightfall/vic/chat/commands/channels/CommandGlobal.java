@@ -13,19 +13,19 @@ import java.util.List;
 public class CommandGlobal extends CommandOverrideAccess
 {
     @Override
-    public String getCommandName()
+    public String getName()
     {
         return "global";
     }
 
     @Override
-    public String getCommandUsage(ICommandSender sender)
+    public String getUsage(ICommandSender sender)
     {
         return "/global <message>";
     }
 
     @Override
-    public List<String> getCommandAliases()
+    public List<String> getAliases()
     {
         return Collections.singletonList("g");
     }
@@ -37,11 +37,11 @@ public class CommandGlobal extends CommandOverrideAccess
     }
 
     @Override
-    public void processCommand(ICommandSender sender, String[] args) throws WrongUsageException
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws WrongUsageException
     {
         if(args.length < 1)
-            throw new WrongUsageException(getCommandUsage(sender));
+            throw new WrongUsageException(getUsage(sender));
 
-        MinecraftServer.getServer().getCommandManager().executeCommand(sender, "/channel msg global " + StringUtils.join(Arrays.asList(args), " "));
+        server.getCommandManager().executeCommand(sender, "/channel msg global " + StringUtils.join(Arrays.asList(args), " "));
     }
 }

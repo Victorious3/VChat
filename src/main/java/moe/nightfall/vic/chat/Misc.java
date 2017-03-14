@@ -13,14 +13,12 @@ import java.util.regex.Pattern;
 import moe.nightfall.vic.chat.bots.BotHandler;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.event.ClickEvent;
-import net.minecraft.event.HoverEvent;
-import net.minecraft.event.HoverEvent.Action;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.EnumChatFormatting;
 
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.event.ClickEvent;
+import net.minecraft.util.text.event.HoverEvent;
 import org.apache.commons.lang3.StringUtils;
 
 public class Misc 
@@ -57,8 +55,8 @@ public class Misc
         if(modt.contains("%TIME%")) modt = modt.replaceAll("%TIME%", new SimpleDateFormat("HH:mm").format(Calendar.getInstance().getTime()));
         if(modt.contains("%ONLINE%")) modt = modt.replaceAll("%ONLINE%", String.valueOf(player.mcServer.getCurrentPlayerCount()));
         if(modt.contains("%ONLINE_MAX%")) modt = modt.replaceAll("%ONLINE_MAX%", String.valueOf(player.mcServer.getMaxPlayers()));
-        if(modt.contains("%DIM%")) modt = modt.replaceAll("%DIM%", String.valueOf(player.worldObj.provider.getDimensionId()));
-        if(modt.contains("%DIM_NAME%")) modt = modt.replaceAll("%DIM_NAME%", player.worldObj.provider.getDimensionName());
+        if(modt.contains("%DIM%")) modt = modt.replaceAll("%DIM%", String.valueOf(player.getEntityWorld().provider.getDimension()));
+        if(modt.contains("%DIM_NAME%")) modt = modt.replaceAll("%DIM_NAME%", player.getEntityWorld().provider.getDimensionType().getName());
         if(modt.contains("%MODT%")) modt = modt.replaceAll("%MODT%", player.mcServer.getMOTD());
 
         return modt.split("/n");
@@ -77,10 +75,10 @@ public class Misc
 
     public static boolean checkPermission(ICommandSender sender, int permlevel)
     {
-        if(sender.canCommandSenderUseCommand(permlevel, null)) return true;
-        ChatComponentTranslation component = new ChatComponentTranslation("commands.generic.permission", new Object[0]);
-        component.getChatStyle().setColor(EnumChatFormatting.RED);
-        sender.addChatMessage(component);
+        if(sender.canUseCommand(permlevel, null)) return true;
+        TextComponentTranslation component = new TextComponentTranslation("commands.generic.permission", new Object[0]);
+        component.getStyle().setColor(TextFormatting.RED);
+        sender.sendMessage(component);
         return false;
     }
 
@@ -99,14 +97,14 @@ public class Misc
 
     public static EntityPlayerMP getPlayer(String player)
     {
-        for (EntityPlayerMP entity : MinecraftServer.getServer().getConfigurationManager().playerEntityList)
+        for (EntityPlayerMP entity : VChat.instance.getServer().getPlayerList().getPlayers())
             if (entity.getName().equalsIgnoreCase(player))
                 return entity;
 
         return null;
     }
 
-    public static ChatComponentText getComponent(ChatEntity entity)
+    public static TextComponentString getComponent(ChatEntity entity)
     {
         String nick = entity.getNickname();
 
@@ -116,25 +114,25 @@ public class Misc
             nick = handler.getOwningBot().getDisplayName();
         }
 
-        ChatComponentText nameComponent = new ChatComponentText(nick != null ? nick : entity.getUsername());
+        TextComponentString nameComponent = new TextComponentString(nick != null ? nick : entity.getUsername());
 
         if(nick != null)
         {
             if(Config.afkEnabled && VChat.instance.getAfkHandler().isAFK(entity))
             {
-                nameComponent.getChatStyle().setColor(EnumChatFormatting.GRAY);
-                nameComponent.getChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(entity.getUsername() + " (AFK - " + VChat.instance.getAfkHandler().getReason(entity) + ")")));
+                nameComponent.getStyle().setColor(TextFormatting.GRAY);
+                nameComponent.getStyle().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponentString(entity.getUsername() + " (AFK - " + VChat.instance.getAfkHandler().getReason(entity) + ")")));
             }
             else
             {
-                nameComponent.getChatStyle().setColor(entity.isBot() ? Config.colorBot : Config.colorNickName);
-                nameComponent.getChatStyle().setChatHoverEvent(new HoverEvent(Action.SHOW_TEXT, new ChatComponentText(entity.getUsername())));
-                nameComponent.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/msg " + entity.getUsername()));
+                nameComponent.getStyle().setColor(entity.isBot() ? Config.colorBot : Config.colorNickName);
+                nameComponent.getStyle().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponentString(entity.getUsername())));
+                nameComponent.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/msg " + entity.getUsername()));
             }
         }
         else
         {
-            nameComponent.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/msg " + entity.getUsername()));
+            nameComponent.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/msg " + entity.getUsername()));
         }
 
         return nameComponent;
@@ -207,14 +205,14 @@ public class Misc
     {
         ArrayList<ChatEntity> list = new ArrayList<ChatEntity>();
 
-        for(Object obj : MinecraftServer.getServer().getConfigurationManager().playerEntityList)
-            list.add(new ChatEntity(obj));
+        for(EntityPlayerMP player : VChat.instance.getServer().getPlayerList().getPlayers())
+            list.add(new ChatEntity(player));
 
         return list;
     }
 
     public static ArrayList<EntityPlayerMP> getOnlinePlayers()
     {
-        return (ArrayList<EntityPlayerMP>) MinecraftServer.getServer().getConfigurationManager().playerEntityList;
+        return (ArrayList<EntityPlayerMP>) VChat.instance.getServer().getPlayerList().getPlayers();
     }
 }

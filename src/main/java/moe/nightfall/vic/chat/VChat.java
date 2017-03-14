@@ -10,6 +10,7 @@ import moe.nightfall.vic.chat.integrations.github.GitHubChatFormatter;
 import moe.nightfall.vic.chat.integrations.soundcloud.SoundCloudChatFormatter;
 import moe.nightfall.vic.chat.integrations.twitter.TwitterChatFormatter;
 import moe.nightfall.vic.chat.integrations.youtube.YoutubeChatFormatter;
+import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
 import org.apache.logging.log4j.Logger;
 
@@ -20,13 +21,14 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 
-@Mod(modid = "vchat", name = "vChat", version = Constants.VERSION, acceptableRemoteVersions = "*", acceptedMinecraftVersions = "1.8, 1.8.8, 1.8.9")
+@Mod(modid = "vchat", name = "vChat", version = Constants.VERSION, acceptableRemoteVersions = "*", acceptedMinecraftVersions = "1.11")
 public class VChat
 {	
     @Instance("vchat")
     public static VChat instance;
 
     private ArrayList<ChatHandler> chatHandlers;
+    private MinecraftServer server;
     private Logger logger;
 
     private CommonHandler commonHandler;
@@ -83,6 +85,8 @@ public class VChat
     @EventHandler
     public void onServerLoad(FMLServerStartingEvent event)
     {
+        this.server = event.getServer();
+
         for(ChatHandler handler : this.chatHandlers)
             handler.onServerLoad(event);
     }
@@ -98,6 +102,11 @@ public class VChat
     {
         MinecraftForge.EVENT_BUS.register(chatHandler);
         this.chatHandlers.add(chatHandler);
+    }
+
+    public MinecraftServer getServer()
+    {
+        return this.server;
     }
 
     public Logger getLogger()

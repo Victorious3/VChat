@@ -1,10 +1,10 @@
 package moe.nightfall.vic.chat.api;
 
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentString;
 
 public interface IChatFormatter 
 {
-    void apply(ChatComponentText text);
+    void apply(TextComponentString text);
 
     boolean isMatched();
 }

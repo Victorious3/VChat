@@ -1,14 +1,15 @@
 package moe.nightfall.vic.chat.bots;
 
 import moe.nightfall.vic.chat.ChatEntity;
+import moe.nightfall.vic.chat.VChat;
 import moe.nightfall.vic.chat.api.bot.IChatBot;
 import net.minecraft.command.CommandResultStats;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.IChatComponent;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 
 public class BotCommandSender implements ICommandSender
@@ -25,7 +26,7 @@ public class BotCommandSender implements ICommandSender
     }
 
     @Override
-    public void addChatMessage(IChatComponent comp)
+    public void sendMessage(ITextComponent comp)
     {
         this.owningBot.onCommandMessage(this.activeCommand, this.activeArgs, comp.getUnformattedText());
     }
@@ -49,7 +50,7 @@ public class BotCommandSender implements ICommandSender
     @Override
     public World getEntityWorld()
     {
-        return MinecraftServer.getServer().getEntityWorld();
+        return this.getServer().getEntityWorld();
     }
 
     @Override
@@ -60,19 +61,19 @@ public class BotCommandSender implements ICommandSender
     }
 
     @Override
-    public IChatComponent getDisplayName()
+    public ITextComponent getDisplayName()
     {
-        return MinecraftServer.getServer().getDisplayName();
+        return this.getServer().getDisplayName();
     }
 
     @Override
     public BlockPos getPosition()
     {
-        return MinecraftServer.getServer().getPosition();
+        return this.getServer().getPosition();
     }
 
     @Override
-    public Vec3 getPositionVector()
+    public Vec3d getPositionVector()
     {
         return null;
     }
@@ -87,8 +88,14 @@ public class BotCommandSender implements ICommandSender
     public void setCommandStat(CommandResultStats.Type type, int amount) {}
 
     @Override
-    public boolean canCommandSenderUseCommand(int par1, String par2)
+    public boolean canUseCommand(int par1, String par2)
     {
         return true;
+    }
+
+    @Override
+    public MinecraftServer getServer()
+    {
+        return VChat.instance.getServer();
     }
 }

@@ -8,6 +8,8 @@ import java.util.List;
 import moe.nightfall.vic.chat.ChatEntity;
 import moe.nightfall.vic.chat.Misc;
 import moe.nightfall.vic.chat.VChat;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
@@ -17,9 +19,6 @@ import moe.nightfall.vic.chat.api.bot.IChannelBase;
 import moe.nightfall.vic.chat.api.bot.IChatBot;
 import moe.nightfall.vic.chat.api.bot.IChatEntity;
 import moe.nightfall.vic.chat.api.bot.LogLevel;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
 
 public class BotHandler implements IBotHandler
 {
@@ -39,34 +38,34 @@ public class BotHandler implements IBotHandler
     @Override
     public void sendGlobalMessage(String message)
     {
-        ChatComponentText text = new ChatComponentText("");
+        TextComponentString text = new TextComponentString("");
         text.appendSibling(Misc.getComponent(this.botEntity));
         text.appendText(": " + message);
 
         this.instance.getChannelHandler().broadcast(text, this.botEntity);
-        MinecraftServer.getServer().addChatMessage(text);
+        this.instance.getServer().sendMessage(text);
     }
 
     @Override
     public void sendMessage(IChannelBase channel, String message)
     {
-        ChatComponentText text = new ChatComponentText("");
+        TextComponentString text = new TextComponentString("");
         text.appendSibling(Misc.getComponent(this.botEntity));
         text.appendText(": " + message);
 
         this.instance.getChannelHandler().broadcastOnChannel((IChannel) channel, this.botEntity, text);
-        MinecraftServer.getServer().addChatMessage(text);
+        this.instance.getServer().sendMessage(text);
     }
 
     @Override
     public void sendPrivateMessage(IChatEntity entity, String message)
     {
-        ChatComponentText text = new ChatComponentText("");
+        TextComponentString text = new TextComponentString("");
         text.appendSibling(Misc.getComponent(this.botEntity));
 
-        ChatComponentText mcomp = new ChatComponentText(" whispers to you: " + message);
-        mcomp.getChatStyle().setItalic(true);
-        mcomp.getChatStyle().setColor(EnumChatFormatting.GRAY);
+        TextComponentString mcomp = new TextComponentString(" whispers to you: " + message);
+        mcomp.getStyle().setItalic(true);
+        mcomp.getStyle().setColor(TextFormatting.GRAY);
 
         text.appendSibling(mcomp);
 
@@ -81,11 +80,11 @@ public class BotHandler implements IBotHandler
 
         try
         {
-            MinecraftServer.getServer().getCommandManager().executeCommand(this.botSender, command + " " + StringUtils.join(Arrays.asList(args), " "));
+            this.instance.getServer().getCommandManager().executeCommand(this.botSender, command + " " + StringUtils.join(Arrays.asList(args), " "));
         }
         catch (Exception e)
         {
-            this.botSender.addChatMessage(new ChatComponentText("$COMMANDEXECFAILED " + e.getClass().getSimpleName() + ": " + e.getMessage()));
+            this.botSender.sendMessage(new TextComponentString("$COMMANDEXECFAILED " + e.getClass().getSimpleName() + ": " + e.getMessage()));
         }
     }
 

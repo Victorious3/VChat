@@ -9,8 +9,8 @@ import net.minecraft.command.PlayerNotFoundException;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 
 import java.util.List;
 
@@ -24,13 +24,13 @@ public class CommandNick extends CommandOverrideAccess
     }
 
     @Override
-    public String getCommandName()
+    public String getName()
     {
         return "nick";
     }
 
     @Override
-    public String getCommandUsage(ICommandSender sender)
+    public String getUsage(ICommandSender sender)
     {
         return "/nick <player> [nickname]";
     }
@@ -42,14 +42,15 @@ public class CommandNick extends CommandOverrideAccess
     }
 
     @Override
-    public void processCommand(ICommandSender sender, String[] args) throws CommandException
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
         if(args.length > 0 && args.length < 3)
         {
             EntityPlayerMP player = null;
+
             try
             {
-                player = getPlayer(sender, args[0]);
+                player = getPlayer(server, sender, args[0]);
             }
             catch (PlayerNotFoundException e)
             {
@@ -67,7 +68,7 @@ public class CommandNick extends CommandOverrideAccess
                 if(player != null)
                     player.refreshDisplayName();
 
-                sender.addChatMessage(new ChatComponentText("Removed nickname from player \"" + args[0] + "\"."));
+                sender.sendMessage(new TextComponentString("Removed nickname from player \"" + args[0] + "\"."));
             }
             else
             {
@@ -95,7 +96,7 @@ public class CommandNick extends CommandOverrideAccess
                     if(player != null)
                         player.refreshDisplayName();
 
-                    sender.addChatMessage(new ChatComponentText("Added nickname \"" + args[1] + "\" to player \"" + args[0] + "\"."));
+                    sender.sendMessage(new TextComponentString("Added nickname \"" + args[1] + "\" to player \"" + args[0] + "\"."));
                 }
                 else
                 {
@@ -103,12 +104,12 @@ public class CommandNick extends CommandOverrideAccess
                 }
             }
         }
-        else throw new WrongUsageException(getCommandUsage(sender));
+        else throw new WrongUsageException(getUsage(sender));
     }
 
     @Override
-    public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos)
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos)
     {
-        return args.length == 1 ? getListOfStringsMatchingLastWord(args, MinecraftServer.getServer().getAllUsernames()) : null;
+        return args.length == 1 ? getListOfStringsMatchingLastWord(args, server.getPlayerList().getOnlinePlayerNames()) : null;
     }
 }

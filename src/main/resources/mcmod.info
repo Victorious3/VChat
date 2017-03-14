@@ -1,0 +1,14 @@
+{
+  "modListVersion": 2,
+  "modList": [{
+    "modid": "vchat",
+    "name": "vChat",
+    "description": "A server side mod that makes the chat more reliable.",
+    "version": "0.5r1",
+    "mcversion": "1.11.x",
+    "url": "http://www.minecraftforum.net/forums/mapping-and-modding/minecraft-mods/wip-mods/2182328-vchat-v0-1r13-a-server-side-mod-that-makes-the",
+    "authorList": [ "Victorious3" ],
+    "credits": "Idea of Victorious3. Supported by oitsjustjose, IamBlueSlime & Thog",
+    "requiredMods": [ "Forge" ]
+  }]
+}

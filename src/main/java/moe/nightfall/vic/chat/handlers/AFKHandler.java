@@ -10,8 +10,8 @@ import moe.nightfall.vic.chat.ChatEntity;
 import moe.nightfall.vic.chat.Misc;
 import moe.nightfall.vic.chat.VChat;
 import net.minecraft.command.server.CommandMessage;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -44,19 +44,19 @@ public class AFKHandler extends ChatHandler
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onCommand(CommandEvent event)
     {
-        if(event.command instanceof CommandMessage)
+        if(event.getCommand() instanceof CommandMessage)
         {
-            if(event.parameters.length > 0)
+            if(event.getParameters().length > 0)
             {
-                ChatEntity entity = new ChatEntity((Object)event.parameters[0]);
+                ChatEntity entity = new ChatEntity((Object)event.getParameters()[0]);
 
-                if(entity.getUsername() != null && this.isAFK(entity) && !entity.equals(new ChatEntity(event.sender.getName())))
+                if(entity.getUsername() != null && this.isAFK(entity) && !entity.equals(new ChatEntity(event.getSender().getName())))
                 {
-                    ChatComponentText text = new ChatComponentText("The player you tired to message is currently AFK (Reason: " + getReason(entity) + ")");
-                    text.getChatStyle().setColor(EnumChatFormatting.RED);
-                    event.sender.addChatMessage(text);
+                    TextComponentString text = new TextComponentString("The player you tired to message is currently AFK (Reason: " + getReason(entity) + ")");
+                    text.getStyle().setColor(TextFormatting.RED);
+                    event.getSender().sendMessage(text);
 
-                    this.afks.get(entity).messaged.add(new ChatEntity(event.sender));
+                    this.afks.get(entity).messaged.add(new ChatEntity(event.getSender()));
                 }
             }
         }
@@ -81,9 +81,9 @@ public class AFKHandler extends ChatHandler
 
         this.afks.put(entity, new AFKEntry(reason));
 
-        ChatComponentText text = new ChatComponentText("*" + nickname + " is now AFK" + (!reason.equalsIgnoreCase("AFK") ? " (" + reason + ")" : "") + ".");
-        text.getChatStyle().setItalic(true);
-        text.getChatStyle().setColor(EnumChatFormatting.GRAY);
+        TextComponentString text = new TextComponentString("*" + nickname + " is now AFK" + (!reason.equalsIgnoreCase("AFK") ? " (" + reason + ")" : "") + ".");
+        text.getStyle().setItalic(true);
+        text.getStyle().setColor(TextFormatting.GRAY);
 
         this.instance.getChannelHandler().broadcast(text, ChatEntity.SERVER);
     }
@@ -97,20 +97,20 @@ public class AFKHandler extends ChatHandler
 
         AFKEntry entry = this.afks.remove(entity);
 
-        ChatComponentText text = new ChatComponentText("*" + nickname + " is no longer AFK.");
-        text.getChatStyle().setItalic(true);
-        text.getChatStyle().setColor(EnumChatFormatting.GRAY);
+        TextComponentString text = new TextComponentString("*" + nickname + " is no longer AFK.");
+        text.getStyle().setItalic(true);
+        text.getStyle().setColor(TextFormatting.GRAY);
 
         this.instance.getChannelHandler().broadcast(text, ChatEntity.SERVER);
 
         if(!entry.messaged.isEmpty())
         {
-            ChatComponentText text1 = new ChatComponentText("The following players tried to message you: ");
+            TextComponentString text1 = new TextComponentString("The following players tried to message you: ");
             Iterator<ChatEntity> iterator = entry.messaged.iterator();
 
             while(iterator.hasNext())
             {
-                ChatComponentText nameComponent = Misc.getComponent(iterator.next());
+                TextComponentString nameComponent = Misc.getComponent(iterator.next());
                 text.appendSibling(nameComponent);
 
                 if(iterator.hasNext())
@@ -118,7 +118,7 @@ public class AFKHandler extends ChatHandler
             }
 
             text1.appendText(".");
-            entity.toPlayer().addChatMessage(text1);
+            entity.toPlayer().sendMessage(text1);
         }
     }
 

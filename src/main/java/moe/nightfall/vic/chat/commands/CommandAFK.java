@@ -6,6 +6,7 @@ import moe.nightfall.vic.chat.VChat;
 import moe.nightfall.vic.chat.handlers.AFKHandler;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.server.MinecraftServer;
 import org.apache.commons.lang3.StringUtils;
 
 public class CommandAFK extends CommandOverrideAccess
@@ -18,19 +19,19 @@ public class CommandAFK extends CommandOverrideAccess
     }
 
     @Override
-    public String getCommandName()
+    public String getName()
     {
         return "afk";
     }
 
     @Override
-    public String getCommandUsage(ICommandSender sender)
+    public String getUsage(ICommandSender sender)
     {
         return "/afk [reason]";
     }
 
     @Override
-    public void processCommand(ICommandSender sender, String[] args)
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args)
     {
         if(!(sender instanceof EntityPlayerMP))
             return;

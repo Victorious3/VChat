@@ -3,11 +3,11 @@ package moe.nightfall.vic.chat.integrations.twitter;
 import moe.nightfall.vic.chat.Config;
 import moe.nightfall.vic.chat.VChat;
 import moe.nightfall.vic.chat.integrations.ChatFormatter;
-import net.minecraft.event.ClickEvent;
-import net.minecraft.event.HoverEvent;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatStyle;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.event.ClickEvent;
+import net.minecraft.util.text.event.HoverEvent;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
@@ -38,18 +38,18 @@ public class TwitterChatFormatter extends ChatFormatter
     }
 
     @Override
-    public void apply(ChatComponentText text)
+    public void apply(TextComponentString text)
     {
         super.apply(text, PATTERN);
     }
 
     @Override
-    protected ChatComponentText getComponentReplacement(String match)
+    protected TextComponentString getComponentReplacement(String match)
     {
-        ChatComponentText text = new ChatComponentText("[Twitter - ");
+        TextComponentString text = new TextComponentString("[Twitter - ");
 
-        ChatStyle style = new ChatStyle();
-        style.setColor(EnumChatFormatting.AQUA);
+        Style style = new Style();
+        style.setColor(TextFormatting.AQUA);
 
         try
         {
@@ -60,13 +60,13 @@ public class TwitterChatFormatter extends ChatFormatter
 
             String subtitle = "Unknown page";
 
-            ChatComponentText toolTipText = new ChatComponentText(BULLET + " Twitter\n\n");
-            toolTipText.getChatStyle().setColor(EnumChatFormatting.AQUA);
+            TextComponentString toolTipText = new TextComponentString(BULLET + " Twitter\n\n");
+            toolTipText.getStyle().setColor(TextFormatting.AQUA);
 
             if (match.endsWith("twitter.com") || match.endsWith("twitter.com/"))
             {
                 subtitle = "Home page";
-                toolTipText.appendText(EnumChatFormatting.GRAY + "Home page");
+                toolTipText.appendText(TextFormatting.GRAY + "Home page");
             }
             else
             {
@@ -74,26 +74,26 @@ public class TwitterChatFormatter extends ChatFormatter
 
                 if (pages.length == 1)
                 {
-                    subtitle = "Profile of " + EnumChatFormatting.GRAY + pages[0];
-                    toolTipText.appendText(EnumChatFormatting.GRAY + "Profile of: " + EnumChatFormatting.WHITE + pages[0]);
+                    subtitle = "Profile of " + TextFormatting.GRAY + pages[0];
+                    toolTipText.appendText(TextFormatting.GRAY + "Profile of: " + TextFormatting.WHITE + pages[0]);
                 }
                 else if (pages.length == 3 && pages[1].equals("status"))
                 {
                     long tweetId = Long.parseLong(pages[2]);
                     Status tweet = this.twitter.tweets().showStatus(tweetId);
 
-                    subtitle = EnumChatFormatting.DARK_AQUA + "\"" + tweet.getText() + "\"" + EnumChatFormatting.AQUA + " by " + EnumChatFormatting.DARK_AQUA + pages[0];
-                    toolTipText.appendText(EnumChatFormatting.DARK_AQUA + "Tweet from: " + EnumChatFormatting.WHITE + pages[0] + " (" + EnumChatFormatting.DARK_AQUA + DATE_FORMAT.format(tweet.getCreatedAt()) + EnumChatFormatting.WHITE + ")\n");
-                    toolTipText.appendText(EnumChatFormatting.DARK_AQUA + "Retweets: " + EnumChatFormatting.WHITE + tweet.getRetweetCount() + "\n");
-                    toolTipText.appendText(EnumChatFormatting.DARK_AQUA + "Favorites: " + EnumChatFormatting.WHITE + tweet.getFavoriteCount());
+                    subtitle = TextFormatting.DARK_AQUA + "\"" + tweet.getText() + "\"" + TextFormatting.AQUA + " by " + TextFormatting.DARK_AQUA + pages[0];
+                    toolTipText.appendText(TextFormatting.DARK_AQUA + "Tweet from: " + TextFormatting.WHITE + pages[0] + " (" + TextFormatting.DARK_AQUA + DATE_FORMAT.format(tweet.getCreatedAt()) + TextFormatting.WHITE + ")\n");
+                    toolTipText.appendText(TextFormatting.DARK_AQUA + "Retweets: " + TextFormatting.WHITE + tweet.getRetweetCount() + "\n");
+                    toolTipText.appendText(TextFormatting.DARK_AQUA + "Favorites: " + TextFormatting.WHITE + tweet.getFavoriteCount());
                 }
             }
 
-            style.setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, match));
-            style.setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, toolTipText));
+            style.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, match));
+            style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, toolTipText));
 
-            ChatComponentText title = new ChatComponentText(subtitle);
-            title.getChatStyle().setColor(EnumChatFormatting.WHITE);
+            TextComponentString title = new TextComponentString(subtitle);
+            title.getStyle().setColor(TextFormatting.WHITE);
 
             text.appendSibling(title);
         }
@@ -102,21 +102,21 @@ public class TwitterChatFormatter extends ChatFormatter
             e.printStackTrace();
             this.instance.getLogger().warn("Failed to retrieve the Tweeter tweet's data of '" + match + "' (" + e.getMessage() + ")");
 
-            style.setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, match));
+            style.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, match));
 
-            ChatComponentText toolTipText = new ChatComponentText("Click to open this Twitter page (Failed to retrieve tweet's data)");
-            toolTipText.getChatStyle().setColor(EnumChatFormatting.AQUA);
+            TextComponentString toolTipText = new TextComponentString("Click to open this Twitter page (Failed to retrieve tweet's data)");
+            toolTipText.getStyle().setColor(TextFormatting.AQUA);
 
-            style.setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, toolTipText));
+            style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, toolTipText));
 
-            ChatComponentText link = new ChatComponentText(match);
-            link.getChatStyle().setColor(EnumChatFormatting.DARK_AQUA);
+            TextComponentString link = new TextComponentString(match);
+            link.getStyle().setColor(TextFormatting.DARK_AQUA);
 
             text.appendSibling(link);
         }
 
         text.appendText("]");
-        text.setChatStyle(style);
+        text.setStyle(style);
 
         return text;
     }

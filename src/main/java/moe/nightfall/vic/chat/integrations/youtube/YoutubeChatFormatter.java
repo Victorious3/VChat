@@ -5,11 +5,11 @@ import com.google.gson.JsonParser;
 import moe.nightfall.vic.chat.Misc;
 import moe.nightfall.vic.chat.VChat;
 import moe.nightfall.vic.chat.integrations.ChatFormatter;
-import net.minecraft.event.ClickEvent;
-import net.minecraft.event.HoverEvent;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatStyle;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.event.ClickEvent;
+import net.minecraft.util.text.event.HoverEvent;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -28,18 +28,18 @@ public class YoutubeChatFormatter extends ChatFormatter
     }
 
     @Override
-    public void apply(ChatComponentText text)
+    public void apply(TextComponentString text)
     {
         super.apply(text, PATTERN);
     }
 
     @Override
-    protected ChatComponentText getComponentReplacement(String match)
+    protected TextComponentString getComponentReplacement(String match)
     {
-        ChatComponentText text = new ChatComponentText("[Youtube - ");
+        TextComponentString text = new TextComponentString("[Youtube - ");
 
-        ChatStyle style = new ChatStyle();
-        style.setColor(EnumChatFormatting.RED);
+        Style style = new Style();
+        style.setColor(TextFormatting.RED);
 
         try
         {
@@ -98,23 +98,23 @@ public class YoutubeChatFormatter extends ChatFormatter
                     }
                 }
 
-                ChatComponentText toolTipText = new ChatComponentText(BULLET + " YouTube\n\n");
-                toolTipText.getChatStyle().setColor(EnumChatFormatting.RED);
-                toolTipText.appendText(EnumChatFormatting.RED + "Title: " + EnumChatFormatting.WHITE + youtubeVideo.getTitle() + "\n");
-                toolTipText.appendText(EnumChatFormatting.RED + "Publisher: " + EnumChatFormatting.WHITE + youtubeVideo.getChannelTitle() + "\n");
-                toolTipText.appendText(EnumChatFormatting.RED + "Duration: " + (hours > 0 ? EnumChatFormatting.RED + "" + hours + EnumChatFormatting.WHITE + " hours, " : "") + EnumChatFormatting.RED + minutes + EnumChatFormatting.WHITE + " minutes and " + EnumChatFormatting.RED + seconds + EnumChatFormatting.WHITE + " seconds");
+                TextComponentString toolTipText = new TextComponentString(BULLET + " YouTube\n\n");
+                toolTipText.getStyle().setColor(TextFormatting.RED);
+                toolTipText.appendText(TextFormatting.RED + "Title: " + TextFormatting.WHITE + youtubeVideo.getTitle() + "\n");
+                toolTipText.appendText(TextFormatting.RED + "Publisher: " + TextFormatting.WHITE + youtubeVideo.getChannelTitle() + "\n");
+                toolTipText.appendText(TextFormatting.RED + "Duration: " + (hours > 0 ? TextFormatting.RED + "" + hours + TextFormatting.WHITE + " hours, " : "") + TextFormatting.RED + minutes + TextFormatting.WHITE + " minutes and " + TextFormatting.RED + seconds + TextFormatting.WHITE + " seconds");
 
-                style.setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, match));
-                style.setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, toolTipText));
+                style.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, match));
+                style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, toolTipText));
 
-                ChatComponentText title = new ChatComponentText("\"" + youtubeVideo.getTitle() + "\"");
-                title.getChatStyle().setColor(EnumChatFormatting.WHITE);
+                TextComponentString title = new TextComponentString("\"" + youtubeVideo.getTitle() + "\"");
+                title.getStyle().setColor(TextFormatting.WHITE);
 
                 text.appendSibling(title);
                 text.appendText(" by ");
 
-                ChatComponentText publisher = new ChatComponentText(youtubeVideo.getChannelTitle());
-                publisher.getChatStyle().setColor(EnumChatFormatting.WHITE);
+                TextComponentString publisher = new TextComponentString(youtubeVideo.getChannelTitle());
+                publisher.getStyle().setColor(TextFormatting.WHITE);
 
                 text.appendSibling(publisher);
             }
@@ -128,21 +128,21 @@ public class YoutubeChatFormatter extends ChatFormatter
             e.printStackTrace();
             this.instance.getLogger().warn("Failed to retrieve the YouTube video's data of '" + match + "' (" + e.getMessage() + ")");
 
-            style.setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, match));
+            style.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, match));
 
-            ChatComponentText toolTipText = new ChatComponentText("Click to open this YouTube video (Failed to retrieve video's data)");
-            toolTipText.getChatStyle().setColor(EnumChatFormatting.RED);
+            TextComponentString toolTipText = new TextComponentString("Click to open this YouTube video (Failed to retrieve video's data)");
+            toolTipText.getStyle().setColor(TextFormatting.RED);
 
-            style.setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, toolTipText));
+            style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, toolTipText));
 
-            ChatComponentText link = new ChatComponentText(match);
-            link.getChatStyle().setColor(EnumChatFormatting.WHITE);
+            TextComponentString link = new TextComponentString(match);
+            link.getStyle().setColor(TextFormatting.WHITE);
 
             text.appendSibling(link);
         }
 
         text.appendText("]");
-        text.setChatStyle(style);
+        text.setStyle(style);
 
         return text;
     }

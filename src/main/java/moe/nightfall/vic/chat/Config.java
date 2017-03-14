@@ -2,8 +2,8 @@ package moe.nightfall.vic.chat;
 
 import java.io.File;
 
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.config.Configuration;
 
 public class Config 
@@ -69,10 +69,10 @@ public class Config
      * Style
      */
 
-    public static EnumChatFormatting colorHighlight;
-    public static EnumChatFormatting colorHighlightSelf;
-    public static EnumChatFormatting colorNickName;
-    public static EnumChatFormatting colorBot;
+    public static TextFormatting colorHighlight;
+    public static TextFormatting colorHighlightSelf;
+    public static TextFormatting colorNickName;
+    public static TextFormatting colorBot;
 
     public static void initialize(File file)
     {
@@ -119,7 +119,7 @@ public class Config
 
         pingHighlighted = config.get("GENERAL", "ping_enabled", true, "Enable to let players get pinged when they get mentioned in chat.").getBoolean(true);
         pingPitch = (float) config.get("GENERAL", "ping_pitch", 0.8, "Change the pitch of the sound that will be played on player mention.").getDouble();
-        pingVolume = MathHelper.clamp_float((float) config.get("GENERAL", "ping_pitch", 1.0, "Change the volume of the sound that will be played on player mention. (0.0 - 1.0)").getDouble(), 0, 1);
+        pingVolume = MathHelper.clamp((float) config.get("GENERAL", "ping_pitch", 1.0, "Change the volume of the sound that will be played on player mention. (0.0 - 1.0)").getDouble(), 0, 1);
         pingSound = config.get("GENERAL", "ping_sound", "random.levelup", "Change the sound that will be played on player mention. Here is a complete list: http://minecraft.gamepedia.com/Sounds.json").getString();
 
         channelListEnabled = config.get("GENERAL", "channel_list_enabled", true, "Disable or enable to show the list of joined channels when joining the server.").getBoolean(true);
@@ -160,17 +160,17 @@ public class Config
 
         config.addCustomCategoryComment("STYLE", "Valid colors are: BLACK, DARK_BLUE, DARK_GREEN, DARK_AQUA, DARK_RED, DARK_PURPLE, GOLD, GRAY, DARK_GRAY, BLUE, GREEN, AQUA, RED, LIGHT_PURPLE, YELLOW, WHITE");
 
-        colorHighlight = EnumChatFormatting.getValueByName(config.get("STYLE", "color_highlight", "DARK_AQUA", "The color used by the name hightlighting.").getString());
-        if(colorHighlight == null) colorHighlight = EnumChatFormatting.DARK_AQUA;
+        colorHighlight = TextFormatting.getValueByName(config.get("STYLE", "color_highlight", "DARK_AQUA", "The color used by the name hightlighting.").getString());
+        if(colorHighlight == null) colorHighlight = TextFormatting.DARK_AQUA;
 
-        colorHighlightSelf = EnumChatFormatting.getValueByName(config.get("STYLE", "color_highlight_self", "DARK_RED", "The color used by the name hightlighting if yourself gets highlighted.").getString());
-        if(colorHighlightSelf == null) colorHighlightSelf = EnumChatFormatting.DARK_RED;
+        colorHighlightSelf = TextFormatting.getValueByName(config.get("STYLE", "color_highlight_self", "DARK_RED", "The color used by the name hightlighting if yourself gets highlighted.").getString());
+        if(colorHighlightSelf == null) colorHighlightSelf = TextFormatting.DARK_RED;
 
-        colorNickName = EnumChatFormatting.getValueByName(config.get("STYLE", "color_nick", "YELLOW", "Change the color applied to nicknames").getString());
-        if(colorNickName == null) colorNickName = EnumChatFormatting.YELLOW;
+        colorNickName = TextFormatting.getValueByName(config.get("STYLE", "color_nick", "YELLOW", "Change the color applied to nicknames").getString());
+        if(colorNickName == null) colorNickName = TextFormatting.YELLOW;
 
-        colorBot = EnumChatFormatting.getValueByName(config.get("STYLE", "color_bot", "GREEN", "Change the color applied to bots").getString());
-        if(colorNickName == null) colorNickName = EnumChatFormatting.GREEN;
+        colorBot = TextFormatting.getValueByName(config.get("STYLE", "color_bot", "GREEN", "Change the color applied to bots").getString());
+        if(colorNickName == null) colorNickName = TextFormatting.GREEN;
 
         config.save();
     }

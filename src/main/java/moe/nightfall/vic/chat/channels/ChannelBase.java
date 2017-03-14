@@ -6,13 +6,12 @@ import java.util.Collection;
 import moe.nightfall.vic.chat.ChatEntity;
 import moe.nightfall.vic.chat.VChat;
 import moe.nightfall.vic.chat.api.IChannel;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IChatComponent;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 
 public abstract class ChannelBase implements IChannel
 {
@@ -32,13 +31,13 @@ public abstract class ChannelBase implements IChannel
     }
 
     @Override
-    public IChatComponent formatChat(ChatEntity sender, ChatEntity receiver, IChatComponent message)
+    public ITextComponent formatChat(ChatEntity sender, ChatEntity receiver, ITextComponent message)
     {
         if(sender.isServer())
         {
-            ChatComponentText text = new ChatComponentText("*");
-            text.getChatStyle().setItalic(true);
-            text.getChatStyle().setColor(EnumChatFormatting.GRAY);
+            TextComponentString text = new TextComponentString("*");
+            text.getStyle().setItalic(true);
+            text.getStyle().setColor(TextFormatting.GRAY);
             text.appendSibling(message);
 
             return text;
@@ -53,7 +52,7 @@ public abstract class ChannelBase implements IChannel
         if(!this.joined.contains(player))
         {
             if(!initial)
-                this.instance.getChannelHandler().broadcastOnChannel(this, ChatEntity.SERVER, new ChatComponentText(player + " joined the channel."));
+                this.instance.getChannelHandler().broadcastOnChannel(this, ChatEntity.SERVER, new TextComponentString(player + " joined the channel."));
 
             this.joined.add(player);
         }
@@ -68,13 +67,13 @@ public abstract class ChannelBase implements IChannel
         this.joined.remove(player);
 
         if(!initial)
-            this.instance.getChannelHandler().broadcastOnChannel(this, ChatEntity.SERVER, new ChatComponentText(player + " left the channel."));
+            this.instance.getChannelHandler().broadcastOnChannel(this, ChatEntity.SERVER, new TextComponentString(player + " left the channel."));
     }
 
     @Override
     public void mute(ChatEntity issuer, ChatEntity player, boolean unmute)
     {
-        this.instance.getChannelHandler().broadcastOnChannel(this, ChatEntity.SERVER, new ChatComponentText(player + " was " + (unmute ? "unmuted" : "muted") +" by " + issuer));
+        this.instance.getChannelHandler().broadcastOnChannel(this, ChatEntity.SERVER, new TextComponentString(player + " was " + (unmute ? "unmuted" : "muted") +" by " + issuer));
 
         if(unmute)
             this.muted.remove(player);
@@ -87,11 +86,11 @@ public abstract class ChannelBase implements IChannel
     {
         if(!this.joined.contains(player))
         {
-            this.instance.getChannelHandler().privateMessageOnChannel(this, ChatEntity.SERVER, issuer, new ChatComponentText("There is no player called \"" + player.getUsername() + "\" on the channel!"));
+            this.instance.getChannelHandler().privateMessageOnChannel(this, ChatEntity.SERVER, issuer, new TextComponentString("There is no player called \"" + player.getUsername() + "\" on the channel!"));
             return;
         }
 
-        this.instance.getChannelHandler().broadcastOnChannel(this, ChatEntity.SERVER, new ChatComponentText(player + " was kicked from the channel by " + issuer));
+        this.instance.getChannelHandler().broadcastOnChannel(this, ChatEntity.SERVER, new TextComponentString(player + " was kicked from the channel by " + issuer));
         this.instance.getChannelHandler().leaveChannel(player, this);
     }
 
@@ -105,20 +104,20 @@ public abstract class ChannelBase implements IChannel
                 this.banned.remove(player);
 
                 if(this.isWhitelisted())
-                    this.instance.getChannelHandler().privateMessageOnChannel(this, ChatEntity.SERVER, issuer, new ChatComponentText("You removed " + player.getUsername() + " from the whitelist."));
+                    this.instance.getChannelHandler().privateMessageOnChannel(this, ChatEntity.SERVER, issuer, new TextComponentString("You removed " + player.getUsername() + " from the whitelist."));
                 else
-                    this.instance.getChannelHandler().privateMessageOnChannel(this, ChatEntity.SERVER, issuer, new ChatComponentText("You unbanned " + player.getUsername() + " from the channel."));
+                    this.instance.getChannelHandler().privateMessageOnChannel(this, ChatEntity.SERVER, issuer, new TextComponentString("You unbanned " + player.getUsername() + " from the channel."));
 
                 if(this.isWhitelisted() && this.joined.contains(player))
                     this.instance.getChannelHandler().leaveChannel(player, this);
             }
             else if(this.isWhitelisted())
             {
-                this.instance.getChannelHandler().privateMessageOnChannel(this, ChatEntity.SERVER, issuer, new ChatComponentText("You haven't added " + player.getUsername() + " to the whitelist!"));
+                this.instance.getChannelHandler().privateMessageOnChannel(this, ChatEntity.SERVER, issuer, new TextComponentString("You haven't added " + player.getUsername() + " to the whitelist!"));
             }
             else
             {
-                this.instance.getChannelHandler().privateMessageOnChannel(this, ChatEntity.SERVER, issuer, new ChatComponentText("You haven't banned " + player.getUsername() + " from the channel!"));
+                this.instance.getChannelHandler().privateMessageOnChannel(this, ChatEntity.SERVER, issuer, new TextComponentString("You haven't banned " + player.getUsername() + " from the channel!"));
             }
         }
         else
@@ -128,20 +127,20 @@ public abstract class ChannelBase implements IChannel
                 this.banned.add(player);
 
                 if(this.isWhitelisted())
-                    this.instance.getChannelHandler().broadcastOnChannel(this, ChatEntity.SERVER, new ChatComponentText(player + " was added to the whitelist by " + issuer));
+                    this.instance.getChannelHandler().broadcastOnChannel(this, ChatEntity.SERVER, new TextComponentString(player + " was added to the whitelist by " + issuer));
                 else
-                    this.instance.getChannelHandler().broadcastOnChannel(this, ChatEntity.SERVER, new ChatComponentText(player + " was banned from the channel by " + issuer));
+                    this.instance.getChannelHandler().broadcastOnChannel(this, ChatEntity.SERVER, new TextComponentString(player + " was banned from the channel by " + issuer));
 
                 if(!this.isWhitelisted() && this.joined.contains(player))
                     this.instance.getChannelHandler().leaveChannel(player, this);
             }
             else if(this.isWhitelisted())
             {
-                this.instance.getChannelHandler().privateMessageOnChannel(this, ChatEntity.SERVER, issuer, new ChatComponentText("You already added " + player.getUsername() + " to the whitelist!"));
+                this.instance.getChannelHandler().privateMessageOnChannel(this, ChatEntity.SERVER, issuer, new TextComponentString("You already added " + player.getUsername() + " to the whitelist!"));
             }
             else
             {
-                this.instance.getChannelHandler().privateMessageOnChannel(this, ChatEntity.SERVER, issuer, new ChatComponentText("You already banned " + player.getUsername() + " from the channel!"));
+                this.instance.getChannelHandler().privateMessageOnChannel(this, ChatEntity.SERVER, issuer, new TextComponentString("You already banned " + player.getUsername() + " from the channel!"));
             }
         }
     }
@@ -214,7 +213,7 @@ public abstract class ChannelBase implements IChannel
     }
 
     @Override
-    public boolean canReceiveChat(ChatEntity sender, ChatEntity receiver, IChatComponent message)
+    public boolean canReceiveChat(ChatEntity sender, ChatEntity receiver, ITextComponent message)
     {
         return true;
     }

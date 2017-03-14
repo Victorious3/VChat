@@ -4,9 +4,9 @@ import moe.nightfall.vic.chat.Config;
 import moe.nightfall.vic.chat.Misc;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.concurrent.TimeUnit;
@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 public class CommandTop extends CommandOverrideAccess
 {
     @Override
-    public String getCommandName()
+    public String getName()
     {
         return "top";
     }
@@ -26,17 +26,17 @@ public class CommandTop extends CommandOverrideAccess
     }
 
     @Override
-    public String getCommandUsage(ICommandSender sender)
+    public String getUsage(ICommandSender sender)
     {
         return "/top";
     }
 
     @Override
-    public void processCommand(ICommandSender sender, String[] args)
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args)
     {
         Runtime runtime = Runtime.getRuntime();
         int proc = runtime.availableProcessors();
-        long uptime = (long) MinecraftServer.getServer().getTickCounter() * 50;
+        long uptime = (long) server.getTickCounter() * 50;
         long sysmem = Misc.getDeviceMemory() / (1024 * 1024);
         long freemem = runtime.totalMemory() - runtime.freeMemory();
         long maxmem = runtime.maxMemory();
@@ -50,32 +50,32 @@ public class CommandTop extends CommandOverrideAccess
         int min = (int) TimeUnit.MILLISECONDS.toMinutes(uptime) % 60;
         int sec = (int) TimeUnit.MILLISECONDS.toSeconds(uptime) % 60;
 
-        ChatComponentText uptComp = new ChatComponentText(String.format("Uptime: %d:%02d:%02d:%02d", day, hrs, min, sec));
-        ChatComponentText aprComp = new ChatComponentText(String.format("Available processors: %d", proc));
-        ChatComponentText sysmemComp = new ChatComponentText(String.format("System memory: %d MB", sysmem));
+        TextComponentString uptComp = new TextComponentString(String.format("Uptime: %d:%02d:%02d:%02d", day, hrs, min, sec));
+        TextComponentString aprComp = new TextComponentString(String.format("Available processors: %d", proc));
+        TextComponentString sysmemComp = new TextComponentString(String.format("System memory: %d MB", sysmem));
 
-        ChatComponentText memComp = new ChatComponentText("RAM: ");
+        TextComponentString memComp = new TextComponentString("RAM: ");
         memComp.appendSibling(createBar(usedmem, freemem + "/" + maxmem + "MB", 50));
 
-        ChatComponentText cpuComp = new ChatComponentText("CPU: ");
+        TextComponentString cpuComp = new TextComponentString("CPU: ");
         cpuComp.appendSibling(createBar(cpuload, (int)(cpuload * 100) + "%", 50));
 
-        sender.addChatMessage(uptComp);
-        sender.addChatMessage(aprComp);
-        sender.addChatMessage(sysmemComp);
-        sender.addChatMessage(memComp);
-        sender.addChatMessage(cpuComp);
+        sender.sendMessage(uptComp);
+        sender.sendMessage(aprComp);
+        sender.sendMessage(sysmemComp);
+        sender.sendMessage(memComp);
+        sender.sendMessage(cpuComp);
     }
 
-    private static ChatComponentText createBar(float value, String inlay, int maxLength)
+    private static TextComponentString createBar(float value, String inlay, int maxLength)
     {
-        value = MathHelper.clamp_float(value, 0, 1);
+        value = MathHelper.clamp(value, 0, 1);
         maxLength -= 2;
 
         int length = (int) (value * maxLength);
 
-        String out = StringUtils.repeat('#', MathHelper.clamp_int(length, 0, maxLength - inlay.length()));
-        out += StringUtils.repeat('_', MathHelper.clamp_int(maxLength - length - inlay.length(), 0, maxLength - inlay.length()));
+        String out = StringUtils.repeat('#', MathHelper.clamp(length, 0, maxLength - inlay.length()));
+        out += StringUtils.repeat('_', MathHelper.clamp(maxLength - length - inlay.length(), 0, maxLength - inlay.length()));
 
         if(length > maxLength - inlay.length())
         {
@@ -87,17 +87,17 @@ public class CommandTop extends CommandOverrideAccess
         length = out.length();
         out += StringUtils.repeat('_', maxLength - out.length());
 
-        ChatComponentText comp = new ChatComponentText("[");
+        TextComponentString comp = new TextComponentString("[");
 
-        int i1 = MathHelper.clamp_int(maxLength / 3, 0, length);
-        ChatComponentText c1 = new ChatComponentText(out.substring(0, i1));
-        int i2 = MathHelper.clamp_int(i1 + maxLength / 3, 0, length);
-        ChatComponentText c2 = new ChatComponentText(out.substring(i1, i2));
-        ChatComponentText c3 = new ChatComponentText(out.substring(i2, length));
+        int i1 = MathHelper.clamp(maxLength / 3, 0, length);
+        TextComponentString c1 = new TextComponentString(out.substring(0, i1));
+        int i2 = MathHelper.clamp(i1 + maxLength / 3, 0, length);
+        TextComponentString c2 = new TextComponentString(out.substring(i1, i2));
+        TextComponentString c3 = new TextComponentString(out.substring(i2, length));
 
-        c1.getChatStyle().setColor(EnumChatFormatting.GREEN);
-        c2.getChatStyle().setColor(EnumChatFormatting.YELLOW);
-        c3.getChatStyle().setColor(EnumChatFormatting.RED);
+        c1.getStyle().setColor(TextFormatting.GREEN);
+        c2.getStyle().setColor(TextFormatting.YELLOW);
+        c3.getStyle().setColor(TextFormatting.RED);
 
         comp.appendSibling(c1);
         comp.appendSibling(c2);
