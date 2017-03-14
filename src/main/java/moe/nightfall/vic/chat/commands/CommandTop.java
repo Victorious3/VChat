@@ -1,7 +1,7 @@
 package moe.nightfall.vic.chat.commands;
 
 import moe.nightfall.vic.chat.Config;
-import moe.nightfall.vic.chat.Misc;
+import moe.nightfall.vic.chat.util.Misc;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.MathHelper;

@@ -1,5 +1,6 @@
 package moe.nightfall.vic.chat;
 
+import moe.nightfall.vic.chat.util.Misc;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import moe.nightfall.vic.chat.api.bot.IChatEntity;

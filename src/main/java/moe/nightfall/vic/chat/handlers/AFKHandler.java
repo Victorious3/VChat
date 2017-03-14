@@ -7,7 +7,7 @@ import java.util.Iterator;
 import moe.nightfall.vic.chat.commands.CommandAFK;
 
 import moe.nightfall.vic.chat.ChatEntity;
-import moe.nightfall.vic.chat.Misc;
+import moe.nightfall.vic.chat.util.Misc;
 import moe.nightfall.vic.chat.VChat;
 import net.minecraft.command.server.CommandMessage;
 import net.minecraft.util.text.TextComponentString;

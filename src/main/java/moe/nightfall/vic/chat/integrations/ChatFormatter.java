@@ -1,11 +1,8 @@
 package moe.nightfall.vic.chat.integrations;
 
-import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import moe.nightfall.vic.chat.*;
-
+import moe.nightfall.vic.chat.ChatEntity;
+import moe.nightfall.vic.chat.Config;
+import moe.nightfall.vic.chat.VChat;
 import moe.nightfall.vic.chat.api.IChatFormatter;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.text.Style;
@@ -13,6 +10,10 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.event.ClickEvent;
 import net.minecraft.util.text.event.HoverEvent;
+
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public abstract class ChatFormatter implements IChatFormatter
 {
@@ -123,6 +124,7 @@ public abstract class ChatFormatter implements IChatFormatter
             style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponentString("Click to open URL")));
             style.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, match));
             text.setStyle(style);
+
             return text;
         }
 

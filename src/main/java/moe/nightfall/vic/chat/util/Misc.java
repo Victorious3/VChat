@@ -1,19 +1,11 @@
-package moe.nightfall.vic.chat;
+package moe.nightfall.vic.chat.util;
 
-import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import java.lang.management.OperatingSystemMXBean;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import moe.nightfall.vic.chat.ChatEntity;
+import moe.nightfall.vic.chat.Config;
+import moe.nightfall.vic.chat.VChat;
 import moe.nightfall.vic.chat.bots.BotHandler;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
-
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
@@ -21,15 +13,45 @@ import net.minecraft.util.text.event.ClickEvent;
 import net.minecraft.util.text.event.HoverEvent;
 import org.apache.commons.lang3.StringUtils;
 
-public class Misc 
+import javax.net.ssl.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
+import java.lang.reflect.Method;
+import java.net.*;
+import java.nio.charset.Charset;
+import java.security.cert.CertificateException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class Misc
 {
     public static final Pattern splitPattern = Pattern.compile("([^\"]\\S*|\".+?\")\\s*");
+    public static SSLContext SSL_CONTEXT = null;
+    public static final HostnameVerifier HOSTNAME_VERIFIER = new HostnameVerifier()
+    {
+        public boolean verify(String hostname, SSLSession session)
+        {
+            return true;
+        }
+    };
+    private static final Pattern TITLE_TAG = Pattern.compile("\\<title>(.*)\\</title>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     private static final OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
     private static Method getSystemCpuLpad;
     private static Long deviceMemory;
 
-	private Misc() {}
+    private Misc()
+    {
+
+    }
+
+    private static SSLSocketFactory factory;
 
     static
     {
@@ -38,12 +60,37 @@ public class Misc
             getSystemCpuLpad = osBean.getClass().getDeclaredMethod("getSystemCpuLoad");
             getSystemCpuLpad.setAccessible(true);
 
-            Method memsize = osBean.getClass().getDeclaredMethod("getTotalPhysicalMemorySize");
-            memsize.setAccessible(true);
+            Method memSize = osBean.getClass().getDeclaredMethod("getTotalPhysicalMemorySize");
+            memSize.setAccessible(true);
 
-            deviceMemory = (Long) memsize.invoke(osBean);
-        }
-        catch (Exception e)
+            deviceMemory = (Long) memSize.invoke(osBean);
+
+            TrustManager[] trustAllCerts = new TrustManager[]{
+                    new X509TrustManager()
+                    {
+                        @Override
+                        public void checkClientTrusted(java.security.cert.X509Certificate[] x509Certificates, String s) throws CertificateException
+                        {
+
+                        }
+
+                        @Override
+                        public void checkServerTrusted(java.security.cert.X509Certificate[] x509Certificates, String s) throws CertificateException
+                        {
+
+                        }
+
+                        public java.security.cert.X509Certificate[] getAcceptedIssuers()
+                        {
+                            return null;
+                        }
+
+                    }
+            };
+            SSL_CONTEXT = SSLContext.getInstance("SSL");
+            SSL_CONTEXT.init(null, trustAllCerts, new java.security.SecureRandom());
+            factory = new SSLSocketFactoryBridge(SSL_CONTEXT.getSocketFactory());
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -67,7 +114,7 @@ public class Misc
         List<String> list = new ArrayList<String>();
         Matcher m = splitPattern.matcher(StringUtils.join(Arrays.asList(args), " "));
 
-        while(m.find())
+        while (m.find())
             list.add(m.group(1).replaceAll("\"", ""));
 
         return list.toArray(new String[list.size()]);
@@ -157,13 +204,13 @@ public class Misc
 
     public static HashMap<String, String> getQueryMap(URL url)
     {
-        if(url.getQuery() == null)
+        if (url.getQuery() == null)
             return new HashMap<String, String>();
 
         String[] params = url.getQuery().split("&");
         HashMap<String, String> map = new HashMap<String, String>();
 
-        for(String param : params)
+        for (String param : params)
         {
             String name = param.split("=")[0];
             String value = param.split("=")[1];
@@ -192,8 +239,7 @@ public class Misc
             int end = content.indexOf(tagClose);
 
             return content.substring(begin, end);
-        }
-        catch (IOException e)
+        } catch (IOException e)
         {
             e.printStackTrace();
         }
@@ -214,5 +260,110 @@ public class Misc
     public static ArrayList<EntityPlayerMP> getOnlinePlayers()
     {
         return (ArrayList<EntityPlayerMP>) VChat.instance.getServer().getPlayerList().getPlayers();
+    }
+
+    public static String getPageTitle(String url) throws IOException
+    {
+        URL u = new URL(url);
+        HttpURLConnection conn = (HttpURLConnection) u.openConnection();
+        conn.setConnectTimeout(2000);
+        conn.setInstanceFollowRedirects(true);
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("Content-Language", "en-US");
+        conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.56 Safari/535.11");
+
+        // Disable certificates checks
+        if (conn instanceof HttpsURLConnection)
+        {
+            ((HttpsURLConnection) conn).setSSLSocketFactory(factory);
+            ((HttpsURLConnection) conn).setHostnameVerifier(HOSTNAME_VERIFIER);
+        }
+        try
+        {
+            int httpCode = conn.getResponseCode();
+            if (httpCode == 301 || httpCode == 302)
+                return getPageTitle(conn.getHeaderField("Location"));
+        } catch (IOException e)
+        {
+            // silence error code
+        }
+        InputStream stream = conn.getErrorStream();
+        if (stream == null) stream = conn.getInputStream();
+
+        ContentType contentType = getContentTypeHeader(conn);
+        Charset charset = getCharset(contentType);
+        if (charset == null)
+            charset = Charset.defaultCharset();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(stream, charset));
+        int n, totalRead = 0;
+        char[] buf = new char[1024];
+        StringBuilder content = new StringBuilder();
+
+        while (totalRead < 655360 && (n = reader.read(buf, 0, buf.length)) != -1)
+        {
+            content.append(buf, 0, n);
+            totalRead += n;
+        }
+        reader.close();
+        Matcher matcher = TITLE_TAG.matcher(content);
+        if (matcher.find())
+            return matcher.group(1).replaceAll("[\\s\\<>]+", " ").trim();
+        return null;
+    }
+
+    public static String getDomainName(String url) throws URISyntaxException
+    {
+        URI uri = new URI(url);
+        String domain = uri.getHost();
+        return domain.startsWith("www.") ? domain.substring(4) : domain;
+    }
+
+    private static ContentType getContentTypeHeader(URLConnection conn)
+    {
+        int i = 0;
+        boolean moreHeaders = true;
+        do
+        {
+            String headerName = conn.getHeaderFieldKey(i);
+            String headerValue = conn.getHeaderField(i);
+            if (headerName != null && headerName.equals("Content-Type"))
+                return new ContentType(headerValue);
+
+            i++;
+            moreHeaders = headerName != null || headerValue != null;
+        }
+        while (moreHeaders);
+
+        return new ContentType("text/html");
+    }
+
+    private static Charset getCharset(ContentType contentType)
+    {
+        if (contentType != null && contentType.charsetName != null && Charset.isSupported(contentType.charsetName))
+            return Charset.forName(contentType.charsetName);
+        else
+            return null;
+    }
+
+    /**
+     * Class that represent ContentType and Charset of a document (if present)
+     */
+    private static final class ContentType
+    {
+        private static final Pattern CHARSET_HEADER = Pattern.compile("charset=([-_a-zA-Z0-9]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+
+        private String charsetName;
+
+        private ContentType(String headerValue)
+        {
+            if (headerValue == null)
+                throw new IllegalArgumentException("ContentType must be constructed with a not-null headerValue");
+            if (headerValue.indexOf(";") != -1)
+            {
+                Matcher matcher = CHARSET_HEADER.matcher(headerValue);
+                if (matcher.find())
+                    charsetName = matcher.group(1);
+            }
+        }
     }
 }

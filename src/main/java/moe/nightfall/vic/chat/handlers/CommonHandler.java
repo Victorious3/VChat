@@ -30,7 +30,7 @@ import moe.nightfall.vic.chat.channels.ChannelCustom;
 import moe.nightfall.vic.chat.ChatEntity;
 import moe.nightfall.vic.chat.integrations.ChatFormatter;
 import moe.nightfall.vic.chat.Config;
-import moe.nightfall.vic.chat.Misc;
+import moe.nightfall.vic.chat.util.Misc;
 import moe.nightfall.vic.chat.VChat;
 import moe.nightfall.vic.chat.api.IChannel;
 import net.minecraft.command.server.CommandEmote;
